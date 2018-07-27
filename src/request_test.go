@@ -11,6 +11,54 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/integration"
 )
 
+func TestRunCollection(t *testing.T) {
+
+	jmxQueryFunc = func(name string, timeout int) (map[string]interface{}, error) {
+		outmap := map[string]interface{}{
+			"java.lang:test1=test1,test2=test2,attr=testattr": "testresult",
+		}
+
+		return outmap, nil
+	}
+
+	collection := []*domainDefinition{
+		{
+			domain:    "java.lang",
+			eventType: "TestEvent",
+			beans: []*beanRequest{
+				{
+					beanQuery: "test1=test1,test2=test2",
+					attributes: []*attributeRequest{
+						{
+							attrRegexp: regexp.MustCompile("attr=testattr$"),
+							metricName: "testName",
+							metricType: metric.ATTRIBUTE,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	expectedMetrics := map[string]interface{}{
+		"event_type":  "TestEvent",
+		"entityName":  "domain:java.lang",
+		"displayName": "java.lang",
+		"host":        "",
+		"testName":    "testresult",
+		"query":       "test1=test1,test2=test2",
+	}
+
+	i, _ := integration.New("jmxtest", "0.1.0")
+
+	runCollection(collection, i)
+
+	if !reflect.DeepEqual(expectedMetrics, i.Entities[0].Metrics[0].Metrics) {
+		fmt.Println(pretty.Diff(expectedMetrics, i.Entities[0].Metrics[0].Metrics))
+		t.Error("Failed to produce expected metrics")
+	}
+
+}
 func TestGenerateEventType(t *testing.T) {
 	i, _ := integration.New("jmx", "0.1.0")
 	logger = i.Logger()
