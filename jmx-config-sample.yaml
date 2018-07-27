@@ -1,0 +1,20 @@
+# Copy this file into the following folder:
+#    Linux: /etc/newrelic-infra/integrations.d
+#    Windows: C:\Program Files\New Relic\newrelic-infra\integrations.d
+#
+# For a complete description of the Configuration File Specification, please
+# refer to the Integrations SDK documentation:
+# https://docs.newrelic.com/docs/integrations/integrations-sdk/file-specifications
+
+integration_name: com.newrelic.jmx
+
+instances:
+  - name: jmx
+    command: all_data
+    arguments:
+        jmx_host: jmx-test.localnet
+        jmx_port: 9999
+        jmx_user: admin
+        jmx_pass: admin
+        collection_files: ~/sample-metrics.yaml,~/default-metrics.yaml
+
