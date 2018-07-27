@@ -1,0 +1,20 @@
+collect:
+    - domain: 
+        - test.test
+      beans:
+          - query: test=test
+            exclude_regex: 
+                - test
+            attributes:
+                - atr: test.test
+                  metric_type: rate
+                  metric_name: t.test
+                - attr_regex: test.*
+    - domain: test.*
+      event_type: TestSample
+      beans:
+          - query: test=tester
+            exclude_regex: test2
+
+                
+

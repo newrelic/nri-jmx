@@ -8,7 +8,29 @@ import (
 
 	"github.com/kr/pretty"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
+	"github.com/newrelic/infra-integrations-sdk/integration"
 )
+
+func TestParseYaml(t *testing.T) {
+	i, _ := integration.New("jmx", "1")
+	logger = i.Logger()
+
+	testCases := []struct {
+		file         string
+		expectedFail bool
+	}{
+		{"../test/test-sample.yml", false},
+		{"../test/test-sample-bad.yml", true},
+		{"../test/test-sample-nonexistant.yml", true},
+	}
+
+	for _, tc := range testCases {
+		_, err := parseYaml(tc.file)
+		if (err != nil) != tc.expectedFail {
+			t.Error("Did not get expected error state")
+		}
+	}
+}
 
 func TestParseAttributeFromString(t *testing.T) {
 	testCases := []struct {
@@ -194,7 +216,7 @@ func TestParseBean(t *testing.T) {
 	}
 }
 
-func TestParseCollection(t *testing.T) {
+func TestParseCollectionDefinition(t *testing.T) {
 	expectedDomains := []*domainDefinition{
 		{
 			domain:    "test.test",
@@ -251,5 +273,14 @@ func TestParseCollection(t *testing.T) {
 	if !reflect.DeepEqual(domains, expectedDomains) {
 		fmt.Println(pretty.Diff(domains, expectedDomains))
 		t.Errorf("Failed to produce expected domains list.")
+	}
+}
+
+func TestParseCollectionDefinition_Fail(t *testing.T) {
+
+	c, err := parseYaml("../test/test-sample-bad2.yml")
+	_, err = parseCollectionDefinition(c)
+	if err == nil {
+		t.Error("Expected error")
 	}
 }
