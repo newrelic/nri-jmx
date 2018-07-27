@@ -85,6 +85,8 @@ func main() {
 		}
 	}
 
+	jmxCloseFunc()
+
 	panicOnErr(jmxIntegration.Publish())
 }
 
