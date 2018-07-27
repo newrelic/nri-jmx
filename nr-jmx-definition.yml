@@ -16,19 +16,3 @@ commands:
     command:
       - ./bin/nr-jmx
     interval: 15
-  metrics:
-    command:
-      - ./bin/nr-jmx
-      - --metrics
-    interval: 15
-  inventory:
-    command:
-      - ./bin/nr-jmx
-      - --inventory
-    prefix: config/nr-jmx
-    interval: 15
-  events:
-    command:
-    - ./bin/nr-jmx
-    - --events
-    interval: 15
