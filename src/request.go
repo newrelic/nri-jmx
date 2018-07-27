@@ -50,7 +50,10 @@ func handleResponse(eventType string, request *beanRequest, response queryRespon
 
 	// For each domain, create an entity and a metric set
 	for domain, beanAttrVals := range domainsMap {
-		insertDomainMetrics(eventType, domain, beanAttrVals, request, i)
+		err := insertDomainMetrics(eventType, domain, beanAttrVals, request, i)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
