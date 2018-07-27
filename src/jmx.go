@@ -70,18 +70,8 @@ func main() {
 			panic(err)
 		}
 
-		// For every domain in the collection
-		for _, domain := range collection {
-			for _, request := range domain.beans {
-				requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
-				result, err := jmxQueryFunc(requestString, args.Timeout)
-				if err != nil {
-					logger.Errorf("Failed to retrieve metrics for request %s: %s", requestString, err)
-				}
-				if err := handleResponse(domain.eventType, request, result, jmxIntegration); err != nil {
-					logger.Errorf("Failed to parse response for request %s: %s", requestString, err)
-				}
-			}
+		if err := runCollection(collection, jmxIntegration); err != nil {
+			logger.Errorf("Failed to complete collection: %s", err)
 		}
 	}
 

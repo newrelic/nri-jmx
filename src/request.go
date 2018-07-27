@@ -22,6 +22,25 @@ type beanAttrValuePair struct {
 	value    interface{}
 }
 
+func runCollection(collection []*domainDefinition, i *integration.Integration) error {
+	for _, domain := range collection {
+		for _, request := range domain.beans {
+			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
+			result, err := jmxQueryFunc(requestString, args.Timeout)
+			if err != nil {
+				logger.Errorf("Failed to retrieve metrics for request %s: %s", requestString, err)
+				return err
+			}
+			if err := handleResponse(domain.eventType, request, result, i); err != nil {
+				logger.Errorf("Failed to parse response for request %s: %s", requestString, err)
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 // handleResponse takes a response, filters out the excluded beans,
 // sorts the responses by domain, and passes each domain off to
 // insertDomainMetrics to populate the metric list
