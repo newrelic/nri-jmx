@@ -39,6 +39,12 @@
 			"revisionTime": "2018-07-12T13:06:44Z"
 		},
 		{
+			"checksumSHA1": "QckSaNIvmIz79W+cNQPRH3HRzSc=",
+			"path": "github.com/newrelic/infra-integrations-sdk/jmx",
+			"revision": "a4b1657059fb6499a886dd51a4d9839437404cd9",
+			"revisionTime": "2018-07-19T08:06:57Z"
+		},
+		{
 			"checksumSHA1": "6/DhD+/LhC/k3NaLgkpd6iE8b5E=",
 			"path": "github.com/newrelic/infra-integrations-sdk/log",
 			"revision": "05f41fe052b3dc8861a75b3bd8b4cef90dcb5dc4",
@@ -69,5 +75,5 @@
 			"revisionTime": "2018-06-26T19:55:58Z"
 		}
 	],
-	"rootPath": "github.com/newrelic/nri-jmx"
+	"rootPath": "nri-jmx"
 }

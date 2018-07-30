@@ -22,4 +22,14 @@ collect:
             attributes:
                 - ThreadCount
                 - TotalStartedThreadCount
+          - query: type=ClassLoading
+            attributes:
+                - LoadedClassCount
+          - query: type=Compilation
+            attributes:
+                - TotalCompilationTime
+          - query: type=MemoryPool,name=*
+            attributes:
+                - Usage
+          
 
