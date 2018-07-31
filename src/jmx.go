@@ -63,6 +63,7 @@ func main() {
 			logger.Errorf("Failed to parse collection definition file %s: %s", collectionFile, err)
 			panic(err)
 		}
+
 		// Validate the definition and create a collection object
 		collection, err := parseCollectionDefinition(collectionDefinition)
 		if err != nil {

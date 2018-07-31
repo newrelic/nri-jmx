@@ -72,14 +72,14 @@ func parseYaml(filename string) (*collectionDefinitionParser, error) {
 	// Read the file
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
-		logger.Errorf("Failed to open %s: %s", filename, err)
+		logger.Errorf("failed to open %s: %s", filename, err)
 		return nil, err
 	}
 
 	// Parse the file
 	var c collectionDefinitionParser
 	if err := yaml.Unmarshal(yamlFile, &c); err != nil {
-		logger.Errorf("Failed to parse collection: %s", err)
+		logger.Errorf("failed to parse collection: %s", err)
 		return nil, err
 	}
 
@@ -90,16 +90,19 @@ func parseYaml(filename string) (*collectionDefinitionParser, error) {
 // an array of domains containing the validated configuration
 func parseCollectionDefinition(c *collectionDefinitionParser) ([]*domainDefinition, error) {
 
+	var err error
+
 	// For each domain in the collection
 	var collections []*domainDefinition
 	for _, domain := range c.Collect {
 
 		// For each bean in the domain
 		var beans []*beanRequest
+		var newBean *beanRequest
 		for _, bean := range domain.Beans {
 
 			// Parse the bean and add it to the domain
-			newBean, err := parseBean(&bean)
+			newBean, err = parseBean(&bean)
 			if err != nil {
 				return nil, err
 			}
@@ -109,7 +112,6 @@ func parseCollectionDefinition(c *collectionDefinitionParser) ([]*domainDefiniti
 
 		// If no custom event type defined, generate an event type from the domain name
 		var eventType string
-		var err error
 		if domain.EventType == "" {
 			eventType, err = generateEventType(domain.Domain)
 			if err != nil {
@@ -124,9 +126,49 @@ func parseCollectionDefinition(c *collectionDefinitionParser) ([]*domainDefiniti
 	return collections, nil
 }
 
+func parseBean(bean *beanDefinitionParser) (*beanRequest, error) {
+	attributes, err := parseAttributes(bean.Attributes)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the exclude patterns
+	var excludePatterns []*regexp.Regexp
+	if bean.Exclude != nil {
+		switch b := bean.Exclude.(type) {
+		// If exclude_regex is a string
+		case string:
+			r, err := regexp.Compile(b)
+			if err != nil {
+				return nil, fmt.Errorf("invalid regex pattern %s", b)
+			}
+			excludePatterns = append(excludePatterns, r)
+		// If exclude_regex is an array of strings
+		case []interface{}:
+			for _, excludeString := range b {
+				switch e := excludeString.(type) {
+				case string:
+					// Panic if can't compile the regex pattern
+					r := regexp.MustCompile(e)
+					excludePatterns = append(excludePatterns, r)
+				default:
+					return nil, fmt.Errorf("invalid exclude pattern '%v'", e)
+				}
+			}
+		default:
+			return nil, fmt.Errorf("invalid format for exclude_regex")
+
+		}
+	}
+
+	return &beanRequest{beanQuery: bean.Query, exclude: excludePatterns, attributes: attributes}, nil
+}
+
 func parseAttributes(rawAttributes []interface{}) ([]*attributeRequest, error) {
 	var attributes []*attributeRequest
+	// If no attributes are specified, collect all
 	if len(rawAttributes) == 0 {
+		// We know this is valid regex, so we don't need to handle the error
 		r, _ := createAttributeRegex(".*", false)
 		attributes = []*attributeRequest{
 			{
@@ -135,16 +177,19 @@ func parseAttributes(rawAttributes []interface{}) ([]*attributeRequest, error) {
 			},
 		}
 	} else {
+		// For each defined attribute
 		for _, attribute := range rawAttributes {
 			var newAttribute *attributeRequest
 			var err error
 			switch a := attribute.(type) {
+			// If it's a map
 			case map[interface{}]interface{}:
 				newAttribute, err = parseAttributeFromMap(a)
+			// If it's only the attribute name
 			case string:
 				newAttribute, err = parseAttributeFromString(a)
 			default:
-				return nil, fmt.Errorf("Unable to parse attributes list %s", attribute)
+				return nil, fmt.Errorf("unable to parse attributes list %s", attribute)
 			}
 			if err != nil {
 				return nil, err
@@ -156,45 +201,15 @@ func parseAttributes(rawAttributes []interface{}) ([]*attributeRequest, error) {
 	return attributes, nil
 }
 
-func parseBean(bean *beanDefinitionParser) (*beanRequest, error) {
-	attributes, err := parseAttributes(bean.Attributes)
-	if err != nil {
-		return nil, err
-	}
-
-	var excludePatterns []*regexp.Regexp
-	if bean.Exclude != nil {
-		switch b := bean.Exclude.(type) {
-		case string:
-			r, err := regexp.Compile(b)
-			if err != nil {
-				return nil, fmt.Errorf("Invalid regex pattern %s", b)
-			}
-			excludePatterns = append(excludePatterns, r)
-		case []interface{}:
-			for _, excludeString := range b {
-				r, err := regexp.Compile(excludeString.(string))
-				if err != nil {
-					return nil, fmt.Errorf("Invalid regex pattern %s", excludeString)
-				}
-				excludePatterns = append(excludePatterns, r)
-			}
-		default:
-			return nil, fmt.Errorf("Invalid format for exclude_regex")
-
-		}
-	}
-
-	return &beanRequest{beanQuery: bean.Query, exclude: excludePatterns, attributes: attributes}, nil
-}
-
 func createAttributeRegex(attrRegex string, literal bool) (*regexp.Regexp, error) {
 	var attrString string
+	// If attrRegex is the actual attribute name, and not a regex match
 	if literal {
 		attrString = regexp.QuoteMeta(attrRegex)
 	} else {
 		attrString = attrRegex
 	}
+
 	r, err := regexp.Compile("attr=" + attrString + "$")
 	if err != nil {
 		return nil, err
@@ -206,7 +221,7 @@ func createAttributeRegex(attrRegex string, literal bool) (*regexp.Regexp, error
 func parseAttributeFromString(a string) (*attributeRequest, error) {
 	attrRegexp, err := createAttributeRegex(a, true)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create regex pattern from attribute name %s", a)
+		return nil, fmt.Errorf("failed to create regex pattern from attribute name %s", a)
 	}
 
 	return &attributeRequest{attrRegexp: attrRegexp}, nil
@@ -217,11 +232,13 @@ func parseAttributeFromMap(a map[interface{}]interface{}) (*attributeRequest, er
 	attrRegexpString, regexPresent := a["attr_regex"]
 	var attrRegexp *regexp.Regexp
 	var err error
-	if !namePresent && !regexPresent {
+
+	// Must specify exactly one attribute selector
+	if namePresent == regexPresent {
 		return nil, fmt.Errorf("must specify one of attr or attr_regex for every attribute")
-	} else if namePresent && regexPresent {
-		return nil, fmt.Errorf("must specify only one of attr or attr_regex")
-	} else if regexPresent {
+	}
+
+	if regexPresent {
 		attrRegexp, err = createAttributeRegex(attrRegexpString.(string), false)
 		if err != nil {
 			return nil, fmt.Errorf("failed to compile attribute regex pattern %s", attrRegexpString)
@@ -233,15 +250,18 @@ func parseAttributeFromMap(a map[interface{}]interface{}) (*attributeRequest, er
 		}
 	}
 
+	// Parse the metric type
 	metricType, err := getMetricType(a)
 	if err != nil {
 		return nil, err
 	}
+
 	newAttribute := &attributeRequest{
 		attrRegexp: attrRegexp,
 		metricType: metricType,
 	}
 
+	// Parse the metric name
 	metricName, _ := a["metric_name"]
 	if metricName != nil {
 		newAttribute.metricName = metricName.(string)
