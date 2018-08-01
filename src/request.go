@@ -24,6 +24,7 @@ type beanAttrValuePair struct {
 
 func runCollection(collection []*domainDefinition, i *integration.Integration) error {
 	for _, domain := range collection {
+        var failedRequests []string
 		for _, request := range domain.beans {
 			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
 			result, err := jmxQueryFunc(requestString, args.Timeout)
@@ -32,10 +33,11 @@ func runCollection(collection []*domainDefinition, i *integration.Integration) e
 				return err
 			}
 			if err := handleResponse(domain.eventType, request, result, i); err != nil {
-				logger.Errorf("Failed to parse response for request %s: %s", requestString, err)
-				return err
+                failedRequests = append(failedRequests, request.beanQuery)
 			}
 		}
+
+		logger.Errorf("Failed to parse some responses for domain %s: %v", domain.domain, failedRequests)
 	}
 
 	return nil
@@ -121,15 +123,21 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 func insertMetric(key string, val interface{}, attribute *attributeRequest, metricSet *metric.Set) error {
 
 	// Generate a metric name if unset
-	var metricName string
-	var err error
-	if attribute.metricName == "" {
-		metricName, err = generateMetricName(key)
-		if err != nil {
-			return err
+	metricName, err := func() (string, error) {
+		if attribute.metricName == "" {
+			metricName, err := generateMetricName(key)
+			if err != nil {
+				return "", err
+			}
+
+			return metricName, nil
 		}
-	} else {
-		metricName = attribute.metricName
+
+		return attribute.metricName, nil
+	}()
+
+	if err != nil {
+		return err
 	}
 
 	// Generate a metric type if unset
