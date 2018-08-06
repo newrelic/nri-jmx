@@ -15,6 +15,7 @@ Information on configuring JMX can be found [here](https://docs.oracle.com/javas
 - extract `jmx-definition.yml` and `/bin` directory into `/var/db/newrelic-infra/newrelic-integrations`
 - add execute permissions for the binary file `nr-jmx` (if required)
 - extract `jmx-config.yml.sample` into `/etc/newrelic-infra/integrations.d`
+- install [`nrjmx` tool](https://github.com/newrelic/nrjmx) 
 
 ## Usage
 
