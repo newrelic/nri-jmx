@@ -42,7 +42,7 @@ func main() {
 		panic(fmt.Errorf("Failed to create new integration: %s", err))
 	}
 
-	logger := jmxIntegration.Logger()
+	logger = jmxIntegration.Logger()
 
 	// Open a JMX connection
 	if err := jmxOpenFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass); err != nil {
