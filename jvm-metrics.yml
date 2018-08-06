@@ -28,8 +28,3 @@ collect:
           - query: type=Compilation
             attributes:
                 - TotalCompilationTime
-          - query: type=MemoryPool,name=*
-            attributes:
-                - Usage
-          
-
