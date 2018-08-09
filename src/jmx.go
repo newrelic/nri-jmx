@@ -39,7 +39,7 @@ func main() {
 	// Create a new integration
 	jmxIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
-		panic(fmt.Errorf("Failed to create new integration: %s", err))
+		panic(fmt.Errorf("failed to create new integration: %s", err))
 	}
 
 	logger = jmxIntegration.Logger()
@@ -50,7 +50,7 @@ func main() {
 			"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s): %s",
 			args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, err,
 		)
-		panic(fmt.Sprintf("failed to open JMX connection: %s", err))
+		panic(fmt.Errorf("failed to open JMX connection: %s", err))
 	}
 
 	// For each collection definition file, parse and collect it
