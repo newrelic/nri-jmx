@@ -47,6 +47,9 @@ func TestRunCollection(t *testing.T) {
 		"host":        "",
 		"testName":    "testresult",
 		"query":       "test1=test1,test2=test2",
+		"bean":        "test1=test1,test2=test2",
+		"key:test1":   "test1",
+		"key:test2":   "test2",
 	}
 
 	i, _ := integration.New("jmxtest", "0.1.0")
@@ -186,7 +189,7 @@ func TestInsertDomainMetrics(t *testing.T) {
 		},
 	}
 	request := &beanRequest{
-		beanQuery: "test2=test1,test2=test2",
+		beanQuery: "test1=test1,test2=test2",
 		exclude: []*regexp.Regexp{
 			regexp.MustCompile("wontmatch"),
 		},
@@ -196,9 +199,6 @@ func TestInsertDomainMetrics(t *testing.T) {
 				metricName: "testmetric2",
 				metricType: metric.ATTRIBUTE,
 			},
-			{
-				attrRegexp: regexp.MustCompile("attr=testattr$"),
-			},
 		},
 	}
 
@@ -207,13 +207,15 @@ func TestInsertDomainMetrics(t *testing.T) {
 	insertDomainMetrics(eventType, domain, beanAttrVals, request, i)
 
 	expectedMetrics := map[string]interface{}{
-		"event_type":           "TestEventTypeSample",
-		"entityName":           "domain:java.lang",
-		"displayName":          "java.lang",
-		"host":                 "localhost",
-		"query":                "test2=test1,test2=test2",
-		"test1.test2.testattr": 1.0,
-		"testmetric2":          "test",
+		"event_type":  "TestEventTypeSample",
+		"entityName":  "domain:java.lang",
+		"displayName": "java.lang",
+		"host":        "localhost",
+		"query":       "test1=test1,test2=test2",
+		"testmetric2": "test",
+		"bean":        "test1=test1,test2=test2",
+		"key:test1":   "test1",
+		"key:test2":   "test2",
 	}
 
 	if !reflect.DeepEqual(i.Entities[0].Metrics[0].Metrics, expectedMetrics) {
