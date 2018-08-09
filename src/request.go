@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
@@ -24,7 +25,7 @@ type beanAttrValuePair struct {
 
 func runCollection(collection []*domainDefinition, i *integration.Integration) error {
 	for _, domain := range collection {
-        var failedRequests []string
+		var errors []error
 		for _, request := range domain.beans {
 			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
 			result, err := jmxQueryFunc(requestString, args.Timeout)
@@ -33,11 +34,13 @@ func runCollection(collection []*domainDefinition, i *integration.Integration) e
 				return err
 			}
 			if err := handleResponse(domain.eventType, request, result, i); err != nil {
-                failedRequests = append(failedRequests, request.beanQuery)
+				errors = append(errors, err)
 			}
 		}
 
-		logger.Errorf("Failed to parse some responses for domain %s: %v", domain.domain, failedRequests)
+		if len(errors) != 0 {
+			logger.Errorf("Failed to parse some responses for domain %s: %v", domain.domain, errors)
+		}
 	}
 
 	return nil
