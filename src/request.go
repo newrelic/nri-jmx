@@ -253,24 +253,6 @@ func generateEventType(domain string) (string, error) {
 	return eventType, nil
 }
 
-// generateMetricName generates a metric name from the mbean
-// This will be used if no custom metric name is defined
-func generateMetricName(returnedBean string) (string, error) {
-
-	metricName := ""
-	for _, keyval := range strings.Split(returnedBean, ",") {
-		val := strings.Split(keyval, "=")
-		if len(val) != 2 {
-			return "", fmt.Errorf("invalid selector %s", keyval)
-		}
-		metricName += "."
-		metricName += val[1]
-	}
-	metricName = metricName[1:]
-
-	return metricName, nil
-}
-
 // inferMetricType attempts to guess the metric type based
 // on its ability to convert to a number
 func inferMetricType(s interface{}) metric.SourceType {
