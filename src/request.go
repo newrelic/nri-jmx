@@ -102,11 +102,13 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 		// For each attribute we want to collect, check if it matches
 		for _, attribute := range request.attributes {
 			if attribute.attrRegexp.MatchString(beanAttrVal.beanAttr) {
-				beanNameMatcher := regexp.MustCompile(`^(.*),attr`)
-				beanNameMatch := beanNameMatcher.FindStringSubmatch(beanAttrVal.beanAttr)[0]
+				beanName, err := getBeanName(beanAttrVal.beanAttr)
+				if err != nil {
+					return err
+				}
 
 				// Get the metric set from the map or create it
-				metricSet, err := getOrCreateMetricSet(entityMetricSets, e, request, beanNameMatch, eventType)
+				metricSet, err := getOrCreateMetricSet(entityMetricSets, e, request, beanName, eventType)
 				if err != nil {
 					return err
 				}
@@ -198,12 +200,24 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 	return nil
 }
 
-func getAttrName(beanString string) (string, error) {
-	attrNameRegex, err := regexp.Compile("^.*attr=(.*)$")
-	if err != nil {
-		return "", err
+func getBeanName(beanString string) (string, error) {
+	beanNameRegex := regexp.MustCompile("^(.*),attr=.*")
+	beanNameMatches := beanNameRegex.FindStringSubmatch(beanString)
+	if beanNameMatches == nil {
+		return "", fmt.Errorf("failed to get bean name from %s", beanString)
 	}
-	return attrNameRegex.FindStringSubmatch(beanString)[1], nil
+
+	return beanNameMatches[1], nil
+}
+
+func getAttrName(beanString string) (string, error) {
+	attrNameRegex := regexp.MustCompile("^.*attr=(.*)$")
+	attrNameMatches := attrNameRegex.FindStringSubmatch(beanString)
+	if attrNameMatches == nil {
+		return "", fmt.Errorf("failed to get attr name from %s", beanString)
+	}
+
+	return attrNameMatches[1], nil
 }
 
 func getKeyProperties(keyProperties string) (map[string]string, error) {
