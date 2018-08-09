@@ -87,18 +87,18 @@ func TestGenerateEventType(t *testing.T) {
 	}
 }
 
-func TestGenerateMetricName(t *testing.T) {
+func TestGetBeanName(t *testing.T) {
 	testCases := []struct {
 		input       string
 		expectedOut string
 	}{
-		{"type=RequestMetrics,name=TotalTimeMs,request=Fetch,attr=Min", "RequestMetrics.TotalTimeMs.Fetch.Min"},
-		{"type=RequestMetrics,name=TotalTimeMs,request=Fetch,attr=Min.2", "RequestMetrics.TotalTimeMs.Fetch.Min.2"},
-		{"type=Request,attr=Test", "Request.Test"},
+		{"type=RequestMetrics,name=TotalTimeMs,request=Fetch,attr=Min", "type=RequestMetrics,name=TotalTimeMs,request=Fetch"},
+		{"type=RequestMetrics,name=TotalTimeMs,request=Fetch,attr=Min.2", "type=RequestMetrics,name=TotalTimeMs,request=Fetch"},
+		{"type=Request,attr=Test", "type=Request"},
 	}
 
 	for _, tc := range testCases {
-		out, err := generateMetricName(tc.input)
+		out, err := getBeanName(tc.input)
 		if err != nil {
 			t.Error(err)
 		}
@@ -107,6 +107,28 @@ func TestGenerateMetricName(t *testing.T) {
 		}
 	}
 }
+
+func TestGetAttrName(t *testing.T) {
+	testCases := []struct {
+		input       string
+		expectedOut string
+	}{
+		{"type=RequestMetrics,name=TotalTimeMs,request=Fetch,attr=Min", "Min"},
+		{"type=RequestMetrics,name=TotalTimeMs,request=Fetch,attr=Min.2", "Min.2"},
+		{"type=Request,attr=Test", "Test"},
+	}
+
+	for _, tc := range testCases {
+		out, err := getAttrName(tc.input)
+		if err != nil {
+			t.Error(err)
+		}
+		if out != tc.expectedOut {
+			t.Errorf("Expected metric name %s, got %s", tc.expectedOut, out)
+		}
+	}
+}
+
 func TestSplitBeanName(t *testing.T) {
 	testCases := []struct {
 		input        string
