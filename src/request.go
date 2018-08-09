@@ -94,19 +94,23 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 		return err
 	}
 
-	// Create a metric set for the domain
-	metricSet := e.NewMetricSet(eventType,
-		metric.Attribute{Key: "query", Value: request.beanQuery},
-		metric.Attribute{Key: "entityName", Value: "domain:" + e.Metadata.Name},
-		metric.Attribute{Key: "displayName", Value: e.Metadata.Name},
-		metric.Attribute{Key: "host", Value: args.JmxHost},
-	)
+	// Create a map of bean names to metric sets
+	entityMetricSets := make(map[string]*metric.Set)
 
 	// For each bean/attribute returned from this domain
 	for _, beanAttrVal := range beanAttrVals {
 		// For each attribute we want to collect, check if it matches
 		for _, attribute := range request.attributes {
 			if attribute.attrRegexp.MatchString(beanAttrVal.beanAttr) {
+				beanNameMatcher := regexp.MustCompile(`^(.*),attr`)
+				beanNameMatch := beanNameMatcher.FindStringSubmatch(beanAttrVal.beanAttr)[0]
+
+				// Get the metric set from the map or create it
+				metricSet, err := getOrCreateMetricSet(entityMetricSets, e, request, beanNameMatch, eventType)
+				if err != nil {
+					return err
+				}
+
 				// If we want to collect the metric, populate the metric list
 				if err := insertMetric(beanAttrVal.beanAttr, beanAttrVal.value, attribute, metricSet); err != nil {
 					return err
@@ -121,6 +125,41 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 	return nil
 }
 
+// getOrCreateMetricSet takes a map of bean names to metric sets and either
+// returns a metric set from the map if it exists, or creates the metric set
+// and adds it to the map
+func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integration.Entity, request *beanRequest, beanNameMatch string, eventType string) (*metric.Set, error) {
+
+	// If the metric set exists, return it
+	if ms, ok := entityMetricSets[beanNameMatch]; ok {
+		return ms, nil
+	}
+
+	// Attributes in all metric sets
+	attributes := []metric.Attribute{
+		{Key: "query", Value: request.beanQuery},
+		{Key: "entityName", Value: "domain:" + e.Metadata.Name},
+		{Key: "displayName", Value: e.Metadata.Name},
+		{Key: "host", Value: args.JmxHost},
+		{Key: "bean", Value: beanNameMatch},
+	}
+
+	// Add the bean keys and properties as attributes
+	keyProperties, err := getKeyProperties(beanNameMatch)
+	if err != nil {
+		return nil, err
+	}
+	for key, val := range keyProperties {
+		attributes = append(attributes, metric.Attribute{Key: "key:" + key, Value: val})
+	}
+
+	// Create the metric set and put it in the map
+	metricSet := e.NewMetricSet(eventType, attributes...)
+	entityMetricSets[beanNameMatch] = metricSet
+
+	return metricSet, nil
+}
+
 // Inserts a metric into a metric set, generating metric names
 // and metric types if unset
 func insertMetric(key string, val interface{}, attribute *attributeRequest, metricSet *metric.Set) error {
@@ -128,7 +167,7 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 	// Generate a metric name if unset
 	metricName, err := func() (string, error) {
 		if attribute.metricName == "" {
-			metricName, err := generateMetricName(key)
+			metricName, err := getAttrName(key)
 			if err != nil {
 				return "", err
 			}
@@ -157,6 +196,30 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 	}
 
 	return nil
+}
+
+func getAttrName(beanString string) (string, error) {
+	attrNameRegex, err := regexp.Compile("^.*attr=(.*)$")
+	if err != nil {
+		return "", err
+	}
+	return attrNameRegex.FindStringSubmatch(beanString)[1], nil
+}
+
+func getKeyProperties(keyProperties string) (map[string]string, error) {
+	keyPropertiesMap := make(map[string]string)
+	keyPropertiesArray := strings.Split(keyProperties, ",")
+	for _, keyProperty := range keyPropertiesArray {
+		keyPropertySplit := strings.Split(keyProperty, "=")
+		if len(keyPropertySplit) != 2 {
+			return nil, fmt.Errorf("invalid key properties %s", keyProperties)
+		}
+
+		keyPropertiesMap[keyPropertySplit[0]] = keyPropertySplit[1]
+	}
+
+	return keyPropertiesMap, nil
+
 }
 
 // Convenience function to split the domain:query string
