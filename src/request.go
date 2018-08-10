@@ -24,7 +24,7 @@ type beanAttrValuePair struct {
 
 func runCollection(collection []*domainDefinition, i *integration.Integration) error {
 	for _, domain := range collection {
-        var failedRequests []string
+		var failedRequests []string
 		for _, request := range domain.beans {
 			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
 			result, err := jmxQueryFunc(requestString, args.Timeout)
@@ -33,7 +33,7 @@ func runCollection(collection []*domainDefinition, i *integration.Integration) e
 				return err
 			}
 			if err := handleResponse(domain.eventType, request, result, i); err != nil {
-                failedRequests = append(failedRequests, request.beanQuery)
+				failedRequests = append(failedRequests, request.beanQuery)
 			}
 		}
 
