@@ -39,10 +39,10 @@
 			"revisionTime": "2018-07-31T07:45:10Z"
 		},
 		{
-			"checksumSHA1": "LQaT+AsGHHGm8eJTRw5XAcH+8VI=",
+			"checksumSHA1": "bsQrXQwKK7ZK3HgWQzkMu2zt4jA=",
 			"path": "github.com/newrelic/infra-integrations-sdk/data/metric",
-			"revision": "bc3a63447665955140b691dec7a708d4cfbdba55",
-			"revisionTime": "2018-07-31T07:45:10Z"
+			"revision": "be1a6cdadeabe7879263dae229a75525051bbb31",
+			"revisionTime": "2018-08-13T11:54:35Z"
 		},
 		{
 			"checksumSHA1": "iYqZm+K1690zh7ihc+yDbKftd9g=",
