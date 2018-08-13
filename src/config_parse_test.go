@@ -8,13 +8,9 @@ import (
 
 	"github.com/kr/pretty"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
-	"github.com/newrelic/infra-integrations-sdk/integration"
 )
 
 func TestParseYaml(t *testing.T) {
-	i, _ := integration.New("jmx", "1")
-	logger = i.Logger()
-
 	testCases := []struct {
 		file         string
 		expectedFail bool

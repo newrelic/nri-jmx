@@ -6,6 +6,7 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
 // queryResponse is a struct that contains the
@@ -29,7 +30,7 @@ func runCollection(collection []*domainDefinition, i *integration.Integration) e
 			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
 			result, err := jmxQueryFunc(requestString, args.Timeout)
 			if err != nil {
-				logger.Errorf("Failed to retrieve metrics for request %s: %s", requestString, err)
+				log.Error("Failed to retrieve metrics for request %s: %s", requestString, err)
 				return err
 			}
 			if err := handleResponse(domain.eventType, request, result, i); err != nil {
@@ -37,7 +38,9 @@ func runCollection(collection []*domainDefinition, i *integration.Integration) e
 			}
 		}
 
-		logger.Errorf("Failed to parse some responses for domain %s: %v", domain.domain, failedRequests)
+		if len(failedRequests) != 0 {
+			log.Error("Failed to parse some responses for domain %s: %v", domain.domain, failedRequests)
+		}
 	}
 
 	return nil
@@ -170,7 +173,7 @@ func splitBeanName(bean string) (string, string, error) {
 // The resulting event type will be used if no custom event type has been defined.
 func generateEventType(domain string) (string, error) {
 	if strings.Contains(domain, "*") {
-		logger.Errorf(
+		log.Error(
 			"Cannot generate an event type for the wildcarded domain %s."+
 				"For wildcarded domains, define a custom event type with event_type"+
 				"in the collection configuration file.", domain,
