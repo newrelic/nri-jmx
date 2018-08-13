@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
@@ -59,6 +60,11 @@ func main() {
 	// For each collection definition file, parse and collect it
 	collectionFiles := strings.Split(args.CollectionFiles, ",")
 	for _, collectionFile := range collectionFiles {
+
+		// Check that the filepath is an absolute path
+		if !filepath.IsAbs(collectionFile) {
+			log.Error("Invalid metrics colleciton path %s. Metrics collection files must be specified as absolute paths.", collectionFile)
+		}
 
 		// Parse the yaml file into a raw definition
 		collectionDefinition, err := parseYaml(collectionFile)
