@@ -64,6 +64,7 @@ func main() {
 		// Check that the filepath is an absolute path
 		if !filepath.IsAbs(collectionFile) {
 			log.Error("Invalid metrics colleciton path %s. Metrics collection files must be specified as absolute paths.", collectionFile)
+			os.Exit(1)
 		}
 
 		// Parse the yaml file into a raw definition
