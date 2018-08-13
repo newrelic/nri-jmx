@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
@@ -51,6 +50,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Ensure a collection file is specified
 	if args.CollectionFiles == "" {
 		log.Error("Must specify at least one collection file")
 		os.Exit(1)
