@@ -16,5 +16,5 @@ instances:
         jmx_port: 9999
         jmx_user: admin
         jmx_pass: admin
-        collection_files: ~/sample-metrics.yaml,~/default-metrics.yaml
+        collection_files: "/etc/newrelic-infra/integrations.d/jvm-metrics.yml"
 
