@@ -3,6 +3,18 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "QDZDAU8Rm1a2XSvoLTr8zIkCspI=",
+			"path": "github.com/GoASTScanner/gas",
+			"revision": "90a1c1d625419e54889b149cb8cd402b6af92ecf",
+			"revisionTime": "2018-08-03T08:02:42Z"
+		},
+		{
+			"checksumSHA1": "QS45yLsMJ9dnHYMoxecwbq+SQMI=",
+			"path": "github.com/alecthomas/gometalinter",
+			"revision": "96fc44369e9e59ef934fd7941f9eb710d2a19b92",
+			"revisionTime": "2018-07-24T19:13:49Z"
+		},
+		{
 			"checksumSHA1": "CSPbwbyzqA6sfORicn4HFtIhF/c=",
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "8991bc29aa16c548c550c7ff78260e27b9ab7c73",

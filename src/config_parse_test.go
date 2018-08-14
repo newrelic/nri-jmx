@@ -101,7 +101,6 @@ func TestParseAttributeFromMap(t *testing.T) {
 			fmt.Println(pretty.Diff(rq, tc.output))
 			t.Errorf("Not the same for test case %d", i)
 		}
-
 	}
 }
 
