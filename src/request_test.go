@@ -63,8 +63,6 @@ func TestRunCollection(t *testing.T) {
 
 }
 func TestGenerateEventType(t *testing.T) {
-	i, _ := integration.New("jmx", "0.1.0")
-	logger = i.Logger()
 	testCases := []struct {
 		input       string
 		expectedOut string

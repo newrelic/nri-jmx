@@ -6,6 +6,7 @@ import (
 	"regexp"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
+	"github.com/newrelic/infra-integrations-sdk/log"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -72,14 +73,14 @@ func parseYaml(filename string) (*collectionDefinitionParser, error) {
 	// Read the file
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
-		logger.Errorf("failed to open %s: %s", filename, err)
+		log.Error("failed to open %s: %s", filename, err)
 		return nil, err
 	}
 
 	// Parse the file
 	var c collectionDefinitionParser
 	if err := yaml.Unmarshal(yamlFile, &c); err != nil {
-		logger.Errorf("failed to parse collection: %s", err)
+		log.Error("failed to parse collection: %s", err)
 		return nil, err
 	}
 

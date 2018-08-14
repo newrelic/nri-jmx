@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
@@ -26,8 +27,7 @@ const (
 )
 
 var (
-	args   argumentList
-	logger log.Logger
+	args argumentList
 
 	jmxOpenFunc  = jmx.Open
 	jmxCloseFunc = jmx.Close
@@ -39,50 +39,56 @@ func main() {
 	// Create a new integration
 	jmxIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
-		panic(fmt.Errorf("failed to create new integration: %s", err))
+		os.Exit(1)
 	}
-
-	logger = jmxIntegration.Logger()
 
 	// Open a JMX connection
 	if err := jmxOpenFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass); err != nil {
-		logger.Errorf(
+		log.Error(
 			"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s): %s",
 			args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, err,
 		)
-		panic(fmt.Errorf("failed to open JMX connection: %s", err))
+		os.Exit(1)
+	}
+
+	// Ensure a collection file is specified
+	if args.CollectionFiles == "" {
+		log.Error("Must specify at least one collection file")
+		os.Exit(1)
 	}
 
 	// For each collection definition file, parse and collect it
 	collectionFiles := strings.Split(args.CollectionFiles, ",")
 	for _, collectionFile := range collectionFiles {
 
+		// Check that the filepath is an absolute path
+		if !filepath.IsAbs(collectionFile) {
+			log.Error("Invalid metrics collection path %s. Metrics collection files must be specified as absolute paths.", collectionFile)
+			os.Exit(1)
+		}
+
 		// Parse the yaml file into a raw definition
 		collectionDefinition, err := parseYaml(collectionFile)
 		if err != nil {
-			logger.Errorf("Failed to parse collection definition file %s: %s", collectionFile, err)
-			panic(err)
+			log.Error("Failed to parse collection definition file %s: %s", collectionFile, err)
+			os.Exit(1)
 		}
 
 		// Validate the definition and create a collection object
 		collection, err := parseCollectionDefinition(collectionDefinition)
 		if err != nil {
-			logger.Errorf("Failed to parse collection definition %s: %s", collectionFile, err)
-			panic(err)
+			log.Error("Failed to parse collection definition %s: %s", collectionFile, err)
+			os.Exit(1)
 		}
 
 		if err := runCollection(collection, jmxIntegration); err != nil {
-			logger.Errorf("Failed to complete collection: %s", err)
+			log.Error("Failed to complete collection: %s", err)
 		}
 	}
 
 	jmxCloseFunc()
 
-	panicOnErr(jmxIntegration.Publish())
-}
-
-func panicOnErr(err error) {
-	if err != nil {
-		panic(err)
+	if err := jmxIntegration.Publish(); err != nil {
+		os.Exit(1)
 	}
 }
