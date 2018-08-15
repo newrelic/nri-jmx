@@ -26,7 +26,7 @@ type beanAttrValuePair struct {
 
 func runCollection(collection []*domainDefinition, i *integration.Integration) error {
 	for _, domain := range collection {
-		var failedRequests []string
+		var errors []error
 		for _, request := range domain.beans {
 			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
 			result, err := jmxQueryFunc(requestString, args.Timeout)
@@ -35,12 +35,12 @@ func runCollection(collection []*domainDefinition, i *integration.Integration) e
 				return err
 			}
 			if err := handleResponse(domain.eventType, request, result, i); err != nil {
-				failedRequests = append(failedRequests, request.beanQuery)
+				errors = append(errors, err)
 			}
 		}
 
-		if len(failedRequests) != 0 {
-			log.Error("Failed to parse some responses for domain %s: %v", domain.domain, failedRequests)
+		if len(errors) != 0 {
+			log.Error("Failed to parse some responses for domain %s: %v", domain.domain, errors)
 		}
 	}
 
@@ -193,9 +193,14 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 		metricType = attribute.metricType
 	}
 
-	// Populate the metric set with the value
-	if err := metricSet.SetMetric(metricName, val, metricType); err != nil {
-		return err
+	if metricType == metric.ATTRIBUTE {
+		if err := metricSet.SetMetric(metricName, fmt.Sprintf("%s", val), metricType); err != nil {
+			return err
+		}
+	} else {
+		if err := metricSet.SetMetric(metricName, val, metricType); err != nil {
+			return err
+		}
 	}
 
 	return nil
