@@ -194,7 +194,7 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 	}
 
 	if metricType == metric.ATTRIBUTE {
-		if err := metricSet.SetMetric(metricName, fmt.Sprintf("%s", val), metricType); err != nil {
+		if err := metricSet.SetMetric(metricName, fmt.Sprintf("%v", val), metricType); err != nil {
 			return err
 		}
 	} else {
