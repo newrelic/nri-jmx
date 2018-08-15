@@ -1,7 +1,0 @@
-collect:
-    - domain: '*'
-      event_type: JVMSample
-      beans:
-          - query: type=*
-            attributes:
-              - attr_regex: '.*'
