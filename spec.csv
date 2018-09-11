@@ -1,0 +1,15 @@
+Description,Metric Name,Units,Event Type
+The total Java heap memory used,HeapMemoryUsage.Used,byte,JVMSample
+The total Java heap memory committed tto be used,HeapMemoryUsage.Committed,byte,JVMSample
+The initial Java heap memory allocated,HeapMemoryUsage.Init,byte,JVMSample
+The maximum Java heap memory available,HeapMemoryUsage.Max,byte,JVMSample
+The total Java non-heap memory used,NonHeapMemoryUsage.Used,byte,JVMSample
+The total Java non-heap memory committed to be used,NonHeapMemoryUsage.Committed,byte,JVMSample
+The initial Java non-heap memory allocated,NonHeapMemoryUsage.Init,byte,JVMSample
+The maximum Java non-heap memory available,NonHeapMemoryUsage.Max,byte,JVMSample
+The number of live threads,ThreadCount,thread,JVMSample
+The total number of garbage collections that have occurred,CollectionCount,garbage collections,JVMSample
+The approximate accumulated garbage collection time elapsed,CollectionTime,milliseconds,JVMSample
+The total number of started threads,TotalStartedThreadCount,threads,JVMSample
+The total time spent compiling,TotalCompilationTime,milliseconds,JVMSample
+The number of loaded classes,LoadedClassCount,classes,JVMSample
