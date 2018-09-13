@@ -1,15 +1,15 @@
-Description,Metric Name,Units,Event Type
-The total Java heap memory used,HeapMemoryUsage.Used,byte,JVMSample
-The total Java heap memory committed tto be used,HeapMemoryUsage.Committed,byte,JVMSample
-The initial Java heap memory allocated,HeapMemoryUsage.Init,byte,JVMSample
-The maximum Java heap memory available,HeapMemoryUsage.Max,byte,JVMSample
-The total Java non-heap memory used,NonHeapMemoryUsage.Used,byte,JVMSample
-The total Java non-heap memory committed to be used,NonHeapMemoryUsage.Committed,byte,JVMSample
-The initial Java non-heap memory allocated,NonHeapMemoryUsage.Init,byte,JVMSample
-The maximum Java non-heap memory available,NonHeapMemoryUsage.Max,byte,JVMSample
-The number of live threads,ThreadCount,thread,JVMSample
-The total number of garbage collections that have occurred,CollectionCount,garbage collections,JVMSample
-The approximate accumulated garbage collection time elapsed,CollectionTime,milliseconds,JVMSample
-The total number of started threads,TotalStartedThreadCount,threads,JVMSample
-The total time spent compiling,TotalCompilationTime,milliseconds,JVMSample
-The number of loaded classes,LoadedClassCount,classes,JVMSample
+integration,metric_name,metric_type,metric_enabled,metric_description
+Jmx,HeapMemoryUsage.Used,Gauge,true,The total Java heap memory used
+Jmx,HeapMemoryUsage.Committed,Gauge,true,The total Java heap memory committed to be used
+Jmx,HeapMemoryUsage.Init,Gauge,true,The initial Java heap memory allocated
+Jmx,HeapMemoryUsage.Max,Gauge,true,The maximum Java heap memory available
+Jmx,NonHeapMemoryUsage.Used,Gauge,true,The total Java non-heap memory used
+Jmx,NonHeapMemoryUsage.Committed,Gauge,true,The total Java non-heap memory committed to be used
+Jmx,NonHeapMemoryUsage.Init,Gauge,true,The initial Java non-heap memory allocated
+Jmx,NonHeapMemoryUsage.Max,Gauge,true,The maximum Java non-heap memory available
+Jmx,ThreadCount,Gauge,true,The number of live threads
+Jmx,CollectionCount,Gauge,true,The total number of garbage collections that have occurred
+Jmx,CollectionTime,Gauge,true,The approximate accumulated garbage collection time elapsed
+Jmx,TotalStartedThreadCount,Gauge,true,The total number of started threads
+Jmx,TotalCompilationTime,Gauge,true,The total time spent compiling
+Jmx,LoadedClassCount,Gauge,true,The number of loaded classes
