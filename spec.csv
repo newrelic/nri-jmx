@@ -1,0 +1,15 @@
+integration,metric_name,metric_type,metric_enabled,metric_description
+JMX,HeapMemoryUsage.Used,Gauge,true,The total Java heap memory used
+JMX,HeapMemoryUsage.Committed,Gauge,true,The total Java heap memory committed to be used
+JMX,HeapMemoryUsage.Init,Gauge,true,The initial Java heap memory allocated
+JMX,HeapMemoryUsage.Max,Gauge,true,The maximum Java heap memory available
+JMX,NonHeapMemoryUsage.Used,Gauge,true,The total Java non-heap memory used
+JMX,NonHeapMemoryUsage.Committed,Gauge,true,The total Java non-heap memory committed to be used
+JMX,NonHeapMemoryUsage.Init,Gauge,true,The initial Java non-heap memory allocated
+JMX,NonHeapMemoryUsage.Max,Gauge,true,The maximum Java non-heap memory available
+JMX,ThreadCount,Gauge,true,The number of live threads
+JMX,CollectionCount,Gauge,true,The total number of garbage collections that have occurred
+JMX,CollectionTime,Gauge,true,The approximate accumulated garbage collection time elapsed
+JMX,TotalStartedThreadCount,Gauge,true,The total number of started threads
+JMX,TotalCompilationTime,Gauge,true,The total time spent compiling
+JMX,LoadedClassCount,Gauge,true,The number of loaded classes
