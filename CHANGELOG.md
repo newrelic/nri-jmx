@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## 0.1.1 - 2018-09-13
-### Added
+### Changed
 - Renamed nr-jmx-config.yml.template to jmx-config.yml.sample
 - Renamed nr-jmx-definition.yml to jmx-definition.yml
 
