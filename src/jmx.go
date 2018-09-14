@@ -19,11 +19,12 @@ type argumentList struct {
 	JmxPass         string `default:"admin" help:"The password for the JMX connection"`
 	CollectionFiles string `default:"" help:"A comma separated list of full paths to metrics configuration files"`
 	Timeout         int    `default:"10000" help:"Timeout for JMX queries"`
+	MetricLimit     int    `default:"200" help:"Number of events that can be collected. If this limit is exceeded some metrics may be lost. A limit of 0 implies not limit."`
 }
 
 const (
 	integrationName    = "com.newrelic.jmx"
-	integrationVersion = "0.1.1"
+	integrationVersion = "0.1.2"
 )
 
 var (
@@ -41,6 +42,7 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
+	log.SetupLogging(args.Verbose)
 
 	// Open a JMX connection
 	if err := jmxOpenFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass); err != nil {
@@ -88,7 +90,24 @@ func main() {
 
 	jmxCloseFunc()
 
+	checkMetricLimit(jmxIntegration.Entities)
+
 	if err := jmxIntegration.Publish(); err != nil {
 		os.Exit(1)
+	}
+}
+
+// checkMetricLimit looks through all of the metric sets for every entity and aggregates the number
+// of metrics. If that total is greate than args.MetricLimit a warning is logged
+func checkMetricLimit(entities []*integration.Entity) {
+	for _, entity := range entities {
+		metricCount := 0
+		for _, metricSet := range entity.Metrics {
+			metricCount += len(metricSet.Metrics)
+		}
+
+		if args.MetricLimit != 0 && metricCount > args.MetricLimit {
+			log.Warn("Domain '%s' has %d metrics, the current limit is %d. Some metrics will be truncated.", entity.Metadata.Name, metricCount, args.MetricLimit)
+		}
 	}
 }
