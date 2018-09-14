@@ -19,7 +19,7 @@ type argumentList struct {
 	JmxPass         string `default:"admin" help:"The password for the JMX connection"`
 	CollectionFiles string `default:"" help:"A comma separated list of full paths to metrics configuration files"`
 	Timeout         int    `default:"10000" help:"Timeout for JMX queries"`
-	MetricLimit     int    `default:"200" help:"Number of events that can be collected. If this limit is exceeded some metrics may be lost. A limit of 0 implies not limit."`
+	MetricLimit     int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded some metrics may be lost. A limit of 0 implies not limit."`
 }
 
 const (
