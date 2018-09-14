@@ -5,15 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
-### Added
-- X
 
+## 0.1.1 - 2018-09-13
 ### Changed
-- X
-
-### Removed
-- X
+- Renamed nr-jmx-config.yml.template to jmx-config.yml.sample
+- Renamed nr-jmx-definition.yml to jmx-definition.yml
 
 ## 0.1.0 - 2018-07-24
 ### Added
