@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 0.1.2 - 2018-09-14
 ### Added
-- Logic to enforce a soft limit on the number of metrics that can be collect. If the number of metrics per Entity exceeds this limit a warning will be logged.
+- Logic to enforce a soft limit on the number of metrics that can be collect. If the number of metrics per Entity exceeds this limit the Entity will not be reported to NR.
 
 ## 0.1.1 - 2018-09-13
 ### Changed
