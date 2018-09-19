@@ -1,0 +1,36 @@
+# Standard JVM Metrics
+
+collect:
+    - domain: Catalina
+      event_type: TomcatSample
+      beans:
+          - query: type=Executor,name=*
+            attributes:
+                - poolSize
+                - activeCount
+          - query: type=ThreadPool,name=*
+            attributes:
+                - maxThreads
+                - connectionCount
+          - query: type=GlobalRequestProcessor,name=*
+            attributes:
+                - attr: bytesSent
+                  metric_type: rate
+                - attr: bytesReceived
+                  metric_type: rate
+                - attr: errorCount
+                  metric_type: rate
+                - maxTime
+                - attr: requestCount
+                  metric_type: rate
+          - query: type=Manager,*
+            attributes:
+                - activeSessions
+                - attr: sessionCounter
+                  metric_type: rate
+                - attr: expiredSessions
+                  metric_type: rate
+          - query: type=DataSource,*
+            attributes:
+                - numActive
+                - numIdle

@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## 0.1.4 - 2018-09-19
+### Added
+- Added tomcat-metrics.yml.sample back as an additional sample
+
 ## 0.1.3 - 2018-09-18
 ### Changed
-- Removed extra yml files and renamed exsiting ones with .sample extension
+- Removed extra yml files and renamed existing ones with .sample extension
 
 ## 0.1.2 - 2018-09-14
 ### Added
