@@ -245,7 +245,7 @@ func getKeyProperties(keyProperties string) (map[string]string, error) {
 // Convenience function to split the domain:query string
 // into domain and query
 func splitBeanName(bean string) (string, string, error) {
-	domainQuery := strings.Split(bean, ":")
+	domainQuery := strings.SplitN(bean, ":", 2)
 	if len(domainQuery) != 2 {
 		return "", "", fmt.Errorf("invalid domain:bean string %s", bean)
 	}

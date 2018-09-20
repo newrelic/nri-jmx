@@ -135,6 +135,7 @@ func TestSplitBeanName(t *testing.T) {
 	}{
 		{"java.lang:test=test", "java.lang", "test=test"},
 		{"java.lang:test=test,test2=test2", "java.lang", "test=test,test2=test2"},
+		{`java.lang:test=test,test2="test:test"`, "java.lang", `test=test,test2="test:test"`},
 	}
 
 	for _, tc := range testCases {
@@ -143,7 +144,7 @@ func TestSplitBeanName(t *testing.T) {
 			t.Error(err)
 			t.FailNow()
 		}
-		if out1 != tc.expectedOut1 && out2 != tc.expectedOut2 {
+		if out1 != tc.expectedOut1 || out2 != tc.expectedOut2 {
 			t.Errorf("Expected %s and %s, got %s and %s", out1, out2, tc.expectedOut1, tc.expectedOut2)
 		}
 	}
