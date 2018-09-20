@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 0.1.5 - 2018-09-20
-### Added
+### Fixed
 - Fixed bug with parsing JMX queries
 
 ## 0.1.4 - 2018-09-19
