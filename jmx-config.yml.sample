@@ -1,16 +1,13 @@
 integration_name: com.newrelic.jmx
 
 instances:
-  - name: <INSTANCE IDENTIFIER>
-    command: metrics
+  - name: jmx
+    command: all_data
     arguments:
-      arg1: <ARG_VALUE>
+      jmx_host: jmx-host.localnet
+      jmx_port: 9999
+      jmx_user: admin
+      jmx_pass: admin
+      collection_files: "/etc/newrelic-infra/integrations.d/jvm-metrics.yml,/etc/newrelic-infra/integrations.d/tomcat-metrics.yml"
     labels:
-      key1: <LABEL_VALUE>
-
-  - name: <OTHER INSTANCE IDENTIFIER>
-    command: inventory
-    arguments:
-      arg1: <ARG_VALUE>
-    labels:
-      key1: <LABEL_VALUE>
+      env: staging
