@@ -4,7 +4,7 @@ collect:
     - domain: com.zaxxer.hikari
       event_type: JVMSample
       beans:
-          - query: type=Pool *
+          - query: "type=Pool *"
             attribute:
                 - ActiveConnections
                 - IdleConnections
