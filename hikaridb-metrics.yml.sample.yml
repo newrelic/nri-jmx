@@ -1,0 +1,12 @@
+# Standard JVM Metrics
+
+collect:
+    - domain: com.zaxxer.hikari
+      event_type: JVMSample
+      beans:
+          - query: type=Pool *
+            attribute:
+                - ActiveConnections
+                - IdleConnections
+                - ThreadsAwaitingConnection
+                - TotalConnections
