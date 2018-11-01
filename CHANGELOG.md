@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.1.7 - 2018-11-01
+### Added
+- Sample file for Hikaridb
+
 ## 0.1.6 - 2018-09-26
 ### Changed
 - Updated sample configuration file with JMX-specific fields
