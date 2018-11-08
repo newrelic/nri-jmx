@@ -225,7 +225,7 @@ func parseAttributeFromString(a string) (*attributeRequest, error) {
 		return nil, fmt.Errorf("failed to create regex pattern from attribute name %s", a)
 	}
 
-	return &attributeRequest{attrRegexp: attrRegexp}, nil
+	return &attributeRequest{attrRegexp: attrRegexp, metricType: -1}, nil
 }
 
 func parseAttributeFromMap(a map[interface{}]interface{}) (*attributeRequest, error) {
@@ -286,5 +286,4 @@ func getMetricType(a map[interface{}]interface{}) (metric.SourceType, error) {
 	}
 
 	return metricType, nil
-
 }

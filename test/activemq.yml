@@ -1,0 +1,7 @@
+collect:
+    - domain: org.apache.activemq # Event type ActiveMQSample
+      event_type: ActiveMQSample # 
+      beans:
+        - query: type=Broker,brokerName=*,destinationType=*,destinationName=*
+          attributes:
+              - Name
