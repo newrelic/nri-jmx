@@ -93,7 +93,7 @@ func main() {
 	jmxIntegration.Entities = checkMetricLimit(jmxIntegration.Entities)
 
 	if err := jmxIntegration.Publish(); err != nil {
-    log.Error("Failed to publish integration: %s", err.Error())
+		log.Error("Failed to publish integration: %s", err.Error())
 		os.Exit(1)
 	}
 }
