@@ -24,7 +24,7 @@ type argumentList struct {
 
 const (
 	integrationName    = "com.newrelic.jmx"
-	integrationVersion = "0.1.7"
+	integrationVersion = "0.1.8"
 )
 
 var (
@@ -93,6 +93,7 @@ func main() {
 	jmxIntegration.Entities = checkMetricLimit(jmxIntegration.Entities)
 
 	if err := jmxIntegration.Publish(); err != nil {
+		log.Error("Failed to publish integration: %s", err.Error())
 		os.Exit(1)
 	}
 }

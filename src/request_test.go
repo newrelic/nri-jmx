@@ -268,7 +268,10 @@ func TestHandleResponse(t *testing.T) {
 	}
 	i, _ := integration.New("jmx", "0.1.0")
 
-	handleResponse(eventType, request, response, i)
+	err := handleResponse(eventType, request, response, i)
+	if err != nil {
+		t.Error(err)
+	}
 
 	jsonbytes, _ := i.MarshalJSON()
 
@@ -276,6 +279,32 @@ func TestHandleResponse(t *testing.T) {
 
 	if string(jsonbytes) != expectedMarshalled {
 		t.Error("Failed to get expected marshalled json")
+	}
+
+}
+
+func TestDefaultMetricType(t *testing.T) {
+	eventType := "TestSample"
+	defs, err := parseYaml("../test/activemq.yml")
+	if err != nil {
+		t.Error(err)
+	}
+
+	domainDefinitions, err := parseCollectionDefinition(defs)
+	if err != nil {
+		t.Error(err)
+	}
+
+	request := domainDefinitions[0].beans[0]
+
+	response := map[string]interface{}{
+		"org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Topic,destinationName=ActiveMQ.Advisory.Queue,attr=Name": "ActiveMQ.Advisory.Queue",
+	}
+	i, _ := integration.New("jmx", "0.1.0")
+
+	err = handleResponse(eventType, request, response, i)
+	if err != nil {
+		t.Error(err)
 	}
 
 }
