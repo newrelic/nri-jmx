@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.0 - 2018-11-16
+### Changed
+- Updated to version 1.0.0
+
 ## 0.1.8 - 2018-11-09
 ### Fixed
-- Fix error with incorrect metric type inferrence
+- Fix error with incorrect metric type interface
 
 ## 0.1.7 - 2018-11-01
 ### Added
