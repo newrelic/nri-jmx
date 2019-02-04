@@ -1,14 +1,6 @@
-# Copy this file (and the built 'bin' folder) into the following folder:
-#    Linux: /var/db/newrelic-infra/custom-integrations
-#    Windows: C:\Program Files\New Relic\newrelic-infra\custom-integrations
-#
-# For a complete description of the Definition File Specification, please
-# refer to the Integrations SDK documentation:
-# https://docs.newrelic.com/docs/integrations/integrations-sdk/file-specifications
-
 name: com.newrelic.jmx
 description: Reports status and metrics for jmx service
-protocol_version: 1
+protocol_version: 2
 os: linux
 
 commands:
