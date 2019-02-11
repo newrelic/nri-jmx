@@ -1,0 +1,17 @@
+integration_name: com.newrelic.jmx
+
+instances:
+  - name: jmx
+    command: all_data
+    arguments:
+      jmx_host: jmx-host.localnet
+      jmx_port: 9999
+      jmx_user: admin
+      jmx_pass: admin
+      key_store: /etc/pki/JMXClientKeyStore.key
+      key_store_password: password
+      trust_store: /etc/pki/JMXClientTrustStore.key
+      trust_store_password: password
+      collection_files: "/etc/newrelic-infra/integrations.d/jvm-metrics.yml,/etc/newrelic-infra/integrations.d/tomcat-metrics.yml"
+    labels:
+      env: staging
