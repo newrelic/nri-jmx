@@ -33,6 +33,54 @@
 			"revisionTime": "2018-05-06T08:24:08Z"
 		},
 		{
+			"checksumSHA1": "ZfId5ZYn7jmL0xTxooHcxrLlXoA=",
+			"path": "github.com/newrelic/infra-integrations-sdk/args",
+			"revision": "e6b5f506787067758f790344c68c23720a4b8819",
+			"revisionTime": "2019-02-06T13:06:21Z"
+		},
+		{
+			"checksumSHA1": "KaZLSd/JUZz/mqfW3jFd1j2QdWA=",
+			"path": "github.com/newrelic/infra-integrations-sdk/data/event",
+			"revision": "e6b5f506787067758f790344c68c23720a4b8819",
+			"revisionTime": "2019-02-06T13:06:21Z"
+		},
+		{
+			"checksumSHA1": "EOoxXGqFDPkCvj7wec2S5kCXY2I=",
+			"path": "github.com/newrelic/infra-integrations-sdk/data/inventory",
+			"revision": "e6b5f506787067758f790344c68c23720a4b8819",
+			"revisionTime": "2019-02-06T13:06:21Z"
+		},
+		{
+			"checksumSHA1": "39SDqHpLpE9J1nrIwYI+8ukzXJs=",
+			"path": "github.com/newrelic/infra-integrations-sdk/data/metric",
+			"revision": "e6b5f506787067758f790344c68c23720a4b8819",
+			"revisionTime": "2019-02-06T13:06:21Z"
+		},
+		{
+			"checksumSHA1": "Q23NjXVh6j31N6ZChLG/FNv7fwU=",
+			"path": "github.com/newrelic/infra-integrations-sdk/integration",
+			"revision": "e6b5f506787067758f790344c68c23720a4b8819",
+			"revisionTime": "2019-02-06T13:06:21Z"
+		},
+		{
+			"checksumSHA1": "miKNZdCc3v8MXndG2oZ+3LuCHPw=",
+			"path": "github.com/newrelic/infra-integrations-sdk/jmx",
+			"revision": "e6b5f506787067758f790344c68c23720a4b8819",
+			"revisionTime": "2019-02-06T13:06:21Z"
+		},
+		{
+			"checksumSHA1": "6/DhD+/LhC/k3NaLgkpd6iE8b5E=",
+			"path": "github.com/newrelic/infra-integrations-sdk/log",
+			"revision": "e6b5f506787067758f790344c68c23720a4b8819",
+			"revisionTime": "2019-02-06T13:06:21Z"
+		},
+		{
+			"checksumSHA1": "BsHp62Etporko0d+4GpVxrP2qtw=",
+			"path": "github.com/newrelic/infra-integrations-sdk/persist",
+			"revision": "e6b5f506787067758f790344c68c23720a4b8819",
+			"revisionTime": "2019-02-06T13:06:21Z"
+		},
+		{
 			"checksumSHA1": "ljd3FhYRJ91cLZz3wsH9BQQ2JbA=",
 			"path": "github.com/pkg/errors",
 			"revision": "816c9085562cd7ee03e7f8188a1cfd942858cded",
