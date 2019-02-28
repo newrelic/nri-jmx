@@ -13,26 +13,31 @@ import (
 
 type argumentList struct {
 	sdkArgs.DefaultArgumentList
-	JmxHost         string `default:"localhost" help:"The host running JMX"`
-	JmxPort         string `default:"9999" help:"The port JMX is running on"`
-	JmxUser         string `default:"admin" help:"The username for the JMX connection"`
-	JmxPass         string `default:"admin" help:"The password for the JMX connection"`
-	CollectionFiles string `default:"" help:"A comma separated list of full paths to metrics configuration files"`
-	Timeout         int    `default:"10000" help:"Timeout for JMX queries"`
-	MetricLimit     int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
+	JmxHost            string `default:"localhost" help:"The host running JMX"`
+	JmxPort            string `default:"9999" help:"The port JMX is running on"`
+	JmxUser            string `default:"admin" help:"The username for the JMX connection"`
+	JmxPass            string `default:"admin" help:"The password for the JMX connection"`
+	KeyStore           string `default:"" help:"The location for the keystore containing JMX Client's SSL certificate"`
+	KeyStorePassword   string `default:"" help:"Password for the SSL Key Store"`
+	TrustStore         string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
+	TrustStorePassword string `default:"" help:"Password for the SSL Trust Store"`
+	CollectionFiles    string `default:"" help:"A comma separated list of full paths to metrics configuration files"`
+	Timeout            int    `default:"10000" help:"Timeout for JMX queries"`
+	MetricLimit        int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
 }
 
 const (
 	integrationName    = "com.newrelic.jmx"
-	integrationVersion = "1.0.1"
+	integrationVersion = "1.0.2"
 )
 
 var (
 	args argumentList
 
-	jmxOpenFunc  = jmx.Open
-	jmxCloseFunc = jmx.Close
-	jmxQueryFunc = jmx.Query
+	jmxOpenFunc        = jmx.Open
+	jmxOpenWithSSLFunc = jmx.OpenWithSSL
+	jmxCloseFunc       = jmx.Close
+	jmxQueryFunc       = jmx.Query
 )
 
 func main() {
@@ -44,13 +49,25 @@ func main() {
 	}
 	log.SetupLogging(args.Verbose)
 
-	// Open a JMX connection
-	if err := jmxOpenFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass); err != nil {
-		log.Error(
-			"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s): %s",
-			args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, err,
-		)
-		os.Exit(1)
+	if args.KeyStore != "" && args.KeyStorePassword != "" && args.TrustStore != "" && args.TrustStorePassword != "" {
+		// Open a JMX with SSL connection
+		if err := jmxOpenWithSSLFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword); err != nil {
+			log.Error(
+				"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s, keyStore: %s, keyStorePassword: %s, trustStore: %s, trustStorePassword: %s): %s",
+				args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword, err,
+			)
+			os.Exit(1)
+		}
+	} else {
+
+		// Open a JMX connection
+		if err := jmxOpenFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass); err != nil {
+			log.Error(
+				"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s): %s",
+				args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, err,
+			)
+			os.Exit(1)
+		}
 	}
 
 	// Ensure a collection file is specified
