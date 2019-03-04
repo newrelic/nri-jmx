@@ -10,6 +10,8 @@ RUN go get -d github.com/newrelic/nri-jmx/... && \
     strip ./bin/nr-jmx
 
 FROM newrelic/infrastructure:latest
+ENV NRIA_IS_FORWARD_ONLY true
+ENV NRIA_K8S_INTEGRATION true
 RUN apk --update add openjdk7-jre
 COPY --from=builder-mvn /nrjmx/bin/nrjmx /usr/bin/nrjmx
 COPY --from=builder-mvn /nrjmx/bin/nrjmx.jar /usr/bin/nrjmx.jar
