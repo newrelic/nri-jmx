@@ -8,7 +8,6 @@ instances:
       jmx_port: 9999
       jmx_user: admin
       jmx_pass: admin
-      jmx_remote: false
       key_store: /etc/pki/JMXClientKeyStore.key
       key_store_password: password
       trust_store: /etc/pki/JMXClientTrustStore.key
