@@ -35,7 +35,7 @@ const (
 var (
 	args argumentList
 
-	jmxOpenFunc  = jmx.OpenWithParameters
+	jmxOpenFunc  = jmx.Open
 	jmxCloseFunc = jmx.Close
 	jmxQueryFunc = jmx.Query
 )
