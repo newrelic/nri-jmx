@@ -275,7 +275,7 @@ func TestHandleResponse(t *testing.T) {
 
 	jsonbytes, _ := i.MarshalJSON()
 
-	expectedMarshalled := `{"name":"jmx","protocol_version":"2","integration_version":"0.1.0","data":[{"entity":{"name":"test.domain","type":"domain"},"metrics":[],"inventory":{},"events":[]}]}`
+	expectedMarshalled := `{"name":"jmx","protocol_version":"3","integration_version":"0.1.0","data":[{"entity":{"name":"test.domain","type":"domain","id_attributes":[]},"metrics":[],"inventory":{},"events":[]}]}`
 
 	if string(jsonbytes) != expectedMarshalled {
 		t.Error("Failed to get expected marshalled json")

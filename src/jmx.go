@@ -17,6 +17,7 @@ type argumentList struct {
 	JmxPort            string `default:"9999" help:"The port JMX is running on"`
 	JmxUser            string `default:"admin" help:"The username for the JMX connection"`
 	JmxPass            string `default:"admin" help:"The password for the JMX connection"`
+	JmxRemote          bool   `default:"false" help:"When activated uses the JMX remote url connection format"`
 	KeyStore           string `default:"" help:"The location for the keystore containing JMX Client's SSL certificate"`
 	KeyStorePassword   string `default:"" help:"Password for the SSL Key Store"`
 	TrustStore         string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
@@ -34,10 +35,9 @@ const (
 var (
 	args argumentList
 
-	jmxOpenFunc        = jmx.Open
-	jmxOpenWithSSLFunc = jmx.OpenWithSSL
-	jmxCloseFunc       = jmx.Close
-	jmxQueryFunc       = jmx.Query
+	jmxOpenFunc  = jmx.Open
+	jmxCloseFunc = jmx.Close
+	jmxQueryFunc = jmx.Query
 )
 
 func main() {
@@ -49,25 +49,20 @@ func main() {
 	}
 	log.SetupLogging(args.Verbose)
 
+	options := make([]jmx.Option, 0)
+	if args.JmxRemote {
+		options = append(options, jmx.WithRemoteProtocol())
+	}
 	if args.KeyStore != "" && args.KeyStorePassword != "" && args.TrustStore != "" && args.TrustStorePassword != "" {
-		// Open a JMX with SSL connection
-		if err := jmxOpenWithSSLFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword); err != nil {
-			log.Error(
-				"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s, keyStore: %s, keyStorePassword: %s, trustStore: %s, trustStorePassword: %s): %s",
-				args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword, err,
-			)
-			os.Exit(1)
-		}
-	} else {
-
-		// Open a JMX connection
-		if err := jmxOpenFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass); err != nil {
-			log.Error(
-				"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s): %s",
-				args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, err,
-			)
-			os.Exit(1)
-		}
+		ssl := jmx.WithSSL(args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword)
+		options = append(options, ssl)
+	}
+	if err := jmxOpenFunc(args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, options...); err != nil {
+		log.Error(
+			"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s, keyStore: %s, keyStorePassword: %s, trustStore: %s, trustStorePassword: %s, remote: %t): %s",
+			args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword, args.JmxRemote, err,
+		)
+		os.Exit(1)
 	}
 
 	// Ensure a collection file is specified
