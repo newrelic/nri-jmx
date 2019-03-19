@@ -36,7 +36,8 @@ prep-pkg-env:
 	@cp ./*-definition.yml $(SOURCE_DIR)/var/db/newrelic-infra/newrelic-integrations/
 	@chmod 644 $(SOURCE_DIR)/var/db/newrelic-infra/newrelic-integrations/*-definition.yml
 	@cp ./*-config.yml.sample $(SOURCE_DIR)/etc/newrelic-infra/integrations.d/
-	@chmod 644 $(SOURCE_DIR)/etc/newrelic-infra/integrations.d/*-config.yml.sample
+	@cp ./jvm-metrics.yml.sample $(SOURCE_DIR)/etc/newrelic-infra/integrations.d/
+	@chmod 644 $(SOURCE_DIR)/etc/newrelic-infra/integrations.d/*.yml.sample
 
 deb: prep-pkg-env
 	@echo "=== Main === [ deb ]: building DEB package..."
