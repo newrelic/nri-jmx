@@ -95,7 +95,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		if err := runCollection(collection, jmxIntegration); err != nil {
+		if err := runCollection(collection, jmxIntegration, args.JmxHost, args.JmxPort); err != nil {
 			log.Error("Failed to complete collection: %s", err)
 		}
 	}

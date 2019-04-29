@@ -24,7 +24,7 @@ type beanAttrValuePair struct {
 	value    interface{}
 }
 
-func runCollection(collection []*domainDefinition, i *integration.Integration) error {
+func runCollection(collection []*domainDefinition, i *integration.Integration, host, port string) error {
 	for _, domain := range collection {
 		var errors []error
 		for _, request := range domain.beans {
@@ -34,7 +34,7 @@ func runCollection(collection []*domainDefinition, i *integration.Integration) e
 				log.Error("Failed to retrieve metrics for request %s: %s", requestString, err)
 				return err
 			}
-			if err := handleResponse(domain.eventType, request, result, i); err != nil {
+			if err := handleResponse(domain.eventType, request, result, i, host, port); err != nil {
 				errors = append(errors, err)
 			}
 		}
@@ -50,7 +50,7 @@ func runCollection(collection []*domainDefinition, i *integration.Integration) e
 // handleResponse takes a response, filters out the excluded beans,
 // sorts the responses by domain, and passes each domain off to
 // insertDomainMetrics to populate the metric list
-func handleResponse(eventType string, request *beanRequest, response queryResponse, i *integration.Integration) error {
+func handleResponse(eventType string, request *beanRequest, response queryResponse, i *integration.Integration, host, port string) error {
 
 	// Delete excluded mbeans
 	for key := range response {
@@ -75,7 +75,7 @@ func handleResponse(eventType string, request *beanRequest, response queryRespon
 
 	// For each domain, create an entity and a metric set
 	for domain, beanAttrVals := range domainsMap {
-		err := insertDomainMetrics(eventType, domain, beanAttrVals, request, i)
+		err := insertDomainMetrics(eventType, domain, beanAttrVals, request, i, host, port)
 		if err != nil {
 			return err
 		}
@@ -87,10 +87,12 @@ func handleResponse(eventType string, request *beanRequest, response queryRespon
 // insertDomainMetrics akes a domain and a list of attr:value pairs,
 // creates an entity and metric set for the domain, and populates the
 // metric set for each attribute to be collected
-func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAttrValuePair, request *beanRequest, i *integration.Integration) error {
+func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAttrValuePair, request *beanRequest, i *integration.Integration, host, port string) error {
 
 	// Create an entity for the domain
-	e, err := i.Entity(domain, "domain")
+  hostIDAttr := integration.NewIDAttribute("host", host)
+  portIDAttr := integration.NewIDAttribute("port", port)
+	e, err := i.Entity(domain, "jmx-domain", hostIDAttr, portIDAttr)
 	if err != nil {
 		return err
 	}
