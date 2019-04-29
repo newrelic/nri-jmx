@@ -90,8 +90,8 @@ func handleResponse(eventType string, request *beanRequest, response queryRespon
 func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAttrValuePair, request *beanRequest, i *integration.Integration, host, port string) error {
 
 	// Create an entity for the domain
-  hostIDAttr := integration.NewIDAttribute("host", host)
-  portIDAttr := integration.NewIDAttribute("port", port)
+	hostIDAttr := integration.NewIDAttribute("host", host)
+	portIDAttr := integration.NewIDAttribute("port", port)
 	e, err := i.Entity(domain, "jmx-domain", hostIDAttr, portIDAttr)
 	if err != nil {
 		return err

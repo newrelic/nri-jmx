@@ -275,7 +275,7 @@ func TestHandleResponse(t *testing.T) {
 
 	jsonbytes, _ := i.MarshalJSON()
 
-  fmt.Println(string(jsonbytes))
+	fmt.Println(string(jsonbytes))
 	expectedMarshalled := `{"name":"jmx","protocol_version":"3","integration_version":"0.1.0","data":[{"entity":{"name":"test.domain","type":"jmx-domain","id_attributes":[{"Key":"host","Value":"testhost"},{"Key":"port","Value":"1234"}]},"metrics":[],"inventory":{},"events":[]}]}`
 
 	if string(jsonbytes) != expectedMarshalled {
