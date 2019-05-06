@@ -54,7 +54,7 @@ func TestRunCollection(t *testing.T) {
 
 	i, _ := integration.New("jmxtest", "0.1.0")
 
-	runCollection(collection, i)
+	runCollection(collection, i, "testhost", "1234")
 
 	if !reflect.DeepEqual(expectedMetrics, i.Entities[0].Metrics[0].Metrics) {
 		fmt.Println(pretty.Diff(expectedMetrics, i.Entities[0].Metrics[0].Metrics))
@@ -233,7 +233,7 @@ func TestInsertDomainMetrics(t *testing.T) {
 
 	eventType := "TestEventTypeSample"
 
-	insertDomainMetrics(eventType, domain, beanAttrVals, request, i)
+	insertDomainMetrics(eventType, domain, beanAttrVals, request, i, "testhost", "1234")
 
 	expectedMetrics := map[string]interface{}{
 		"event_type":  "TestEventTypeSample",
@@ -268,14 +268,15 @@ func TestHandleResponse(t *testing.T) {
 	}
 	i, _ := integration.New("jmx", "0.1.0")
 
-	err := handleResponse(eventType, request, response, i)
+	err := handleResponse(eventType, request, response, i, "testhost", "1234")
 	if err != nil {
 		t.Error(err)
 	}
 
 	jsonbytes, _ := i.MarshalJSON()
 
-	expectedMarshalled := `{"name":"jmx","protocol_version":"3","integration_version":"0.1.0","data":[{"entity":{"name":"test.domain","type":"domain","id_attributes":[]},"metrics":[],"inventory":{},"events":[]}]}`
+	fmt.Println(string(jsonbytes))
+	expectedMarshalled := `{"name":"jmx","protocol_version":"3","integration_version":"0.1.0","data":[{"entity":{"name":"test.domain","type":"jmx-domain","id_attributes":[{"Key":"host","Value":"testhost"},{"Key":"port","Value":"1234"}]},"metrics":[],"inventory":{},"events":[]}]}`
 
 	if string(jsonbytes) != expectedMarshalled {
 		t.Error("Failed to get expected marshalled json")
@@ -302,7 +303,7 @@ func TestDefaultMetricType(t *testing.T) {
 	}
 	i, _ := integration.New("jmx", "0.1.0")
 
-	err = handleResponse(eventType, request, response, i)
+	err = handleResponse(eventType, request, response, i, "testhost", "1234")
 	if err != nil {
 		t.Error(err)
 	}

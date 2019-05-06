@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.0.0 - 2019-04-29
+### Changed
+- Added identity attributes for better uniqueness
+- Updated the SDK
+
 ## 1.0.4 - 2019-03-19
 ### Changed
 - Include jvm-metrics.yml.sample in package

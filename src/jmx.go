@@ -29,7 +29,7 @@ type argumentList struct {
 
 const (
 	integrationName    = "com.newrelic.jmx"
-	integrationVersion = "1.0.4"
+	integrationVersion = "2.0.0"
 )
 
 var (
@@ -95,7 +95,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		if err := runCollection(collection, jmxIntegration); err != nil {
+		if err := runCollection(collection, jmxIntegration, args.JmxHost, args.JmxPort); err != nil {
 			log.Error("Failed to complete collection: %s", err)
 		}
 	}
