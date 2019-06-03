@@ -37,6 +37,7 @@ prep-pkg-env:
 	@chmod 644 $(SOURCE_DIR)/var/db/newrelic-infra/newrelic-integrations/*-definition.yml
 	@cp ./*-config.yml.sample $(SOURCE_DIR)/etc/newrelic-infra/integrations.d/
 	@cp ./jvm-metrics.yml.sample $(SOURCE_DIR)/etc/newrelic-infra/integrations.d/
+	@cp ./tomcat-metrics.yml.sample $(SOURCE_DIR)/etc/newrelic-infra/integrations.d/
 	@chmod 644 $(SOURCE_DIR)/etc/newrelic-infra/integrations.d/*.yml.sample
 
 deb: prep-pkg-env
