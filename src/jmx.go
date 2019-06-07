@@ -15,6 +15,7 @@ type argumentList struct {
 	sdkArgs.DefaultArgumentList
 	JmxHost            string `default:"localhost" help:"The host running JMX"`
 	JmxPort            string `default:"9999" help:"The port JMX is running on"`
+	JmxURIPath         string `default: "jmxrmi" help:"The path portion of the JMX Service URI(useful for nonstandard service uris"`
 	JmxUser            string `default:"admin" help:"The username for the JMX connection"`
 	JmxPass            string `default:"admin" help:"The password for the JMX connection"`
 	JmxRemote          bool   `default:"false" help:"When activated uses the JMX remote url connection format"`
@@ -50,6 +51,9 @@ func main() {
 	log.SetupLogging(args.Verbose)
 
 	options := make([]jmx.Option, 0)
+	if args.JmxURIPath != "" {
+		options = append(options, jmx.WithURIPath(args.JmxURIPath))
+	}
 	if args.JmxRemote {
 		options = append(options, jmx.WithRemoteProtocol())
 	}
