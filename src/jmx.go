@@ -18,7 +18,7 @@ type argumentList struct {
 	JmxUser                 string `default:"admin" help:"The username for the JMX connection"`
 	JmxPass                 string `default:"admin" help:"The password for the JMX connection"`
 	JmxRemote               bool   `default:"false" help:"When activated uses the JMX remote url connection format (by default on JBoss Domain-mode)"`
-	JmxRemoteJBossStandlone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
+	JmxRemoteJbossStandlone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
 	KeyStore                string `default:"" help:"The location for the keystore containing JMX Client's SSL certificate"`
 	KeyStorePassword        string `default:"" help:"Password for the SSL Key Store"`
 	TrustStore              string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
@@ -52,7 +52,7 @@ func main() {
 
 	options := make([]jmx.Option, 0)
 	if args.JmxRemote {
-		if args.JmxRemoteJBossStandlone {
+		if args.JmxRemoteJbossStandlone {
 			options = append(options, jmx.WithRemoteStandAloneJBoss())
 		} else {
 			options = append(options, jmx.WithRemoteProtocol())
