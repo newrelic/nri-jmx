@@ -13,18 +13,19 @@ import (
 
 type argumentList struct {
 	sdkArgs.DefaultArgumentList
-	JmxHost            string `default:"localhost" help:"The host running JMX"`
-	JmxPort            string `default:"9999" help:"The port JMX is running on"`
-	JmxUser            string `default:"admin" help:"The username for the JMX connection"`
-	JmxPass            string `default:"admin" help:"The password for the JMX connection"`
-	JmxRemote          bool   `default:"false" help:"When activated uses the JMX remote url connection format"`
-	KeyStore           string `default:"" help:"The location for the keystore containing JMX Client's SSL certificate"`
-	KeyStorePassword   string `default:"" help:"Password for the SSL Key Store"`
-	TrustStore         string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
-	TrustStorePassword string `default:"" help:"Password for the SSL Trust Store"`
-	CollectionFiles    string `default:"" help:"A comma separated list of full paths to metrics configuration files"`
-	Timeout            int    `default:"10000" help:"Timeout for JMX queries"`
-	MetricLimit        int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
+	JmxHost                 string `default:"localhost" help:"The host running JMX"`
+	JmxPort                 string `default:"9999" help:"The port JMX is running on"`
+	JmxUser                 string `default:"admin" help:"The username for the JMX connection"`
+	JmxPass                 string `default:"admin" help:"The password for the JMX connection"`
+	JmxRemote               bool   `default:"false" help:"When activated uses the JMX remote url connection format (by default on JBoss Domain-mode)"`
+	JmxRemoteJbossStandlone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
+	KeyStore                string `default:"" help:"The location for the keystore containing JMX Client's SSL certificate"`
+	KeyStorePassword        string `default:"" help:"Password for the SSL Key Store"`
+	TrustStore              string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
+	TrustStorePassword      string `default:"" help:"Password for the SSL Trust Store"`
+	CollectionFiles         string `default:"" help:"A comma separated list of full paths to metrics configuration files"`
+	Timeout                 int    `default:"10000" help:"Timeout for JMX queries"`
+	MetricLimit             int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
 }
 
 const (
@@ -51,7 +52,11 @@ func main() {
 
 	options := make([]jmx.Option, 0)
 	if args.JmxRemote {
-		options = append(options, jmx.WithRemoteProtocol())
+		if args.JmxRemoteJbossStandlone {
+			options = append(options, jmx.WithRemoteStandAloneJBoss())
+		} else {
+			options = append(options, jmx.WithRemoteProtocol())
+		}
 	}
 	if args.KeyStore != "" && args.KeyStorePassword != "" && args.TrustStore != "" && args.TrustStorePassword != "" {
 		ssl := jmx.WithSSL(args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword)
