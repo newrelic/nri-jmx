@@ -23,14 +23,31 @@ type Entity struct {
 	customAttributes []metric.Attribute
 }
 
-//IDAttributes used for the entity key uniqueness
-type IDAttributes []IDAttribute
-
 // EntityMetadata stores entity Metadata
 type EntityMetadata struct {
 	Name      string       `json:"name"`
 	Namespace string       `json:"type"`          // For compatibility reasons we keep the type.
 	IDAttrs   IDAttributes `json:"id_attributes"` // For entity Key uniqueness
+}
+
+// EqualsTo returns true when both metadata are equal.
+func (m *EntityMetadata) EqualsTo(b *EntityMetadata) bool {
+	// prevent checking on Key() for performance
+	if m.Name != b.Name || m.Namespace != b.Namespace {
+		return false
+	}
+
+	k1, err := m.Key()
+	if err != nil {
+		return false
+	}
+
+	k2, err := b.Key()
+	if err != nil {
+		return false
+	}
+
+	return k1.String() == k2.String()
 }
 
 // newLocalEntity creates unique default entity without identifier (name & type)
@@ -77,21 +94,18 @@ func newEntity(
 	return &d, nil
 }
 
-func idAttributes(idAttrs ...IDAttribute) IDAttributes {
-	attrs := make(IDAttributes, len(idAttrs))
-	if len(attrs) == 0 {
-		return attrs
-	}
-	for i, attr := range idAttrs {
-		attrs[i] = attr
-	}
-
-	return attrs
-}
-
 // isLocalEntity returns true if entity is the default one (has no identifier: name & type)
 func (e *Entity) isLocalEntity() bool {
 	return e.Metadata == nil || e.Metadata.Name == ""
+}
+
+// SameAs return true when is same entity
+func (e *Entity) SameAs(b *Entity) bool {
+	if e.Metadata == nil || b.Metadata == nil {
+		return false
+	}
+
+	return e.Metadata.EqualsTo(b.Metadata)
 }
 
 // NewMetricSet returns a new instance of Set with its sample attached to the integration.
@@ -128,7 +142,19 @@ func (e *Entity) SetInventoryItem(key string, field string, value interface{}) e
 	return e.Inventory.SetItem(key, field, value)
 }
 
+// AddAttributes adds attributes to every entity metric-set.
+func (e *Entity) AddAttributes(attributes ...metric.Attribute) {
+	for _, a := range attributes {
+		e.setCustomAttribute(a.Key, a.Value)
+	}
+}
+
 func (e *Entity) setCustomAttribute(key string, value string) {
 	attribute := metric.Attribute{key, value}
 	e.customAttributes = append(e.customAttributes, attribute)
+}
+
+// Key unique entity identifier within a New Relic customer account.
+func (e *Entity) Key() (EntityKey, error) {
+	return e.Metadata.Key()
 }
