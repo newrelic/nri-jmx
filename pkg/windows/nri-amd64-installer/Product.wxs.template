@@ -92,7 +92,7 @@
             </Component>
             <Component Id="CMP_NRI_{IntegrationName}_METRICS_CONFIG_YML" Guid="e7eba3fb-050c-4850-85a3-b0acfdaad14b" Win64="yes"
                        NeverOverwrite="yes" Permanent="yes">
-                <File Id="FILE_NRI_{IntegrationName}_CONFIG_YML"
+                <File Id="FILE_NRI_{IntegrationName}_METRICS_CONFIG_YML"
                       Name="{IntegrationName}-config.yml.sample"
                       Source="$(var.ProjectRootPath)jvm-metrics.yml.sample"
                       KeyPath="yes"/>
