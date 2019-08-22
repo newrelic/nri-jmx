@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
     <?define Version = "{IntegrationVersion}" ?>
     <?define ProductId = "*" ?>
-    <?define UpgradeCode = "{f42aa489-e590-429d-a1c2-4ebd97cf8c3e}" ?>
+    <?define UpgradeCode = "{0fe87245-ee48-44e0-8e98-c5bce79f358b}" ?>
 
     <Product Id="$(var.ProductId)"
              Name="New Relic Infrastructure Integration, nri-{IntegrationName}"
@@ -67,14 +67,14 @@
 
     <Fragment>
         <ComponentGroup Id="CustomPluginsBinComponent" Directory="CustomPluginsBinFolder">
-            <Component Id="CMP_NRI_{IntegrationName}_EXE" Guid="c57aeed1-f045-4202-8daa-d806db2e29e4" Win64="no">
+            <Component Id="CMP_NRI_{IntegrationName}_EXE" Guid="1a0af02f-9968-43de-b7e2-0ebc69d83b9f" Win64="no">
                 <File Id="FILE_NRI_{IntegrationName}_EXE"
                       Source="$(var.BinariesPath){IntegrationExe}"
                       KeyPath="yes"/>
             </Component>
         </ComponentGroup>
         <ComponentGroup Id="CustomPluginsComponent" Directory="CustomPluginsFolder">
-            <Component Id="CMP_NRI_{IntegrationName}_DEFINITION_YML" Guid="35c84fd9-7b1a-4871-a706-390ea19252b1" Win64="no"
+            <Component Id="CMP_NRI_{IntegrationName}_DEFINITION_YML" Guid="f04a2ead-20dc-448c-af8c-e784b3bce661" Win64="no"
                        NeverOverwrite="yes" Permanent="yes">
                 <File Id="FILE_NRI_{IntegrationName}_DEFINITION_YML"
                       Name="{IntegrationName}-definition.yml"
@@ -83,11 +83,18 @@
             </Component>
         </ComponentGroup>
         <ComponentGroup Id="PluginConfigsComponent" Directory="PluginConfigsFolder">
-            <Component Id="CMP_NRI_{IntegrationName}_CONFIG_YML" Guid="ae131e4c-7ec5-42c5-b21b-b454979f28ee" Win64="no"
-                       NeverOverwrite="yes" Permanent="yes">
+            <Component Id="CMP_NRI_{IntegrationName}_CONFIG_YML" Guid="194337d3-641d-463b-9def-0ad5877c8e94" Win64="no"
+                       Permanent="yes">
                 <File Id="FILE_NRI_{IntegrationName}_CONFIG_YML"
                       Name="{IntegrationName}-config.yml.sample"
                       Source="$(var.ProjectRootPath){IntegrationName}-config.yml.sample"
+                      KeyPath="yes"/>
+            </Component>
+            <Component Id="CMP_NRI_{IntegrationName}_METRICS_CONFIG_YML" Guid="e7eba3fb-050c-4850-85a3-b0acfdaad14b" Win64="yes"
+                       Permanent="yes">
+                <File Id="FILE_NRI_{IntegrationName}_METRICS_CONFIG_YML"
+                      Name="jvm-metrics.yml.sample"
+                      Source="$(var.ProjectRootPath)jvm-metrics.yml.sample"
                       KeyPath="yes"/>
             </Component>
         </ComponentGroup>
