@@ -15,5 +15,6 @@ ENV NRIA_K8S_INTEGRATION true
 RUN apk --update add openjdk7-jre
 COPY --from=builder-mvn /nrjmx/bin/nrjmx /usr/bin/nrjmx
 COPY --from=builder-mvn /nrjmx/bin/nrjmx.jar /usr/bin/nrjmx.jar
-COPY --from=builder /go/src/github.com/newrelic/nri-jmx/bin/nr-jmx /var/db/newrelic-infra/newrelic-integrations/bin/nr-jmx
-COPY --from=builder /go/src/github.com/newrelic/nri-jmx/jmx-definition.yml /var/db/newrelic-infra/newrelic-integrations/definition.yaml
+COPY --from=builder /go/src/github.com/newrelic/nri-jmx/bin/nr-jmx /nri-sidecar/newrelic-infra/newrelic-integrations/bin/nr-jmx
+COPY --from=builder /go/src/github.com/newrelic/nri-jmx/jmx-definition.yml /nri-sidecar/newrelic-infra/newrelic-integrations/definition.yaml
+USER 1000
