@@ -90,18 +90,18 @@ func handleResponse(eventType string, request *beanRequest, response queryRespon
 func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAttrValuePair, request *beanRequest, i *integration.Integration, host, port string) error {
 
 	// Create an entity for the domain
-  var e *integration.Entity
-  var err error
-  if args.LocalEntity {
-    e = i.LocalEntity()
-  } else {
-    hostIDAttr := integration.NewIDAttribute("host", host)
-    portIDAttr := integration.NewIDAttribute("port", port)
-    e, err = i.Entity(domain, "jmx-domain", hostIDAttr, portIDAttr)
-    if err != nil {
-      return err
-    }
-  }
+	var e *integration.Entity
+	var err error
+	if args.LocalEntity {
+		e = i.LocalEntity()
+	} else {
+		hostIDAttr := integration.NewIDAttribute("host", host)
+		portIDAttr := integration.NewIDAttribute("port", port)
+		e, err = i.Entity(domain, "jmx-domain", hostIDAttr, portIDAttr)
+		if err != nil {
+			return err
+		}
+	}
 
 	// Create a map of bean names to metric sets
 	entityMetricSets := make(map[string]*metric.Set)
@@ -149,18 +149,18 @@ func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integratio
 	// Attributes in all metric sets
 	attributes := []metric.Attribute{
 		{Key: "query", Value: request.beanQuery},
-    {Key: "domain", Value: domain},
+		{Key: "domain", Value: domain},
 		{Key: "host", Value: args.JmxHost},
 		{Key: "bean", Value: beanNameMatch},
 	}
 
-  if !args.LocalEntity {
-    nonLocalKeys := []metric.Attribute{
-      {Key: "entityName", Value: "domain:" + e.Metadata.Name},
-      {Key: "displayName", Value: e.Metadata.Name},
-    }
-    attributes = append(attributes, nonLocalKeys...)
-  }
+	if !args.LocalEntity {
+		nonLocalKeys := []metric.Attribute{
+			{Key: "entityName", Value: "domain:" + e.Metadata.Name},
+			{Key: "displayName", Value: e.Metadata.Name},
+		}
+		attributes = append(attributes, nonLocalKeys...)
+	}
 
 	// Add the bean keys and properties as attributes
 	keyProperties, err := getKeyProperties(beanNameMatch)
