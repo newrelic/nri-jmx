@@ -20,6 +20,7 @@ type argumentList struct {
 	JmxPass                 string `default:"admin" help:"The password for the JMX connection"`
 	JmxRemote               bool   `default:"false" help:"When activated uses the JMX remote url connection format (by default on JBoss Domain-mode)"`
 	JmxRemoteJbossStandlone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
+  LocalEntity             bool   `default:"false" help:"Collect all metrics on the local entity. Use only when monitoring localhost."`
 	KeyStore                string `default:"" help:"The location for the keystore containing JMX Client's SSL certificate"`
 	KeyStorePassword        string `default:"" help:"Password for the SSL Key Store"`
 	TrustStore              string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
