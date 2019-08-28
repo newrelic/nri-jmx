@@ -90,11 +90,17 @@ func handleResponse(eventType string, request *beanRequest, response queryRespon
 func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAttrValuePair, request *beanRequest, i *integration.Integration, host, port string) error {
 
 	// Create an entity for the domain
-	hostIDAttr := integration.NewIDAttribute("host", host)
-	portIDAttr := integration.NewIDAttribute("port", port)
-	e, err := i.Entity(domain, "jmx-domain", hostIDAttr, portIDAttr)
-	if err != nil {
-		return err
+	var e *integration.Entity
+	var err error
+	if args.LocalEntity {
+		e = i.LocalEntity()
+	} else {
+		hostIDAttr := integration.NewIDAttribute("host", host)
+		portIDAttr := integration.NewIDAttribute("port", port)
+		e, err = i.Entity(domain, "jmx-domain", hostIDAttr, portIDAttr)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Create a map of bean names to metric sets
@@ -111,7 +117,7 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 				}
 
 				// Get the metric set from the map or create it
-				metricSet, err := getOrCreateMetricSet(entityMetricSets, e, request, beanName, eventType)
+				metricSet, err := getOrCreateMetricSet(entityMetricSets, e, request, beanName, eventType, domain)
 				if err != nil {
 					return err
 				}
@@ -133,7 +139,7 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 // getOrCreateMetricSet takes a map of bean names to metric sets and either
 // returns a metric set from the map if it exists, or creates the metric set
 // and adds it to the map
-func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integration.Entity, request *beanRequest, beanNameMatch string, eventType string) (*metric.Set, error) {
+func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integration.Entity, request *beanRequest, beanNameMatch string, eventType string, domain string) (*metric.Set, error) {
 
 	// If the metric set exists, return it
 	if ms, ok := entityMetricSets[beanNameMatch]; ok {
@@ -143,10 +149,17 @@ func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integratio
 	// Attributes in all metric sets
 	attributes := []metric.Attribute{
 		{Key: "query", Value: request.beanQuery},
-		{Key: "entityName", Value: "domain:" + e.Metadata.Name},
-		{Key: "displayName", Value: e.Metadata.Name},
+		{Key: "domain", Value: domain},
 		{Key: "host", Value: args.JmxHost},
 		{Key: "bean", Value: beanNameMatch},
+	}
+
+	if !args.LocalEntity {
+		nonLocalKeys := []metric.Attribute{
+			{Key: "entityName", Value: "domain:" + e.Metadata.Name},
+			{Key: "displayName", Value: e.Metadata.Name},
+		}
+		attributes = append(attributes, nonLocalKeys...)
 	}
 
 	// Add the bean keys and properties as attributes
