@@ -33,7 +33,7 @@ type argumentList struct {
 
 const (
 	integrationName    = "com.newrelic.jmx"
-	integrationVersion = "2.2.1"
+	integrationVersion = "2.2.2"
 )
 
 var (
