@@ -9,6 +9,8 @@ JMX is required to be enabled on the monitored host.
 
 Information on configuring JMX can be found [here](https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html).
 
+See our [documentation web site](https://docs.newrelic.com/docs/integrations/host-integrations/host-integrations-list/jmx-monitoring-integration) for more details.
+
 ## Installation
 
 - download an archive file for the `JMX` Integration
