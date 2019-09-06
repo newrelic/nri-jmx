@@ -9,7 +9,7 @@ import (
 	"github.com/kr/pretty"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-  "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRunCollection(t *testing.T) {
@@ -314,55 +314,55 @@ func TestDefaultMetricType(t *testing.T) {
 }
 
 func Test_getKeyProperties(t *testing.T) {
-  input1 := `name1=test1,name2=test2`
-  expected1 := map[string]string{
-    "name1": "test1",
-    "name2": "test2",
-  }
+	input1 := `name1=test1,name2=test2`
+	expected1 := map[string]string{
+		"name1": "test1",
+		"name2": "test2",
+	}
 
-  output1, err := getKeyProperties(input1)
-  if err != nil {
-    t.Fatal(err)
-  }
+	output1, err := getKeyProperties(input1)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-  assert.Equal(t, expected1, output1)
+	assert.Equal(t, expected1, output1)
 
-  input2 := `name1="test1,name2=test2"`
-  expected2 := map[string]string{
-    "name1": `test1,name2=test2`,
-  }
+	input2 := `name1="test1,name2=test2"`
+	expected2 := map[string]string{
+		"name1": `test1,name2=test2`,
+	}
 
-  output2, err := getKeyProperties(input2)
-  if err != nil {
-    t.Fatal(err)
-  }
+	output2, err := getKeyProperties(input2)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-  assert.Equal(t, expected2, output2)
+	assert.Equal(t, expected2, output2)
 
-  input3 := `name1="test1",name2="test2"`
-  expected3 := map[string]string{
-    "name1": `test1`,
-    "name2": `test2`,
-  }
+	input3 := `name1="test1",name2="test2"`
+	expected3 := map[string]string{
+		"name1": `test1`,
+		"name2": `test2`,
+	}
 
-  output3, err := getKeyProperties(input3)
-  if err != nil {
-    t.Fatal(err)
-  }
+	output3, err := getKeyProperties(input3)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-  assert.Equal(t, expected3, output3)
+	assert.Equal(t, expected3, output3)
 
-  input4 := `name1="test1,\"asdf",name2="test2"`
-  expected4 := map[string]string{
-    "name1": `test1,\"asdf`,
-    "name2": `test2`,
-  }
+	input4 := `name1="test1,\"asdf",name2="test2"`
+	expected4 := map[string]string{
+		"name1": `test1,\"asdf`,
+		"name2": `test2`,
+	}
 
-  output4, err := getKeyProperties(input4)
-  if err != nil {
-    t.Fatal(err)
-  }
+	output4, err := getKeyProperties(input4)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-  assert.Equal(t, expected4, output4)
+	assert.Equal(t, expected4, output4)
 
 }

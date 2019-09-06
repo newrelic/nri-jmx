@@ -242,49 +242,49 @@ func getAttrName(beanString string) (string, error) {
 }
 
 func getKeyProperties(keyProperties string) (keyPropertiesMap map[string]string, err error) {
-  defer func() {
-    if r := recover(); r != nil {
-      err = fmt.Errorf("failed to parse properties %s", keyProperties) 
-    }
-  }()
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("failed to parse properties %s", keyProperties)
+		}
+	}()
 	keyPropertiesMap = make(map[string]string)
 
-  i := 0
-  tokenStart := 0 
-  key := ""
-  for i < len(keyProperties) {
-    // Find the key
-    if keyProperties[i] == '=' {
-      key = keyProperties[tokenStart:i]
-      i++
-      // Find the value
-      if keyProperties[i] == '"' { // value is quoted
-        i++
-        tokenStart := i
-        for i < len(keyProperties){
-          if keyProperties[i] == '"' && keyProperties[i-1] != '\\' { 
-            keyPropertiesMap[key] = keyProperties[tokenStart:i]
-            i += 2
-            break
-          }
-          i++
-        }
-      } else { // value is not quoted
-        tokenStart = i
-        for { // search for first comma
-          if i == len(keyProperties) || keyProperties[i] == ',' {
-            keyPropertiesMap[key] = keyProperties[tokenStart:i]
-            i++
-            break
-          }
-          i++
-        }
-      }
-      tokenStart = i
-    } else {
-      i++
-    }
-  }
+	i := 0
+	tokenStart := 0
+	key := ""
+	for i < len(keyProperties) {
+		// Find the key
+		if keyProperties[i] == '=' {
+			key = keyProperties[tokenStart:i]
+			i++
+			// Find the value
+			if keyProperties[i] == '"' { // value is quoted
+				i++
+				tokenStart := i
+				for i < len(keyProperties) {
+					if keyProperties[i] == '"' && keyProperties[i-1] != '\\' {
+						keyPropertiesMap[key] = keyProperties[tokenStart:i]
+						i += 2
+						break
+					}
+					i++
+				}
+			} else { // value is not quoted
+				tokenStart = i
+				for { // search for first comma
+					if i == len(keyProperties) || keyProperties[i] == ',' {
+						keyPropertiesMap[key] = keyProperties[tokenStart:i]
+						i++
+						break
+					}
+					i++
+				}
+			}
+			tokenStart = i
+		} else {
+			i++
+		}
+	}
 
 	return keyPropertiesMap, nil
 
