@@ -1,7 +1,7 @@
-FROM maven:3.6-jdk-7 as builder-mvn
+FROM maven:3-jdk-11 as builder-mvn
 RUN git clone https://github.com/newrelic/nrjmx.git && \
     cd nrjmx && \
-    mvn clean package -P \!deb,\!rpm
+    mvn package -DskipTests -P \!deb,\!rpm,\!test,\!tarball
 
 FROM golang:1.10 as builder
 RUN go get -d github.com/newrelic/nri-jmx/... && \
@@ -12,8 +12,9 @@ RUN go get -d github.com/newrelic/nri-jmx/... && \
 FROM newrelic/infrastructure:latest
 ENV NRIA_IS_FORWARD_ONLY true
 ENV NRIA_K8S_INTEGRATION true
-RUN apk --update add openjdk7-jre
+RUN apk --update add openjdk8-jre
 COPY --from=builder-mvn /nrjmx/bin/nrjmx /usr/bin/nrjmx
 COPY --from=builder-mvn /nrjmx/bin/nrjmx.jar /usr/bin/nrjmx.jar
-COPY --from=builder /go/src/github.com/newrelic/nri-jmx/bin/nr-jmx /var/db/newrelic-infra/newrelic-integrations/bin/nr-jmx
-COPY --from=builder /go/src/github.com/newrelic/nri-jmx/jmx-definition.yml /var/db/newrelic-infra/newrelic-integrations/definition.yaml
+COPY --from=builder /go/src/github.com/newrelic/nri-jmx/bin/nr-jmx /nri-sidecar/newrelic-infra/newrelic-integrations/bin/nr-jmx
+COPY --from=builder /go/src/github.com/newrelic/nri-jmx/jmx-definition.yml /nri-sidecar/newrelic-infra/newrelic-integrations/definition.yaml
+USER 1000
