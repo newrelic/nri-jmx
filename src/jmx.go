@@ -29,6 +29,8 @@ type argumentList struct {
 	CollectionFiles         string `default:"" help:"A comma separated list of full paths to metrics configuration files"`
 	Timeout                 int    `default:"10000" help:"Timeout for JMX queries"`
 	MetricLimit             int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
+	NrJmx                   string `default:"/usr/bin/nrjmx" help:"nrjmx tool executable path"`
+	ConnectionURL           string `default:"" help:"full connection URL"`
 }
 
 const (
@@ -53,17 +55,28 @@ func main() {
 	}
 	log.SetupLogging(args.Verbose)
 
-	options := make([]jmx.Option, 0)
-	if args.JmxURIPath != "" {
-		options = append(options, jmx.WithURIPath(args.JmxURIPath))
+	options := []jmx.Option{
+		jmx.WithNrJmxTool(args.NrJmx),
 	}
-	if args.JmxRemote {
-		if args.JmxRemoteJbossStandlone {
-			options = append(options, jmx.WithRemoteStandAloneJBoss())
-		} else {
+
+	if args.Verbose {
+		options = append(options, jmx.WithVerbose())
+	}
+
+	if args.ConnectionURL != "" {
+		options = append(options, jmx.WithConnectionURL(args.ConnectionURL))
+	} else {
+		if args.JmxURIPath != "" {
+			options = append(options, jmx.WithURIPath(args.JmxURIPath))
+		}
+		if args.JmxRemote {
 			options = append(options, jmx.WithRemoteProtocol())
+			if args.JmxRemoteJbossStandlone {
+				options = append(options, jmx.WithRemoteStandAloneJBoss())
+			}
 		}
 	}
+
 	if args.KeyStore != "" && args.KeyStorePassword != "" && args.TrustStore != "" && args.TrustStorePassword != "" {
 		ssl := jmx.WithSSL(args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword)
 		options = append(options, ssl)
