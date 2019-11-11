@@ -44,3 +44,6 @@ Session.vim
 debug
 conf.yaml
 Makefile-deploy.mk
+
+# Idea
+.idea
