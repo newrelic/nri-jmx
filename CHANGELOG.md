@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.2.6 - 2019-11-13
+### Added
+- Nrjmx tool within the Windows installer
+
 ## 2.2.5 - 2019-10-16
 ### Fixed
 - Windows installer GUIDs
