@@ -285,7 +285,7 @@ func handleStdErr(ctx context.Context) {
 func Close() {
 	if cancel != nil {
 		cancel()
-}
+	}
 
 	done.Wait()
 }

@@ -73,12 +73,12 @@
 			"versionExact": "v3.3.1"
 		},
 		{
-			"checksumSHA1": "HMB0D7MjhDrAxefO02AHjLuzzzE=",
+			"checksumSHA1": "Cz0x0qEmD9hIDSBaBVRQI4EUxwM=",
 			"path": "github.com/newrelic/infra-integrations-sdk/jmx",
-			"revision": "a5f2062535dae05a18c6e53f0f2fa7eefb723bb9",
-			"revisionTime": "2019-11-14T08:05:06Z",
-			"version": "jmx_restore_single_line",
-			"versionExact": "jmx_restore_single_line"
+			"revision": "d20f61f8131bc4098cdc34c0e3d206c4783dd2b2",
+			"revisionTime": "2019-11-14T09:00:00Z",
+			"version": "master",
+			"versionExact": "master"
 		},
 		{
 			"checksumSHA1": "6/DhD+/LhC/k3NaLgkpd6iE8b5E=",
