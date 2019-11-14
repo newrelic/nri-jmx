@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.0 (2019-11-)
+### Changed
+
+- Updated `nrjmx` version to the more stable latest one.
+
 ## 2.2.5 - 2019-10-16
 ### Fixed
 - Windows installer GUIDs
