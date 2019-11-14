@@ -5,9 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.2.6 - 2019-11-13
+## 2.3.1 - 2019-11-14
 ### Added
 - Nrjmx tool within the Windows installer
+ 
+## 2.3.0 - 2019-11-13
+### Changed
+- Updated `nrjmx` version to the more stable latest one.
 
 ## 2.2.5 - 2019-10-16
 ### Fixed

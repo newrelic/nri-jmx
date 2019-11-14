@@ -7,6 +7,7 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
+	"github.com/newrelic/infra-integrations-sdk/jmx"
 	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
@@ -26,21 +27,28 @@ type beanAttrValuePair struct {
 
 func runCollection(collection []*domainDefinition, i *integration.Integration, host, port string) error {
 	for _, domain := range collection {
-		var errors []error
+		var handlingErrs []error
 		for _, request := range domain.beans {
 			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
 			result, err := jmxQueryFunc(requestString, args.Timeout)
 			if err != nil {
-				log.Error("Failed to retrieve metrics for request %s: %s", requestString, err)
-				return err
+				if err == jmx.ErrBeanPattern {
+					return fmt.Errorf("cannot parse bean pattern: %s", requestString)
+				}
+				return fmt.Errorf("cannot query: %s, error: %s", requestString, err.Error())
 			}
+
+			if len(result) == 0 {
+				return fmt.Errorf("empty data for pattern: %s", requestString)
+			}
+
 			if err := handleResponse(domain.eventType, request, result, i, host, port); err != nil {
-				errors = append(errors, err)
+				handlingErrs = append(handlingErrs, err)
 			}
 		}
 
-		if len(errors) != 0 {
-			log.Error("Failed to parse some responses for domain %s: %v", domain.domain, errors)
+		if len(handlingErrs) != 0 {
+			log.Error("Failed to parse some responses for domain %s: %v", domain.domain, handlingErrs)
 		}
 	}
 
