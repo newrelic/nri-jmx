@@ -15,7 +15,7 @@ See our [documentation web site](https://docs.newrelic.com/docs/integrations/hos
 
 - download an archive file for the `JMX` Integration
 - extract `jmx-definition.yml` and `/bin` directory into `/var/db/newrelic-infra/newrelic-integrations`
-- add execute permissions for the binary file `nr-jmx` (if required)
+- add execute permissions for the binary file `nri-jmx` (if required)
 - extract `jmx-config.yml.sample` into `/etc/newrelic-infra/integrations.d`
 - install [`nrjmx` tool](https://github.com/newrelic/nrjmx) (Note: for the remoting-jmx URL use the 1.2.0 version or higher.)
 
@@ -41,13 +41,13 @@ Assuming that you have source code you can build and run the JMX Integration loc
 ```bash
 $ make
 ```
-* The command above will execute tests for the JMX Integration and build an executable file called `nr-jmx` in `bin` directory.
+* The command above will execute tests for the JMX Integration and build an executable file called `nri-jmx` in `bin` directory.
 ```bash
-$ ./bin/nr-jmx
+$ ./bin/nri-jmx
 ```
-* If you want to know more about usage of `./nr-jmx` check
+* If you want to know more about usage of `./nri-jmx` check
 ```bash
-$ ./bin/nr-jmx -help
+$ ./bin/nri-jmx -help
 ```
 
 For managing external dependencies [govendor tool](https://github.com/kardianos/govendor) is used. It is required to lock all external dependencies to specific version (if possible) into vendor directory.
