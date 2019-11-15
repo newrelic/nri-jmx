@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.2 - 2019-11-14
+### Added
+- Remove windows definition from linux package
+
 ## 2.3.1 - 2019-11-14
 ### Added
 - Nrjmx tool within the Windows installer
