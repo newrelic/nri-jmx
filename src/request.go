@@ -33,7 +33,7 @@ func runCollection(collection []*domainDefinition, i *integration.Integration, h
 			result, err := jmxQueryFunc(requestString, args.Timeout)
 			if err != nil {
 				if err == jmx.ErrBeanPattern {
-					return fmt.Errorf("cannot parse bean pattern: %s", requestString)
+					return fmt.Errorf("%s, your pattern: %s", err, requestString)
 				}
 				return fmt.Errorf("cannot query: %s, error: %s", requestString, err.Error())
 			}
