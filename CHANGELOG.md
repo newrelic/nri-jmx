@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.4 - 2019-11-19
+### Added
+- Error when a metric is set for the second time
+
 ## 2.3.3 - 2019-11-18
 ### Added
 - Add nrjmx version dependency to 1.5.2, so jmxterm can be bundled within
