@@ -6,5 +6,5 @@ os: windows
 commands:
   all_data:
     command:
-      - .\bin\nr-jmx.exe
+      - .\bin\nr-jmx.exe --nr_jmx 'C:\PROGRA~1\NEWREL~1\nrjmx\nrjmx.bat'
     interval: 15
