@@ -58,7 +58,7 @@ func TestRunCollection(t *testing.T) {
 
 	runCollection(collection, i, "testhost", "1234")
 	runCollection(collection, i, "testhost", "1234")
-    i.Publish()
+	i.Publish()
 
 	if !reflect.DeepEqual(expectedMetrics, i.Entities[0].Metrics[0].Metrics) {
 		fmt.Println(pretty.Diff(expectedMetrics, i.Entities[0].Metrics[0].Metrics))
