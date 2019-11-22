@@ -6,5 +6,5 @@ os: linux
 commands:
   all_data:
     command:
-      - ./bin/nr-jmx
+      - ./bin/nri-jmx
     interval: 15
