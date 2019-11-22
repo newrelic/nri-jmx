@@ -6,5 +6,6 @@ os: windows
 commands:
   all_data:
     command:
-      - .\bin\nri-jmx.exe
+      - .\bin\nri-jmx.exe 
+      - --nr_jmx='C:\PROGRA~1\NEWREL~1\nrjmx\nrjmx.bat'
     interval: 15

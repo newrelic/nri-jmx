@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 2.4.0 (2019-11-18)
 ### Changed
 - Renamed the integration executable from nr-jmx to nri-jmx in order to be consistent with the package naming. **Important Note:** if you have any security module rules (eg. SELinux), alerts or automation that depends on the name of this binary, these will have to be updated.
+
+## 2.3.5 - 2019-11-19
+### Added
+- Error when a metric is set for the second time
+
+## 2.3.4 - 2019-11-19
+### Added
+- Error when a metric is set for the second time
+
+## 2.3.3 - 2019-11-18
+### Added
+- Add nrjmx version dependency to 1.5.2, so jmxterm can be bundled within
+  package.
+
 ## 2.3.2 - 2019-11-14
 ### Added
 - Remove windows definition from linux package

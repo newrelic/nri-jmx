@@ -57,6 +57,8 @@ func TestRunCollection(t *testing.T) {
 	i, _ := integration.New("jmxtest", "0.1.0")
 
 	runCollection(collection, i, "testhost", "1234")
+	runCollection(collection, i, "testhost", "1234")
+    i.Publish()
 
 	if !reflect.DeepEqual(expectedMetrics, i.Entities[0].Metrics[0].Metrics) {
 		fmt.Println(pretty.Diff(expectedMetrics, i.Entities[0].Metrics[0].Metrics))
@@ -365,4 +367,44 @@ func Test_getKeyProperties(t *testing.T) {
 
 	assert.Equal(t, expected4, output4)
 
+}
+
+func Test_insertDomainMetrics(t *testing.T) {
+	bavs := []*beanAttrValuePair{
+		{
+			beanAttr: "name=Test.a,attr=Count",
+			value:    6235,
+		},
+		{
+			beanAttr: "name=Test.b,attr=Count",
+			value:    27323,
+		},
+	}
+	br1 := &beanRequest{
+		beanQuery: "name=Test.*",
+		attributes: []*attributeRequest{
+			{
+				attrRegexp: regexp.MustCompile("Count"),
+				metricName: "",
+				metricType: -1,
+			},
+		},
+	}
+	br2 := &beanRequest{
+		beanQuery: "name=Test.*",
+		attributes: []*attributeRequest{
+			{
+				attrRegexp: regexp.MustCompile("Count"),
+				metricName: "MessageDelta",
+				metricType: metric.DELTA,
+			},
+		},
+	}
+	i, _ := integration.New("testjmx", "1")
+
+	insertDomainMetrics("TestSample", "java.lang", bavs, br1, i, "localhost", "8888")
+	insertDomainMetrics("TestSample", "java.lang", bavs, br2, i, "localhost", "8888")
+
+	assert.Len(t, i.Entities, 1)
+	i.Publish()
 }
