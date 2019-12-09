@@ -57,16 +57,6 @@ type beanRequest struct {
 	attributes []*attributeRequest
 }
 
-var (
-	// metricTypes maps the string used in yaml to a metric type
-	metricTypes = map[string]metric.SourceType{
-		"gauge":     metric.GAUGE,
-		"delta":     metric.DELTA,
-		"attribute": metric.ATTRIBUTE,
-		"rate":      metric.RATE,
-	}
-)
-
 // parseYaml reads a yaml file and parses it into a collectionDefinitionParser.
 // It validates syntax only and not content
 func parseYaml(filename string) (*collectionDefinitionParser, error) {
@@ -278,7 +268,7 @@ func getMetricType(a map[interface{}]interface{}) (metric.SourceType, error) {
 	if !ok {
 		metricType = -1 // Since metric type can't be nil, using -1 as a placeholder
 	} else {
-		mt, ok := metricTypes[metricTypeString.(string)]
+		mt, ok := metric.SourcesNameToType[metricTypeString.(string)]
 		if !ok {
 			return 0, fmt.Errorf("invalid metric type %s", metricTypeString.(string))
 		}
