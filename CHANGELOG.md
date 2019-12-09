@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.2 (2019-12-09)
+## Added
+- Supported new `metric_type` values:
+    - `pdelta`: like `delta` but only reports positive values (returning `0` if the accounted value is negative)
+    - `prate`: like `rate` but only reports positive values (returning `0` if the accounted value is negative) 
+
 ## 2.4.1 (2019-12-02)
 ### Changed
 - Updated the nrjmx path in the definition file
