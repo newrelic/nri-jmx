@@ -39,7 +39,8 @@ func runCollection(collection []*domainDefinition, i *integration.Integration, h
 			}
 
 			if len(result) == 0 {
-				return fmt.Errorf("empty data for pattern: %s", requestString)
+				handlingErrs = append(handlingErrs, fmt.Errorf("empty data for pattern: %s", requestString))
+				continue
 			}
 
 			if err := handleResponse(domain.eventType, request, result, i, host, port); err != nil {
