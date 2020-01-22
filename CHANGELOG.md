@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.3 (2019-01-22)
+## Fixed
+- Continue collection when a query returns an empty result
+
 ## 2.4.2 (2019-12-09)
 ## Added
 - Supported new `metric_type` values:
