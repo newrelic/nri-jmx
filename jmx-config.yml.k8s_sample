@@ -1,0 +1,52 @@
+  jmx-config.yml: |
+    ---
+    # Run auto discovery to find pods with label "app=java"
+    # https://docs.newrelic.com/docs/integrations/host-integrations/installation/container-auto-discovery
+    discovery:
+      command:
+        # Run NRI Discovery for Kubernetes
+        # https://github.com/newrelic/nri-discovery-kubernetes
+        exec: /var/db/newrelic-infra/nri-discovery-kubernetes
+        match:
+          label.app: java
+    integrations:
+      - name: nri-jmx
+        env:
+          # Using the discovered IP as the host address
+          JMX_HOST: ${discovery.ip}
+          JMX_PORT: 9999
+          JMX_USER: admin
+          JMX_PASS: admin
+          COLLECTION_FILES: ${config.path}
+        config:
+          collect:
+            # Standard JVM Metrics
+            - domain: java.lang
+              event_type: JVMSample
+              beans:
+                - query: type=GarbageCollector,name=*
+                  attributes:
+                    - CollectionCount
+                    - CollectionTime
+                - query: type=Memory
+                  attributes:
+                    - HeapMemoryUsage.Committed
+                    - HeapMemoryUsage.Init
+                    - HeapMemoryUsage.Max
+                    - HeapMemoryUsage.Used
+                    - NonHeapMemoryUsage.Committed
+                    - NonHeapMemoryUsage.Init
+                    - NonHeapMemoryUsage.Max
+                    - NonHeapMemoryUsage.Used
+                - query: type=Threading
+                  attributes:
+                    - ThreadCount
+                    - TotalStartedThreadCount
+                - query: type=ClassLoading
+                  attributes:
+                    - LoadedClassCount
+                - query: type=Compilation
+                  attributes:
+                    - TotalCompilationTime
+        labels:
+          env: staging
