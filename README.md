@@ -18,13 +18,13 @@ For installation and configuration instructions, [see the official documentation
 
 Golang is required to build the integration. We recommend Golang 1.11 or higher.
 
-After cloning this repository, go to the directory of the NGINX integration and build it:
+After cloning this repository, go to the directory of the JMX integration and build it:
 
 ```bash
 $ make
 ```
 
-The command above executes the tests for the NGINX integration and builds an executable file called `nri-jmx` under the `bin` directory. 
+The command above executes the tests for the JMX integration and builds an executable file called `nri-jmx` under the `bin` directory. 
 
 To start the integration, run `nri-jmx`:
 
