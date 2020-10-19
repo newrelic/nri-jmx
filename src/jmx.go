@@ -2,8 +2,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
@@ -31,11 +33,11 @@ type argumentList struct {
 	MetricLimit             int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
 	NrJmx                   string `default:"/usr/bin/nrjmx" help:"nrjmx tool executable path"`
 	ConnectionURL           string `default:"" help:"full connection URL"`
+	ShowVersion             bool   `default:"false" help:"Print build information and exit"`
 }
 
 const (
-	integrationName    = "com.newrelic.jmx"
-	integrationVersion = "2.4.5"
+	integrationName = "com.newrelic.jmx"
 )
 
 var (
@@ -44,6 +46,10 @@ var (
 	jmxOpenFunc  = jmx.Open
 	jmxCloseFunc = jmx.Close
 	jmxQueryFunc = jmx.Query
+
+	integrationVersion = "0.0.0"
+	gitCommit          = ""
+	buildDate          = ""
 )
 
 func main() {
@@ -53,6 +59,19 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
+
+	if args.ShowVersion {
+		fmt.Printf(
+			"New Relic %s integration Version: %s, Platform: %s, GoVersion: %s, GitCommit: %s, BuildDate: %s\n",
+			strings.Title(strings.Replace(integrationName, "com.newrelic.", "", 1)),
+			integrationVersion,
+			fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
+			runtime.Version(),
+			gitCommit,
+			buildDate)
+		os.Exit(0)
+	}
+
 	log.SetupLogging(args.Verbose)
 
 	options := []jmx.Option{
