@@ -4,7 +4,7 @@
         <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
         <ProductVersion>3.10</ProductVersion>
-        <ProjectGuid>101f30ba-6098-4ef0-8b8f-0636298997c6</ProjectGuid>
+        <ProjectGuid>126e3ec3-3007-4a47-ad03-f5bdf0db9e59</ProjectGuid>
         <SchemaVersion>2.0</SchemaVersion>
         <OutputName>nri-$(IntegrationName)-386</OutputName>
         <OutputType>Package</OutputType>
