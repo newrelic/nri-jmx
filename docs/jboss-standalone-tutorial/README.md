@@ -14,7 +14,7 @@
 
 ## 2. Expose JMX from JBoss
 
-For this tutorial we will run a JBoss service Standalone-mode inside Docker with the help of the following Dockerfile:
+For this tutorial we will run a JBoss service in Standalone-mode inside Docker with the help of the following Dockerfile:
 
 ```bash
 FROM jboss/wildfly:18.0.0.Final
@@ -75,7 +75,7 @@ In the JMX configuration file, we specified a collection file `jmx-custom-metric
 We can inspect the available JMX metrics using nrjmx command directly or a visual tool like  JConsole.
 
 
-nrjmx tool ouputs the jmx metrics in a JSON format. We can use jq tool to format the output to be more readable:
+nrjmx tool ouputs the jmx metrics in JSON format. We can use jq tool to format the output to be more readable:
 
 ```bash
 echo '*:*' | nrjmx  -port=9990 -H 0.0.0.0 --username=admin1234 --password=Password1! -r -s | jq
