@@ -14,7 +14,7 @@
 
 ## 2. Expose JMX from JBoss
 
-For this tutorial we will run a JBoss service in Standalone-mode inside Docker with the help of the following Dockerfile:
+For this tutorial we will run a JBoss service in Standalone-mode inside Docker using the following Dockerfile:
 
 ```bash
 FROM jboss/wildfly:18.0.0.Final
@@ -24,7 +24,7 @@ RUN /opt/jboss/wildfly/bin/add-user.sh admin1234 Password1! --silent
 CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
 ```
 
-Build and run the image exposing the JMX port 9990:
+Build and run the image, exposing the JMX port 9990:
 
 ```bash	
 docker build -t test_jboss . && docker run -d -p 9990:9990 test_jboss
