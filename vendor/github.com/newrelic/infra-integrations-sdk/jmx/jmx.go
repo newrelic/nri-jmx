@@ -357,7 +357,7 @@ func receiveResult(lineC chan []byte, queryErrC chan error, cancelFn context.Can
 		case warn = <-cmdWarnC:
 			// change on the API is required to return warnings
 			log.Warn(warn)
-			return
+			continue
 
 		case err = <-cmdErrC:
 			return
