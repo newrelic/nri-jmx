@@ -8,7 +8,7 @@ import (
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/jmx"
+	"github.com/newrelic/infra-integrations-sdk/v4/jmx"
 	"github.com/newrelic/infra-integrations-sdk/log"
 )
 

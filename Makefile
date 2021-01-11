@@ -7,11 +7,6 @@ INTEGRATION := jmx
 BINARY_NAME  = nri-$(INTEGRATION)
 GO_PKGS     := $(shell go list ./... | grep -v "/vendor/")
 GO_FILES    := ./src/
-GOTOOLS      =  github.com/kardianos/govendor \
-								gopkg.in/alecthomas/gometalinter.v2 \
-								github.com/axw/gocov/gocov \
-								github.com/stretchr/testify/assert \
-								github.com/AlekSi/gocov-xml \
 
 all: build
 
@@ -21,17 +16,7 @@ clean:
 	@echo "=== $(INTEGRATION) === [ clean ]: Removing binaries and coverage file..."
 	@rm -rfv bin coverage.xml $(TARGET)
 
-tools: check-version
-	@echo "=== $(INTEGRATION) === [ tools ]: Installing tools required by the project..."
-	@go get $(GOTOOLS)
-	@gometalinter.v2 --install
-
-tools-update: check-version
-	@echo "=== $(INTEGRATION) === [ tools-update ]: Updating tools required by the project..."
-	@go get -u $(GOTOOLS)
-	@gometalinter.v2 --install
-
-deps: tools deps-only
+deps: deps-only
 
 deps-only:
 	@echo "=== $(INTEGRATION) === [ deps ]: Installing package dependencies required by the project..."
@@ -39,11 +24,11 @@ deps-only:
 
 validate: deps
 	@echo "=== $(INTEGRATION) === [ validate ]: Validating source code running gometalinter..."
-	@gometalinter.v2 --config=.gometalinter.json ./...
+	@golangci-lint --config=.gometalinter.json ./...
 
 validate-all: deps
 	@echo "=== $(INTEGRATION) === [ validate ]: Validating source code running gometalinter..."
-	@gometalinter.v2 --config=.gometalinter.json --enable=interfacer --enable=gosimple ./...
+	@golangci-lint --config=.gometalinter.json --enable=interfacer --enable=gosimple ./...
 
 compile: deps
 	@echo "=== $(INTEGRATION) === [ compile ]: Building $(BINARY_NAME)..."
@@ -72,4 +57,4 @@ ifneq "$(GOARCH)" "$(NATIVEARCH)"
 endif
 endif
 
-.PHONY: all build clean tools tools-update deps validate compile test check-version
+.PHONY: all build clean deps validate compile test check-version
