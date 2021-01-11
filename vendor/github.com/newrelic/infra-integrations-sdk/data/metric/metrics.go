@@ -109,9 +109,6 @@ func (ms *Set) SetMetric(name string, value interface{}, sourceType SourceType) 
 		return fmt.Errorf("unknown source type for key %s", name)
 	}
 
-	if _, ok := ms.Metrics[name]; ok {
-		return fmt.Errorf("metric %s already exists on the metric set", err)
-	}
 	ms.Metrics[name] = newValue
 
 	return
