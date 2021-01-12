@@ -73,12 +73,12 @@
 			"versionExact": "v3.3.1"
 		},
 		{
-			"checksumSHA1": "Cz0x0qEmD9hIDSBaBVRQI4EUxwM=",
+			"checksumSHA1": "ZnX7aXbVkTjqHg0eSpVMEl672Q0=",
 			"path": "github.com/newrelic/infra-integrations-sdk/jmx",
-			"revision": "33232b0615c59f50fdd2a756dc07f730b36150d8",
-			"revisionTime": "2019-11-19T18:59:22Z",
-			"version": "master",
-			"versionExact": "master"
+			"revision": "e4dedaa80697a813f14e2eda8e2a6f13732e7174",
+			"revisionTime": "2021-01-11T17:03:17Z",
+			"version": "fix/v331-warning-stops-mbeans-processing",
+			"versionExact": "fix/v331-warning-stops-mbeans-processing"
 		},
 		{
 			"checksumSHA1": "6/DhD+/LhC/k3NaLgkpd6iE8b5E=",

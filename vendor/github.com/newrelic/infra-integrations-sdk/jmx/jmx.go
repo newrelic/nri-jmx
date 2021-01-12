@@ -23,15 +23,19 @@ import (
 const (
 	jmxLineInitialBuffer = 4 * 1024 // initial 4KB per line, it'll be increased when required
 	cmdStdChanLen        = 1000
+	defaultNrjmxExec     = "/usr/bin/nrjmx" // defaultNrjmxExec default nrjmx tool executable path
 )
 
 // Error vars to ease Query response handling.
 var (
 	ErrBeanPattern = errors.New("cannot parse MBean glob pattern, valid: 'DOMAIN:BEAN'")
-	ErrConnection  = errors.New("jmx endpoint connection error")
+	ErrConnection  = jmxClientError("jmx endpoint connection error")
+	// ErrJmxCmdRunning error returned when trying to Open and nrjmx command is still running
+	ErrJmxCmdRunning = errors.New("JMX tool is already running")
 )
 
 var cmd *exec.Cmd
+
 var cancel context.CancelFunc
 var cmdOut io.ReadCloser
 var cmdError io.ReadCloser
@@ -40,12 +44,18 @@ var cmdErrC = make(chan error, cmdStdChanLen)
 var cmdWarnC = make(chan string, cmdStdChanLen)
 var done sync.WaitGroup
 
-var (
-	// DefaultNrjmxExec default nrjmx tool executable path
-	DefaultNrjmxExec = "/usr/bin/nrjmx"
-	// ErrJmxCmdRunning error returned when trying to Open and nrjmx command is still running
-	ErrJmxCmdRunning = errors.New("JMX tool is already running")
-)
+// jmxClientError error is returned when the nrjmx tool can not continue
+type jmxClientError string
+
+func (j jmxClientError) Error() string {
+	return string(j)
+}
+
+// IsJmxClientError identify if the error is jmx client error type
+func IsJmxClientError(err error) bool {
+	_, ok := err.(jmxClientError)
+	return ok
+}
 
 // connectionConfig is the configuration for the nrjmx command.
 type connectionConfig struct {
@@ -70,7 +80,7 @@ func (cfg *connectionConfig) isSSL() bool {
 }
 
 func (cfg *connectionConfig) command() []string {
-	c := make([]string, 0)
+	var c []string
 	if os.Getenv("NR_JMX_TOOL") != "" {
 		c = strings.Split(os.Getenv("NR_JMX_TOOL"), " ")
 	} else {
@@ -98,6 +108,10 @@ func (cfg *connectionConfig) command() []string {
 		c = append(c, "--keyStore", cfg.keyStore, "--keyStorePassword", cfg.keyStorePassword, "--trustStore", cfg.trustStore, "--trustStorePassword", cfg.trustStorePassword)
 	}
 
+	if cfg.verbose {
+		c = append(c, "--verbose")
+	}
+
 	return c
 }
 
@@ -119,14 +133,12 @@ func Open(hostname, port, username, password string, opts ...Option) error {
 		port:           port,
 		username:       username,
 		password:       password,
-		executablePath: DefaultNrjmxExec,
+		executablePath: defaultNrjmxExec,
 	}
 
 	for _, opt := range opts {
 		opt(config)
 	}
-
-	log.SetupLogging(config.verbose)
 
 	return openConnection(config)
 }
@@ -225,9 +237,7 @@ func openConnection(config *connectionConfig) (err error) {
 
 	go func() {
 		if err = cmd.Wait(); err != nil {
-			if err != nil {
-				cmdErrC <- fmt.Errorf("nrjmx error: %s [proc-state: %s]", err, cmd.ProcessState)
-			}
+			cmdErrC <- jmxClientError(fmt.Sprintf("nrjmx error: %s [proc-state: %s]", err, cmd.ProcessState))
 		}
 
 		cmd = nil
@@ -327,11 +337,12 @@ func Query(objectPattern string, timeoutMillis int) (result map[string]interface
 	// Send the query async to the underlying process so we can timeout it
 	go doQuery(ctx, lineCh, queryErrors, []byte(fmt.Sprintf("%s\n", objectPattern)))
 
-	return receiveResult(lineCh, queryErrors, cancelFn, objectPattern, outTimeout)
+	return receiveResult(lineCh, cmdErrC, queryErrors, cancelFn, objectPattern, outTimeout)
 }
 
 // receiveResult checks for channels to receive result from nrjmx command.
-func receiveResult(lineC chan []byte, queryErrC chan error, cancelFn context.CancelFunc, objectPattern string, timeout time.Duration) (result map[string]interface{}, err error) {
+func receiveResult(lineC chan []byte, cmdErrC chan error, queryErrC chan error, cancelFn context.CancelFunc, objectPattern string, timeout time.Duration) (result map[string]interface{}, err error) {
+	defer logAvailableWarnings(cmdWarnC)
 	var warn string
 	for {
 		select {
@@ -352,12 +363,11 @@ func receiveResult(lineC chan []byte, queryErrC chan error, cancelFn context.Can
 			for k, v := range r {
 				result[k] = v
 			}
+
 			return
 
 		case warn = <-cmdWarnC:
-			// change on the API is required to return warnings
 			log.Warn(warn)
-			return
 
 		case err = <-cmdErrC:
 			return
@@ -370,6 +380,18 @@ func receiveResult(lineC chan []byte, queryErrC chan error, cancelFn context.Can
 			cancelFn()
 			Close()
 			err = fmt.Errorf("timeout waiting for query: %s", objectPattern)
+			return
+		}
+	}
+}
+
+func logAvailableWarnings(channel chan string) {
+	var warn string
+	for {
+		select {
+		case warn = <-channel:
+			log.Warn(warn)
+		default:
 			return
 		}
 	}
