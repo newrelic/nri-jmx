@@ -109,13 +109,12 @@ jobs:
       PFX_CERTIFICATE_BASE64: ${{ secrets.OHAI_PFX_CERTIFICATE_BASE64 }} # base64 encoded
       PFX_CERTIFICATE_DESCRIPTION: 'New Relic'
       PFX_PASSPHRASE:  ${{ secrets.OHAI_PFX_PASSPHRASE }}
-      NRJMX_VERSION: "1.5.3" # embed_jmx is broken for newer versions
     defaults:
       run:
         working-directory: src/github.com/${{env.ORIGINAL_REPO_NAME}}
     strategy:
       matrix:
-        goarch: [amd64,386]
+        goarch: [ amd64 ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -128,6 +127,13 @@ jobs:
         shell: pwsh
         run: |
           build\windows\download_zip_extract_exe.ps1 "$env:INTEGRATION" ${{ matrix.goarch }} "$env:TAG" "$env:REPO_FULL_NAME"
+      - name: Download nrjmx
+        shell: bash
+        env:
+          # override latest with 1.5.3 until a fix is released (2020-01-28)
+          NRJMX_URL: "https://download.newrelic.com/infrastructure_agent/windows/integrations/nrjmx/nrjmx-amd64.1.5.3.msi"
+        run: |
+          build/windows/download_nrjmx.sh
       - name: Create MSI
         shell: pwsh
         run: |
