@@ -3,9 +3,9 @@ name: Push/PR pipeline
 on:
   push:
     branches:
-      - '**'
-    tags-ignore:
-      - '**'
+      - main
+      - master
+  pull_request:
 
 env:
   TAG: "v0.0.0" # needed for goreleaser windows builds
@@ -90,4 +90,3 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.CAOS_SNYK_TOKEN }}
         run: make ci/snyk-test
-
