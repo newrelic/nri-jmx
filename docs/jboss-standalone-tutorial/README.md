@@ -29,7 +29,7 @@ Build and run the image, exposing the JMX port 9990:
 ```bash	
 docker build -t test_jboss . && docker run -d -p 9990:9990 test_jboss
 ```
-### Install JBooss Custom connector
+### Install JBoss Custom connector
 JMX allows the use of custom connectors to communicate with the application. In order to use a custom connector, you have to place the files inside the sub-folder connectors where nrjmx is installed.
 
 For this example I'll copy the connectors from the newly created docker container:
