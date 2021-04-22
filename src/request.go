@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/jmx"
@@ -156,7 +157,7 @@ func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integratio
 	}
 
 	// Attributes in all metric sets
-	attributes := []metric.Attribute{
+	attributes := []attribute.Attribute{
 		{Key: "query", Value: request.beanQuery},
 		{Key: "domain", Value: domain},
 		{Key: "host", Value: args.JmxHost},
@@ -164,7 +165,7 @@ func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integratio
 	}
 
 	if !args.LocalEntity {
-		nonLocalKeys := []metric.Attribute{
+		nonLocalKeys := []attribute.Attribute{
 			{Key: "entityName", Value: "domain:" + e.Metadata.Name},
 			{Key: "displayName", Value: e.Metadata.Name},
 		}
@@ -177,7 +178,7 @@ func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integratio
 		return nil, err
 	}
 	for key, val := range keyProperties {
-		attributes = append(attributes, metric.Attribute{Key: "key:" + key, Value: val})
+		attributes = append(attributes, attribute.Attribute{Key: "key:" + key, Value: val})
 	}
 
 	// Create the metric set and put it in the map
