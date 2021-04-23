@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.4.5 (2021-04-23)
+## 2.4.5 (2021-04-26)
 ### Changed
 - Upgraded github.com/newrelic/infra-integrations-sdk to v3.6.7
 - Switched to go modules
