@@ -5,12 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 2.4.5 (2021-04-26)
+## 2.4.6 (2021-04-26)
 ### Changed
 - Upgraded github.com/newrelic/infra-integrations-sdk to v3.6.7
 - Switched to go modules
 - Upgraded pipeline to go 1.16
 - Replaced gometalinter with golangci-lint
+
+## 2.4.5 (2021-01-13)
+### Changed
+- This fixes scenario where warnings received from nrjmx tool discarded data subsequent data. Now all warnings get logged and all data get processed.
+- Bundles previous non jlinked nrjmx tool version, due to issue when querying.
 
 ## 2.4.4 (2020-01-22)
 ## Changed
