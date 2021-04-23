@@ -1,0 +1,1038 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "required": [
+    "name",
+    "protocol_version",
+    "integration_version",
+    "data"
+  ],
+  "properties": {
+    "name": {
+      "minLength": 1,
+      "pattern": "^com.newrelic.jmx$",
+      "type": "string"
+    },
+    "protocol_version": {
+      "minLength": 1,
+      "pattern": "^3$",
+      "type": "string"
+    },
+    "integration_version": {
+      "minLength": 1,
+      "pattern": "^[0-9]+.[0-9]+.[0-9]+$",
+      "type": "string"
+    },
+    "data": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": [
+        {
+          "type": "object",
+          "required": [
+            "entity",
+            "metrics",
+            "inventory",
+            "events"
+          ],
+          "properties": {
+            "entity": {
+              "type": "object",
+              "required": [
+                "name",
+                "type",
+                "id_attributes"
+              ],
+              "properties": {
+                "name": {
+                  "minLength": 1,
+                  "pattern": "^java.lang$",
+                  "type": "string"
+                },
+                "type": {
+                  "minLength": 1,
+                  "pattern": "^jmx-domain$",
+                  "type": "string"
+                },
+                "id_attributes": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "Key",
+                        "Value"
+                      ],
+                      "properties": {
+                        "Key": {
+                          "minLength": 1,
+                          "pattern": "^host$",
+                          "type": "string"
+                        },
+                        "Value": {
+                          "minLength": 1,
+                          "pattern": "^tomcat$",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "Key",
+                        "Value"
+                      ],
+                      "properties": {
+                        "Key": {
+                          "minLength": 1,
+                          "pattern": "^port$",
+                          "type": "string"
+                        },
+                        "Value": {
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "metrics": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "CollectionCount",
+                    "CollectionTime",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "host",
+                    "key:name",
+                    "key:type",
+                    "query"
+                  ],
+                  "properties": {
+                    "CollectionCount": {
+                      "type": "integer"
+                    },
+                    "CollectionTime": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:name": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "CollectionCount",
+                    "CollectionTime",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "host",
+                    "key:name",
+                    "key:type",
+                    "query"
+                  ],
+                  "properties": {
+                    "CollectionCount": {
+                      "type": "integer"
+                    },
+                    "CollectionTime": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:name": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "HeapMemoryUsage.Committed",
+                    "HeapMemoryUsage.Init",
+                    "HeapMemoryUsage.Max",
+                    "HeapMemoryUsage.Used",
+                    "NonHeapMemoryUsage.Committed",
+                    "NonHeapMemoryUsage.Init",
+                    "NonHeapMemoryUsage.Max",
+                    "NonHeapMemoryUsage.Used",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "host",
+                    "key:type",
+                    "query"
+                  ],
+                  "properties": {
+                    "HeapMemoryUsage.Committed": {
+                      "type": "integer"
+                    },
+                    "HeapMemoryUsage.Init": {
+                      "type": "integer"
+                    },
+                    "HeapMemoryUsage.Max": {
+                      "type": "integer"
+                    },
+                    "HeapMemoryUsage.Used": {
+                      "type": "integer"
+                    },
+                    "NonHeapMemoryUsage.Committed": {
+                      "type": "integer"
+                    },
+                    "NonHeapMemoryUsage.Init": {
+                      "type": "integer"
+                    },
+                    "NonHeapMemoryUsage.Max": {
+                      "type": "integer"
+                    },
+                    "NonHeapMemoryUsage.Used": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "ThreadCount",
+                    "TotalStartedThreadCount",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "host",
+                    "key:type",
+                    "query"
+                  ],
+                  "properties": {
+                    "ThreadCount": {
+                      "type": "integer"
+                    },
+                    "TotalStartedThreadCount": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "LoadedClassCount",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "host",
+                    "key:type",
+                    "query"
+                  ],
+                  "properties": {
+                    "LoadedClassCount": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "TotalCompilationTime",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "host",
+                    "key:type",
+                    "query"
+                  ],
+                  "properties": {
+                    "TotalCompilationTime": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            },
+            "inventory": {
+              "type": "object",
+              "required": []
+            },
+            "events": {
+              "type": "array",
+              "uniqueItems": true
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "entity",
+            "metrics",
+            "inventory",
+            "events"
+          ],
+          "properties": {
+            "entity": {
+              "type": "object",
+              "required": [
+                "name",
+                "type",
+                "id_attributes"
+              ],
+              "properties": {
+                "name": {
+                  "minLength": 1,
+                  "pattern": "^Catalina$",
+                  "type": "string"
+                },
+                "type": {
+                  "minLength": 1,
+                  "pattern": "^jmx-domain$",
+                  "type": "string"
+                },
+                "id_attributes": {
+                  "type": "array",
+                  "minItems": 2,
+                  "items": [
+                    {
+                      "type": "object",
+                      "required": [
+                        "Key",
+                        "Value"
+                      ],
+                      "properties": {
+                        "Key": {
+                          "minLength": 1,
+                          "pattern": "^host$",
+                          "type": "string"
+                        },
+                        "Value": {
+                          "minLength": 1,
+                          "pattern": "^tomcat$",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "Key",
+                        "Value"
+                      ],
+                      "properties": {
+                        "Key": {
+                          "minLength": 1,
+                          "pattern": "^port$",
+                          "type": "string"
+                        },
+                        "Value": {
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "metrics": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "bean",
+                    "connectionCount",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "host",
+                    "key:name",
+                    "key:type",
+                    "maxThreads",
+                    "query"
+                  ],
+                  "properties": {
+                    "bean": {
+                      "type": "string"
+                    },
+                    "connectionCount": {
+                      "type": "integer"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:name": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "maxThreads": {
+                      "type": "integer"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "bean",
+                    "connectionCount",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "host",
+                    "key:name",
+                    "key:type",
+                    "maxThreads",
+                    "query"
+                  ],
+                  "properties": {
+                    "bean": {
+                      "type": "string"
+                    },
+                    "connectionCount": {
+                      "type": "integer"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:name": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "maxThreads": {
+                      "type": "integer"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "bean",
+                    "bytesReceived",
+                    "bytesSent",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "errorCount",
+                    "event_type",
+                    "host",
+                    "key:name",
+                    "key:type",
+                    "maxTime",
+                    "query",
+                    "requestCount"
+                  ],
+                  "properties": {
+                    "bean": {
+                      "type": "string"
+                    },
+                    "bytesReceived": {
+                      "type": "integer"
+                    },
+                    "bytesSent": {
+                      "type": "integer"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "errorCount": {
+                      "type": "integer"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:name": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "maxTime": {
+                      "type": "integer"
+                    },
+                    "query": {
+                      "type": "string"
+                    },
+                    "requestCount": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "bean",
+                    "bytesReceived",
+                    "bytesSent",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "errorCount",
+                    "event_type",
+                    "host",
+                    "key:name",
+                    "key:type",
+                    "maxTime",
+                    "query",
+                    "requestCount"
+                  ],
+                  "properties": {
+                    "bean": {
+                      "type": "string"
+                    },
+                    "bytesReceived": {
+                      "type": "integer"
+                    },
+                    "bytesSent": {
+                      "type": "integer"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "errorCount": {
+                      "type": "integer"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:name": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "maxTime": {
+                      "type": "integer"
+                    },
+                    "query": {
+                      "type": "string"
+                    },
+                    "requestCount": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "activeSessions",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "expiredSessions",
+                    "host",
+                    "key:context",
+                    "key:host",
+                    "key:type",
+                    "query",
+                    "sessionCounter"
+                  ],
+                  "properties": {
+                    "activeSessions": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "expiredSessions": {
+                      "type": "integer"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:context": {
+                      "type": "string"
+                    },
+                    "key:host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    },
+                    "sessionCounter": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "activeSessions",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "expiredSessions",
+                    "host",
+                    "key:context",
+                    "key:host",
+                    "key:type",
+                    "query",
+                    "sessionCounter"
+                  ],
+                  "properties": {
+                    "activeSessions": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "expiredSessions": {
+                      "type": "integer"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:context": {
+                      "type": "string"
+                    },
+                    "key:host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    },
+                    "sessionCounter": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "activeSessions",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "expiredSessions",
+                    "host",
+                    "key:context",
+                    "key:host",
+                    "key:type",
+                    "query",
+                    "sessionCounter"
+                  ],
+                  "properties": {
+                    "activeSessions": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "expiredSessions": {
+                      "type": "integer"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:context": {
+                      "type": "string"
+                    },
+                    "key:host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    },
+                    "sessionCounter": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "activeSessions",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "expiredSessions",
+                    "host",
+                    "key:context",
+                    "key:host",
+                    "key:type",
+                    "query",
+                    "sessionCounter"
+                  ],
+                  "properties": {
+                    "activeSessions": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "expiredSessions": {
+                      "type": "integer"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:context": {
+                      "type": "string"
+                    },
+                    "key:host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    },
+                    "sessionCounter": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "activeSessions",
+                    "bean",
+                    "displayName",
+                    "domain",
+                    "entityName",
+                    "event_type",
+                    "expiredSessions",
+                    "host",
+                    "key:context",
+                    "key:host",
+                    "key:type",
+                    "query",
+                    "sessionCounter"
+                  ],
+                  "properties": {
+                    "activeSessions": {
+                      "type": "integer"
+                    },
+                    "bean": {
+                      "type": "string"
+                    },
+                    "displayName": {
+                      "type": "string"
+                    },
+                    "domain": {
+                      "type": "string"
+                    },
+                    "entityName": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "expiredSessions": {
+                      "type": "integer"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "key:context": {
+                      "type": "string"
+                    },
+                    "key:host": {
+                      "type": "string"
+                    },
+                    "key:type": {
+                      "type": "string"
+                    },
+                    "query": {
+                      "type": "string"
+                    },
+                    "sessionCounter": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              ]
+            },
+            "inventory": {
+              "type": "object",
+              "required": []
+            },
+            "events": {
+              "type": "array",
+              "uniqueItems": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}

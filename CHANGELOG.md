@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.4.5 (2021-04-23)
+### Changed
+- Upgraded github.com/newrelic/infra-integrations-sdk to v3.6.7
+- Switched to go modules
+- Upgraded pipeline to go 1.16
+- Replaced gometalinter with golangci-lint
+
 ## 2.4.4 (2020-01-22)
 ## Changed
 - Username and password now default to empty to support no auth

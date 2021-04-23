@@ -15,9 +15,9 @@ func TestParseYaml(t *testing.T) {
 		file         string
 		expectedFail bool
 	}{
-		{"../test/data/test-sample.yml", false},
-		{"../test/data/test-sample-bad.yml", true},
-		{"../test/data/test-sample-nonexistant.yml", true},
+		{"../tests/data/test-sample.yml", false},
+		{"../tests/data/test-sample-bad.yml", true},
+		{"../tests/data/test-sample-nonexistant.yml", true},
 	}
 
 	for _, tc := range testCases {
@@ -258,7 +258,7 @@ func TestParseCollectionDefinition(t *testing.T) {
 		},
 	}
 
-	c, err := parseYaml("../test/data/test-sample.yml")
+	c, err := parseYaml("../tests/data/test-sample.yml")
 	domains, err := parseCollectionDefinition(c)
 	if err != nil {
 		t.Error(err)
@@ -273,7 +273,7 @@ func TestParseCollectionDefinition(t *testing.T) {
 
 func TestParseCollectionDefinition_Fail(t *testing.T) {
 
-	c, err := parseYaml("../test/data/test-sample-bad2.yml")
+	c, err := parseYaml("../tests/data/test-sample-bad2.yml")
 	_, err = parseCollectionDefinition(c)
 	if err == nil {
 		t.Error("Expected error")

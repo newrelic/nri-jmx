@@ -289,7 +289,7 @@ func TestHandleResponse(t *testing.T) {
 
 func TestDefaultMetricType(t *testing.T) {
 	eventType := "TestSample"
-	defs, err := parseYaml("../test/data/activemq.yml")
+	defs, err := parseYaml("../tests/data/activemq.yml")
 	if err != nil {
 		t.Error(err)
 	}
