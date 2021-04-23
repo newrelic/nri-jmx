@@ -6,6 +6,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -73,4 +74,71 @@ func TestJMXIntegration(t *testing.T) {
 	schemaPath := filepath.Join("json-schema-files", "jmx-schema.json")
 	err = jsonschema.Validate(schemaPath, stdout)
 	assert.NoError(t, err, "The output of JMX integration doesn't have expected format.")
+}
+
+func TestJMXIntegration_ShowVersion(t *testing.T) {
+	stdout, stderr, err := runIntegration(t, "SHOW_VERSION=true")
+	assert.NotNil(t, stderr, "unexpected stderr")
+	assert.NoError(t, err, "Unexpected error")
+
+	expectedOutMessage := "New Relic Jmx integration Version: 0.0.0, Platform: linux/amd64, GoVersion: go1.16.3, GitCommit: , BuildDate: \n"
+	assert.Equal(t, expectedOutMessage, stdout)
+}
+
+func TestJMXIntegration_ExceededMetricLimit(t *testing.T) {
+	stdout, stderr, _ := runIntegration(t, "METRIC_LIMIT=1")
+
+	expectedErrorMessage := "the current limit is 1. This Domain will not be reported"
+
+	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
+	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
+
+	assert.NotNil(t, stdout, "unexpected stdout")
+}
+
+func TestJMXIntegration_ErrorOpenFuncOnInvalidOptions(t *testing.T) {
+	stdout, stderr, _ := runIntegration(t, "CONNECTION_URL=wrong_url")
+
+	expectedErrorMessage := "Failed to complete collection: cannot query"
+
+	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
+	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
+
+	assert.NotNil(t, stdout, "unexpected stdout")
+}
+
+func TestJMXIntegration_ErrorEmptyCollectionFiles(t *testing.T) {
+	stdout, stderr, err := runIntegration(t, "COLLECTION_FILES=")
+
+	expectedErrorMessage := "Must specify at least one collection file"
+
+	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
+	assert.Error(t, err, "Expected error")
+	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
+
+	assert.NotNil(t, stdout, "unexpected stdout")
+}
+
+func TestJMXIntegration_ErrorCollectionFileNotAbsolutePath(t *testing.T) {
+	stdout, stderr, err := runIntegration(t, "COLLECTION_FILES=wrong_file.yml")
+
+	expectedErrorMessage := "Metrics collection files must be specified as absolute paths"
+
+	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
+	assert.Error(t, err, "Expected error")
+	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
+
+	assert.NotNil(t, stdout, "unexpected stdout")
+}
+
+func TestJMXIntegration_ErrorCollectionFileNotExisting(t *testing.T) {
+	stdout, stderr, err := runIntegration(t, "COLLECTION_FILES=/wrong_file.yml")
+
+	expectedErrorMessage := "Failed to parse collection definition"
+
+	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
+	assert.Error(t, err, "Expected error")
+	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
+
+	assert.NotNil(t, stdout, "unexpected stdout")
 }
