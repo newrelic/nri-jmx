@@ -24,7 +24,11 @@ func Test_checkMetricList(t *testing.T) {
 	}
 
 	set1 := e1.NewMetricSet("testSample")
-	set1.SetMetric("new_metric", 4, metric.GAUGE)
+	err = set1.SetMetric("new_metric", 4, metric.GAUGE)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err.Error())
+		t.FailNow()
+	}
 
 	e2, err := i.Entity("test_2", "domain")
 	if err != nil {
@@ -33,8 +37,16 @@ func Test_checkMetricList(t *testing.T) {
 	}
 
 	set2 := e2.NewMetricSet("testSample")
-	set2.SetMetric("new_metric", 4, metric.GAUGE)
-	set2.SetMetric("other_metric", 5, metric.GAUGE)
+	err = set2.SetMetric("new_metric", 4, metric.GAUGE)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err.Error())
+		t.FailNow()
+	}
+	err = set2.SetMetric("other_metric", 5, metric.GAUGE)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err.Error())
+		t.FailNow()
+	}
 
 	out := checkMetricLimit(i.Entities)
 

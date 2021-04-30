@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"github.com/newrelic/infra-integrations-sdk/log"
-	"github.com/newrelic/nri-jmx/tests/integration/helpers"
-	"github.com/newrelic/nri-jmx/tests/integration/jsonschema"
+	"github.com/newrelic/nri-jmx/test/integration/helpers"
+	"github.com/newrelic/nri-jmx/test/integration/jsonschema"
 	"github.com/stretchr/testify/assert"
 )
 

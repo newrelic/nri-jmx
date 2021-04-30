@@ -14,5 +14,5 @@ COPY --from=builder /usr/bin/nrjmx /usr/bin/nrjmx
 COPY --from=builder /usr/bin/nrjmx.jar /usr/bin/nrjmx.jar
 COPY --from=builder /usr/bin/jmxterm.jar /usr/bin/jmxterm.jar
 COPY --from=builder /go/src/github.com/newrelic/nri-jmx/bin /
-COPY tests/integration/jmx-conf/ /
+COPY test/integration/jmx-conf/ /
 CMD ["sleep", "1h"]

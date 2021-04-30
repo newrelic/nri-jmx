@@ -15,6 +15,6 @@ services:
     container_name: integration_nri-jmx_1
     build:
       context: ../../
-      dockerfile: tests/integration/Dockerfile
+      dockerfile: test/integration/Dockerfile
     dns:
       - 8.8.8.8
