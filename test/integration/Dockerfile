@@ -1,6 +1,6 @@
 FROM golang:1.16 as builder
 ARG CGO_ENABLED=0
-ARG NRJMX_VERSION=1.5.3
+ARG NRJMX_VERSION
 WORKDIR /go/src/github.com/newrelic/nri-jmx
 COPY . .
 RUN make clean compile

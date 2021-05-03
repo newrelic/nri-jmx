@@ -16,5 +16,7 @@ services:
     build:
       context: ../../
       dockerfile: test/integration/Dockerfile
+      args:
+          - NRJMX_VERSION=${NRJMX_VERSION}
     dns:
       - 8.8.8.8
