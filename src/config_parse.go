@@ -253,7 +253,7 @@ func parseAttributeFromMap(a map[interface{}]interface{}) (*attributeRequest, er
 	}
 
 	// Parse the metric name
-	metricName, _ := a["metric_name"]
+	metricName := a["metric_name"]
 	if metricName != nil {
 		newAttribute.metricName = metricName.(string)
 	}

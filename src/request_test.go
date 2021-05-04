@@ -56,7 +56,11 @@ func TestRunCollection(t *testing.T) {
 
 	i, _ := integration.New("jmxtest", "0.1.0")
 
-	runCollection(collection, i, "testhost", "1234")
+	err := runCollection(collection, i, "testhost", "1234")
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err.Error())
+		t.FailNow()
+	}
 
 	if !reflect.DeepEqual(expectedMetrics, i.Entities[0].Metrics[0].Metrics) {
 		fmt.Println(pretty.Diff(expectedMetrics, i.Entities[0].Metrics[0].Metrics))
@@ -195,8 +199,16 @@ func TestInsertMetric(t *testing.T) {
 		"testattr2":        2.0,
 	}
 
-	insertMetric(key1, 1.0, ar1, m)
-	insertMetric(key2, 2.0, ar2, m)
+	err := insertMetric(key1, 1.0, ar1, m)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err.Error())
+		t.FailNow()
+	}
+	err = insertMetric(key2, 2.0, ar2, m)
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err.Error())
+		t.FailNow()
+	}
 
 	if !reflect.DeepEqual(m.Metrics, expectedMetrics) {
 		fmt.Println(pretty.Diff(m.Metrics, expectedMetrics))
@@ -235,7 +247,11 @@ func TestInsertDomainMetrics(t *testing.T) {
 
 	eventType := "TestEventTypeSample"
 
-	insertDomainMetrics(eventType, domain, beanAttrVals, request, i, "testhost", "1234")
+	err := insertDomainMetrics(eventType, domain, beanAttrVals, request, i, "testhost", "1234")
+	if err != nil {
+		t.Errorf("Unexpected error: %s", err.Error())
+		t.FailNow()
+	}
 
 	expectedMetrics := map[string]interface{}{
 		"event_type":  "TestEventTypeSample",
@@ -289,7 +305,7 @@ func TestHandleResponse(t *testing.T) {
 
 func TestDefaultMetricType(t *testing.T) {
 	eventType := "TestSample"
-	defs, err := parseYaml("../test/activemq.yml")
+	defs, err := parseYaml("../test/data/activemq.yml")
 	if err != nil {
 		t.Error(err)
 	}
