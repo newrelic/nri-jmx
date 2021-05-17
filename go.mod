@@ -3,8 +3,6 @@ module github.com/newrelic/nri-jmx
 go 1.16
 
 require (
-	github.com/AlekSi/gocov-xml v0.0.0-20190121064608-3a14fb1c4737
-	github.com/axw/gocov v1.0.0
 	github.com/golangci/golangci-lint v1.39.0
 	github.com/kr/pretty v0.2.1
 	github.com/newrelic/infra-integrations-sdk v3.6.7+incompatible
