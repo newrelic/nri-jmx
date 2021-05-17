@@ -9,20 +9,20 @@ GO_PKGS     := $(shell go list ./... | grep -v "/vendor/")
 GO_FILES    := ./src/
 GOFLAGS			= -mod=readonly
 GOLANGCI_LINT	= github.com/golangci/golangci-lint/cmd/golangci-lint
-GOCOV           = github.com/axw/gocov/gocov
-GOCOV_XML		= github.com/AlekSi/gocov-xml
 
 all: build
 
-build: check-version clean validate test compile
+build: clean validate test compile
 
 clean:
 	@echo "=== $(INTEGRATION) === [ clean ]: Removing binaries and coverage file..."
 	@rm -rfv bin coverage.xml $(TARGET)
 
 validate:
-	@echo "=== $(INTEGRATION) === [ validate ]: Validating source code running golangci-lint..."
-	@go run $(GOFLAGS) $(GOLANGCI_LINT) run --verbose
+	@printf "=== $(INTEGRATION) === [ validate ]: running golangci-lint & semgrep... "
+	@go run  $(GOFLAGS) $(GOLANGCI_LINT) run --verbose
+	@[ -f .semgrep.yml ] && semgrep_config=".semgrep.yml" || semgrep_config="p/golang" ; \
+	docker run --rm -v "${PWD}:/src:ro" --workdir /src returntocorp/semgrep -c "$$semgrep_config"
 
 compile:
 	@echo "=== $(INTEGRATION) === [ compile ]: Building $(BINARY_NAME)..."
@@ -30,7 +30,7 @@ compile:
 
 test:
 	@echo "=== $(INTEGRATION) === [ test ]: Running unit tests..."
-	@go run $(GOFLAGS) $(GOCOV) test -race ./... | go run $(GOFLAGS) $(GOCOV_XML) > coverage.xml
+	@go test -race ./... -count=1
 
 integration-test:
 	@echo "=== $(INTEGRATION) === [ test ]: running integration tests..."
@@ -44,17 +44,5 @@ integration-test:
 # Include thematic Makefiles
 include $(CURDIR)/build/ci.mk
 include $(CURDIR)/build/release.mk
-
-check-version:
-ifdef GOOS
-ifneq "$(GOOS)" "$(NATIVEOS)"
-	$(error GOOS is not $(NATIVEOS). Cross-compiling is only allowed for 'clean' target)
-endif
-endif
-ifdef GOARCH
-ifneq "$(GOARCH)" "$(NATIVEARCH)"
-	$(error GOARCH variable is not $(NATIVEARCH). Cross-compiling is only allowed for 'clean' target)
-endif
-endif
 
 .PHONY: all build clean validate compile test integration-test check-version
