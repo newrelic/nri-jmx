@@ -12,20 +12,16 @@
 
 - [Install New Relic JMX integration](https://docs.newrelic.com/docs/integrations/host-integrations/host-integrations-list/jmx-monitoring-integration#install)
 
-## 2. Expose JMX from JBoss
+## 2. Expose JMX on https from JBoss
 
-For this tutorial we will run a JBoss eap 7.2 service in Standalone-mode inside Docker. Build and run the docker image
-using the provided Dockerfile from the current directory.
+For this tutorial we will run a JBoss eap 7.2 service in Standalone-mode inside Docker. The configuration used can be checked
+in config/standalone.xml. Build and run the docker image using the provided Dockerfile from the current directory.
 
+Build and run the image, exposing the https JMX port 9993:
 ```bash
 docker build -t test/jmx_jboss . && docker run -d -p 9993:9993 -p 8080:8080 -p 8443:8443 -p 9990:9990 test/jmx_jboss
 ```
 
-Build and run the image, exposing the JMX port 9990:
-
-```bash	
-docker build -t test_jboss . && docker run -d -p 9990:9990 test_jboss
-```
 ### Install JBoss Custom connector
 JMX allows the use of custom connectors to communicate with the application. In order to use a custom connector, you have to place the files inside the sub-folder connectors where nrjmx is installed.
 
