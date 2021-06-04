@@ -72,7 +72,7 @@ We can inspect the available JMX metrics using nrjmx command directly or a visua
 nrjmx tool ouputs the jmx metrics in JSON format. We can use jq tool to format the output to be more readable:
 
 ```bash
-echo "*:*" | nrjmx -C service:jmx:remote+https://0.0.0.0:9993 -username admin -password Admin.123 -keyStore $(pwd)/key/jboss.keystore -keyStorePassword password -trustStore $(pwd)/key/jboss.truststore -trustStorePassword password
+echo "*:*" | nrjmx -C service:jmx:remote+https://0.0.0.0:9993 -username admin -password Admin.123 -keyStore $(pwd)/key/jboss.keystore -keyStorePassword password -trustStore $(pwd)/key/jboss.truststore -trustStorePassword password | jq
 ```
 
 ```bash
