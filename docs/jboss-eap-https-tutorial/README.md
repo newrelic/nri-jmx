@@ -111,7 +111,7 @@ Then lunch JConsole using the script from the bin dir and provide the keystore a
 ./../bin/jconsole.sh -J-Djavax.net.ssl.keyStore=$(pwd)/key/jboss.keystore -J-Djavax.net.ssl.keyStorePassword=password -J-Djavax.net.ssl.trustStore=$(pwd)/key/jboss.truststore -J-Djavax.net.ssl.trustStorePassword=password
 ```
 
-![](./img/jconsole_connects.png)
+![](./img/jconsole_connect.png)
 
 
 The following example illustrates how to create a collection file using information provided by the JConsole Java tool:
