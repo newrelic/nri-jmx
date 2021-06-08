@@ -111,7 +111,21 @@ Then lunch JConsole using the script from the bin dir and provide the keystore a
 ./bin/jconsole.sh -J-Djavax.net.ssl.keyStore=$(pwd)/key/jboss.keystore -J-Djavax.net.ssl.keyStorePassword=password -J-Djavax.net.ssl.trustStore=$(pwd)/key/jboss.truststore -J-Djavax.net.ssl.trustStorePassword=password
 ```
 
+On JConsole connection windows choose 'Remote Process' and enter the following connection string:
+
+```
+service:jmx:remote+https://localhost:9993
+```
+
+Username: admin
+Password: Admin.123
+
+![](./img/jconsole_login.png)
+
+After connection is successfully we should be able to see the metrics.
+
 ![](./img/jconsole_connect.png)
+
 
 
 The following example illustrates how to create a collection file using information provided by the JConsole Java tool:
