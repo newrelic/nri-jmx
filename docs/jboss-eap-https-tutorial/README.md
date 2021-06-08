@@ -108,7 +108,7 @@ docker cp <container_id>:/home/jboss/jboss-eap-7.2/bin ./
 Then lunch JConsole using the script from the bin dir and provide the keystore and truststore file path:
 
 ```bash
-./../bin/jconsole.sh -J-Djavax.net.ssl.keyStore=$(pwd)/key/jboss.keystore -J-Djavax.net.ssl.keyStorePassword=password -J-Djavax.net.ssl.trustStore=$(pwd)/key/jboss.truststore -J-Djavax.net.ssl.trustStorePassword=password
+./bin/jconsole.sh -J-Djavax.net.ssl.keyStore=$(pwd)/key/jboss.keystore -J-Djavax.net.ssl.keyStorePassword=password -J-Djavax.net.ssl.trustStore=$(pwd)/key/jboss.truststore -J-Djavax.net.ssl.trustStorePassword=password
 ```
 
 ![](./img/jconsole_connect.png)
