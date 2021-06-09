@@ -99,25 +99,26 @@ collect:
 ### 3.3 Connecting with JConsole
 
 In order to visualize the mbeans with JConsole, JDK instalation is required.
-JConsole will require the jboss client. The easiest way is to get it from the running container using the following command:
+To connect to jboss eap 7.2, JConsole will require the jboss client. The easiest way is to get it from the running container using the following command:
 
 ```bash
 docker cp <container_id>:/home/jboss/jboss-eap-7.2/bin ./
 ```
 
-Then lunch JConsole using the script from the bin dir and provide the keystore and truststore file path:
+Then lunch JConsole using the helper script from the bin directory and provide the keystore and truststore file path:
 
 ```bash
 ./bin/jconsole.sh -J-Djavax.net.ssl.keyStore=$(pwd)/key/jboss.keystore -J-Djavax.net.ssl.keyStorePassword=password -J-Djavax.net.ssl.trustStore=$(pwd)/key/jboss.truststore -J-Djavax.net.ssl.trustStorePassword=password
 ```
 
-On JConsole connection windows choose 'Remote Process' and enter the following connection string:
+On JConsole connection window choose 'Remote Process' and enter the following connection string:
 
 ```
 service:jmx:remote+https://localhost:9993
 ```
 
 Username: admin
+
 Password: Admin.123
 
 ![](./img/jconsole_login.png)
@@ -125,7 +126,6 @@ Password: Admin.123
 After connection is successfully we should be able to see the metrics.
 
 ![](./img/jconsole_connect.png)
-
 
 
 The following example illustrates how to create a collection file using information provided by the JConsole Java tool:
