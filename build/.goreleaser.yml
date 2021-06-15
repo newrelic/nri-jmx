@@ -61,14 +61,14 @@ nfpms:
 
     overrides:
       deb:
-        depends:
+        dependencies:
           - newrelic-infra
           - nrjmx (>= 1.5.3-1)
       rpm:
         file_name_template: "{{ .ProjectName }}-{{ .Version }}-1.{{ .Arch }}"
         replacements:
           amd64: x86_64
-        depends:
+        dependencies:
           - newrelic-infra
           - nrjmx >= 1.5.3-1
 
