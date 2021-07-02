@@ -49,6 +49,10 @@ nfpms:
     contents:
       - src: "jmx-config.yml.sample"
         dst: "/etc/newrelic-infra/integrations.d/jmx-config.yml.sample"
+      - src: "jvm-metrics.yml.sample"
+        dst: "/etc/newrelic-infra/integrations.d/jvm-metrics.yml.sample"
+      - src: "tomcat-metrics.yml.sample"
+        dst: "/etc/newrelic-infra/integrations.d/tomcat-metrics.yml.sample"
       - src: "CHANGELOG.md"
         dst: "/usr/share/doc/nri-jmx/CHANGELOG.md"
       - src: "README.md"
