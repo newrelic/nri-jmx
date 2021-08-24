@@ -16,5 +16,4 @@ RUN apk --update add openjdk8-jre
 COPY --from=builder-mvn /nrjmx/bin/nrjmx /usr/bin/nrjmx
 COPY --from=builder-mvn /nrjmx/bin/nrjmx.jar /usr/bin/nrjmx.jar
 COPY --from=builder /go/src/github.com/newrelic/nri-jmx/bin/nri-jmx /nri-sidecar/newrelic-infra/newrelic-integrations/bin/nri-jmx
-COPY --from=builder /go/src/github.com/newrelic/nri-jmx/jmx-definition.yml /nri-sidecar/newrelic-infra/newrelic-integrations/definition.yaml
 USER 1000

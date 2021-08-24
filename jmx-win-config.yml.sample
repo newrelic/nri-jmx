@@ -1,13 +1,12 @@
-integration_name: com.newrelic.jmx
-
-instances:
-  - name: jmx
-    command: all_data
-    arguments:
-      jmx_host: jmx-host.localnet
-      jmx_port: 9999
-      jmx_user: admin
-      jmx_pass: admin
-      collection_files: "C:\\Program Files\\New Relic\\newrelic-infra\\integrations.d\\jvm-metrics.yml"
-    labels:
-      env: staging
+integrations:
+- name: .\bin\nri-jmx.exe
+  env:
+    COLLECTION_FILES: "C:\Program Files\New Relic\newrelic-infra\integrations.d\jvm-metrics.yml"
+    JMX_HOST: jmx-host.localnet
+    JMX_PASS: admin
+    JMX_PORT: "9999"
+    JMX_USER: admin
+    NR_JMX: "C:\Program Files\New Relic\nrjmx\nrjmx.bat"
+  interval: 15s
+  labels:
+    env: staging

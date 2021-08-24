@@ -59,7 +59,7 @@ nfpms:
         dst: "/usr/share/doc/nri-jmx/README.md"
       - src: "LICENSE"
         dst: "/usr/share/doc/nri-jmx/LICENSE"
-      - src: "jmx-definition.yml"
+      - src: "legacy/jmx-definition.yml"
         dst: "/var/db/newrelic-infra/newrelic-integrations/jmx-definition.yml"
 
     overrides:
@@ -87,7 +87,9 @@ archives:
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Version }}_{{ .Arch }}_dirty"
     files:
       - jmx-config.yml.sample
-      - jmx-definition.yml
+      - src: 'legacy/jmx-definition.yml'
+        dst: .
+        strip_parent: true
       - jvm-metrics.yml.sample
     format: tar.gz
 
@@ -97,7 +99,9 @@ archives:
     name_template: "{{ .ProjectName }}-{{ .Arch }}.{{ .Version }}_dirty"
     files:
       - jmx-win-config.yml.sample
-      - jmx-win-definition.yml
+      - src: 'legacy/jmx-win-definition.yml'
+        dst: .
+        strip_parent: true
       - jvm-metrics.yml.sample
     format: zip
 
