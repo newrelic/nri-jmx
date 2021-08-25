@@ -1,5 +1,5 @@
 integrations:
-- name: .\bin\nri-jmx.exe
+- name: nri-jmx
   env:
     COLLECTION_FILES: "C:\\Program Files\\New Relic\\newrelic-infra\\integrations.d\\jvm-metrics.yml"
     JMX_HOST: jmx-host.localnet
