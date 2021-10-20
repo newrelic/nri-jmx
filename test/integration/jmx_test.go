@@ -4,6 +4,7 @@ package integration
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -68,7 +69,19 @@ func TestMain(m *testing.M) {
 func TestJMXIntegration(t *testing.T) {
 	stdout, stderr, err := runIntegration(t)
 
-	assert.NotNil(t, stderr, "unexpected stderr")
+	assert.Empty(t, stderr, "unexpected stderr")
+	assert.NoError(t, err, "Unexpected error")
+
+	schemaPath := filepath.Join("json-schema-files", "jmx-schema.json")
+	err = jsonschema.Validate(schemaPath, stdout)
+	assert.NoError(t, err, "The output of JMX integration doesn't have expected format.")
+}
+
+func TestJMXIntegrationJSONConfig(t *testing.T) {
+	jvmCollectionJSON := `{"collect":[{"domain":"java.lang","event_type":"JVMSample","beans":[{"query":"type=GarbageCollector,name=*","attributes":["CollectionCount","CollectionTime"]},{"query":"type=Memory","attributes":["HeapMemoryUsage.Committed","HeapMemoryUsage.Init","HeapMemoryUsage.Max","HeapMemoryUsage.Used","NonHeapMemoryUsage.Committed","NonHeapMemoryUsage.Init","NonHeapMemoryUsage.Max","NonHeapMemoryUsage.Used"]},{"query":"type=Threading","attributes":["ThreadCount","TotalStartedThreadCount"]},{"query":"type=ClassLoading","attributes":["LoadedClassCount"]},{"query":"type=Compilation","attributes":["TotalCompilationTime"]}]}]}`
+	stdout, stderr, err := runIntegration(t, "COLLECTION_FILES=", fmt.Sprintf("COLLECTION_CONFIG=%s", jvmCollectionJSON))
+
+	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
 
 	schemaPath := filepath.Join("json-schema-files", "jmx-schema.json")
@@ -78,7 +91,7 @@ func TestJMXIntegration(t *testing.T) {
 
 func TestJMXIntegration_ShowVersion(t *testing.T) {
 	stdout, stderr, err := runIntegration(t, "SHOW_VERSION=true")
-	assert.NotNil(t, stderr, "unexpected stderr")
+	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
 
 	expectedOutMessage := "New Relic Jmx integration Version: 0.0.0, Platform: linux/amd64, GoVersion: go1.16.3, GitCommit: , BuildDate: \n"
@@ -93,7 +106,7 @@ func TestJMXIntegration_ExceededMetricLimit(t *testing.T) {
 	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
 	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
 
-	assert.NotNil(t, stdout, "unexpected stdout")
+	assert.NotEmpty(t, stdout, "unexpected stdout")
 }
 
 func TestJMXIntegration_ErrorOpenFuncOnInvalidOptions(t *testing.T) {
@@ -104,19 +117,19 @@ func TestJMXIntegration_ErrorOpenFuncOnInvalidOptions(t *testing.T) {
 	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
 	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
 
-	assert.NotNil(t, stdout, "unexpected stdout")
+	assert.NotEmpty(t, stdout, "unexpected stdout")
 }
 
 func TestJMXIntegration_ErrorEmptyCollectionFiles(t *testing.T) {
 	stdout, stderr, err := runIntegration(t, "COLLECTION_FILES=")
 
-	expectedErrorMessage := "Must specify at least one collection file"
+	expectedErrorMessage := "Must specify at least one collection file or a collection config JSON"
 
 	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
 	assert.Error(t, err, "Expected error")
 	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
 
-	assert.NotNil(t, stdout, "unexpected stdout")
+	assert.Empty(t, stdout, "unexpected stdout")
 }
 
 func TestJMXIntegration_ErrorCollectionFileNotAbsolutePath(t *testing.T) {
@@ -128,7 +141,7 @@ func TestJMXIntegration_ErrorCollectionFileNotAbsolutePath(t *testing.T) {
 	assert.Error(t, err, "Expected error")
 	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
 
-	assert.NotNil(t, stdout, "unexpected stdout")
+	assert.Empty(t, stdout, "unexpected stdout")
 }
 
 func TestJMXIntegration_ErrorCollectionFileNotExisting(t *testing.T) {
@@ -140,5 +153,5 @@ func TestJMXIntegration_ErrorCollectionFileNotExisting(t *testing.T) {
 	assert.Error(t, err, "Expected error")
 	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
 
-	assert.NotNil(t, stdout, "unexpected stdout")
+	assert.Empty(t, stdout, "unexpected stdout")
 }

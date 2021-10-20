@@ -28,7 +28,8 @@ type argumentList struct {
 	KeyStorePassword        string `default:"" help:"Password for the SSL Key Store"`
 	TrustStore              string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
 	TrustStorePassword      string `default:"" help:"Password for the SSL Trust Store"`
-	CollectionFiles         string `default:"" help:"A comma separated list of full paths to metrics configuration files"`
+	CollectionFiles         string `default:"" help:"A comma separated list of full paths to metrics collections configuration files"`
+	CollectionConfig        string `default:"" help:"JSON format metrics collection configuration"`
 	Timeout                 int    `default:"10000" help:"Timeout for JMX queries"`
 	MetricLimit             int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
 	NrJmx                   string `default:"/usr/bin/nrjmx" help:"nrjmx tool executable path"`
@@ -109,15 +110,33 @@ func main() {
 	}
 
 	// Ensure a collection file is specified
-	if args.CollectionFiles == "" {
-		log.Error("Must specify at least one collection file")
+	if args.CollectionFiles == "" && args.CollectionConfig == "" {
+		log.Error("Must specify at least one collection file or a collection config JSON")
 		os.Exit(1)
 	}
 
+	runCollectionFiles(jmxIntegration)
+	runCollectionConfig(jmxIntegration)
+
+	jmxCloseFunc()
+
+	jmxIntegration.Entities = checkMetricLimit(jmxIntegration.Entities)
+
+	if err := jmxIntegration.Publish(); err != nil {
+		log.Error("Failed to publish integration: %s", err.Error())
+		os.Exit(1)
+	}
+}
+
+// runCollectionFiles will run the collection for collection files configuration.
+func runCollectionFiles(jmxIntegration *integration.Integration) {
+	if args.CollectionFiles == "" {
+		return
+	}
 	// For each collection definition file, parse and collect it
 	collectionFiles := strings.Split(args.CollectionFiles, ",")
-	for _, collectionFile := range collectionFiles {
 
+	for _, collectionFile := range collectionFiles {
 		// Check that the filepath is an absolute path
 		if !filepath.IsAbs(collectionFile) {
 			log.Error("Invalid metrics collection path %s. Metrics collection files must be specified as absolute paths.", collectionFile)
@@ -142,14 +161,30 @@ func main() {
 			log.Error("Failed to complete collection: %s", err)
 		}
 	}
+}
 
-	jmxCloseFunc()
+// runCollectionConfig will run the collection for JSON collection configuration
+func runCollectionConfig(jmxIntegration *integration.Integration) {
+	if args.CollectionConfig == "" {
+		return
+	}
 
-	jmxIntegration.Entities = checkMetricLimit(jmxIntegration.Entities)
-
-	if err := jmxIntegration.Publish(); err != nil {
-		log.Error("Failed to publish integration: %s", err.Error())
+	// Parse the JSON collection config into a raw definition
+	collectionDefinition, err := parseJSON(args.CollectionConfig)
+	if err != nil {
+		log.Error("Failed to parse collection definition config %s: %s", args.CollectionConfig, err)
 		os.Exit(1)
+	}
+
+	// Validate the definition and create a collection object
+	collection, err := parseCollectionDefinition(collectionDefinition)
+	if err != nil {
+		log.Error("Failed to parse collection definition config %s: %s", args.CollectionConfig, err)
+		os.Exit(1)
+	}
+
+	if err := runCollection(collection, jmxIntegration, args.JmxHost, args.JmxPort); err != nil {
+		log.Error("Failed to complete collection: %s", err)
 	}
 }
 
