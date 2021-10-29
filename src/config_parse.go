@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"regexp"
@@ -14,18 +15,18 @@ import (
 // parsing of a collection yaml file
 type collectionDefinitionParser struct {
 	Collect []struct {
-		Domain    string                 `yaml:"domain"`
-		EventType string                 `yaml:"event_type"`
-		Beans     []beanDefinitionParser `yaml:"beans"`
+		Domain    string                 `yaml:"domain" json:"domain"`
+		EventType string                 `yaml:"event_type" json:"event_type"`
+		Beans     []beanDefinitionParser `yaml:"beans" json:"beans"`
 	}
 }
 
 // beanDefinitionParser is a struct to aid the automatic
 // parsing of a collection yaml file
 type beanDefinitionParser struct {
-	Query      string        `yaml:"query"`
-	Exclude    interface{}   `yaml:"exclude_regex"`
-	Attributes []interface{} `yaml:"attributes"`
+	Query      string        `yaml:"query" json:"query"`
+	Exclude    interface{}   `yaml:"exclude_regex" json:"exclude_regex"`
+	Attributes []interface{} `yaml:"attributes" json:"attributes"`
 }
 
 // domainDefinition is a validated and simplified
@@ -71,6 +72,18 @@ func parseYaml(filename string) (*collectionDefinitionParser, error) {
 	var c collectionDefinitionParser
 	if err := yaml.Unmarshal(yamlFile, &c); err != nil {
 		log.Error("failed to parse collection: %s", err)
+		return nil, err
+	}
+
+	return &c, nil
+}
+
+// parseJSON reads a json config and parses it into a collectionDefinitionParser.
+// It validates syntax only and not content
+func parseJSON(collectionJSON string) (*collectionDefinitionParser, error) {
+	var c collectionDefinitionParser
+	if err := json.Unmarshal([]byte(collectionJSON), &c); err != nil {
+		log.Error("failed to parse JSON collection config: %s", err)
 		return nil, err
 	}
 
