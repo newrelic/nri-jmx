@@ -102,7 +102,19 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 	// Create an entity for the domain
 	var e *integration.Entity
 	var err error
-	if args.LocalEntity {
+	if args.RemoteMonitoring {
+		if args.ConnectionURL != "" {
+			e, err = i.Entity(fmt.Sprintf("%s:%s", domain, args.ConnectionURL), "jmx-domain")
+			if err != nil {
+				return err
+			}
+		} else {
+			e, err = i.Entity(fmt.Sprintf("%s:%s:%s", domain, host, port), "jmx-domain")
+			if err != nil {
+				return err
+			}
+		}
+	} else if args.LocalEntity {
 		e = i.LocalEntity()
 	} else {
 		hostIDAttr := integration.NewIDAttribute("host", host)
