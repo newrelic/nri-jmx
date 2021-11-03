@@ -10,6 +10,7 @@ integrations:
     KEY_STORE_PASSWORD: password
     TRUST_STORE: /etc/pki/JMXClientTrustStore.key
     TRUST_STORE_PASSWORD: password
+    REMOTE_MONITORING: true
   interval: 15s
   labels:
     env: staging

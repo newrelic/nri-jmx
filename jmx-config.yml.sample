@@ -6,6 +6,7 @@ integrations:
     JMX_PASS: admin
     JMX_PORT: "9999"
     JMX_USER: admin
+    REMOTE_MONITORING: true
   interval: 15s
   labels:
     env: staging

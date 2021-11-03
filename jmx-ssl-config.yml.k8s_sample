@@ -22,6 +22,7 @@
           TRUST_STORE: < path to trust store '/etc/pki/JMXClientTrustStore.key' >
           TRUST_STORE_PASSWORD: < trust store password>
           COLLECTION_FILES: ${config.path}
+          REMOTE_MONITORING: true
         config:
           collect:
             # Standard JVM Metrics

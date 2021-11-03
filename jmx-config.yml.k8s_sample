@@ -20,6 +20,7 @@
           JMX_USER: admin
           JMX_PASS: admin
           COLLECTION_FILES: ${config.path}
+          REMOTE_MONITORING: true
         config:
           collect:
             # Standard JVM Metrics

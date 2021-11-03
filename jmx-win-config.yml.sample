@@ -7,6 +7,7 @@ integrations:
     JMX_PORT: "9999"
     JMX_USER: admin
     NR_JMX: "C:\\Program Files\\New Relic\\nrjmx\\nrjmx.bat"
+    REMOTE_MONITORING: true
   interval: 15s
   labels:
     env: staging
