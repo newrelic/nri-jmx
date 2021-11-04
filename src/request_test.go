@@ -382,3 +382,15 @@ func Test_getKeyProperties(t *testing.T) {
 	assert.Equal(t, expected4, output4)
 
 }
+
+func Test_getConnectionUrlSAP(t *testing.T){
+
+	connURL := "service:jmx:rmi:///jndi/rmi://tomcat:9999/jmxrmi"
+	badConnURL := "service:jmx:rmi///jndi/rmi//tomcat:9999/jmxrmi"
+	badConnURL2 := "service:jmx:rmi///jndi/rmi://tomcat:9999/jmxrmi"
+
+	assert.Equal(t, "tomcat:9999/jmxrmi", getConnectionUrlSAP(connURL))
+	assert.Equal(t, badConnURL, getConnectionUrlSAP(badConnURL))
+	assert.Equal(t, badConnURL2, getConnectionUrlSAP(badConnURL2))
+
+}

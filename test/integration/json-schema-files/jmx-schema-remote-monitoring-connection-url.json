@@ -46,7 +46,7 @@
               "properties": {
                 "name": {
                   "minLength": 1,
-                  "pattern": "^java.lang:service:jmx:rmi:///jndi/rmi://tomcat:9999/jmxrmi$",
+                  "pattern": "^java.lang:tomcat:9999/jmxrmi$",
                   "type": "string"
                 },
                 "type": {

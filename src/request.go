@@ -104,12 +104,12 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 	var err error
 	if args.RemoteMonitoring {
 		if args.ConnectionURL != "" {
-			e, err = i.Entity(fmt.Sprintf("%s:%s", domain, args.ConnectionURL), "jmx-domain")
+			e, err = newRemoteEntity(domain, getConnectionUrlSAP(args.ConnectionURL), i)
 			if err != nil {
 				return err
 			}
 		} else {
-			e, err = i.Entity(fmt.Sprintf("%s:%s:%s", domain, host, port), "jmx-domain")
+			e, err = newRemoteEntity(domain, fmt.Sprintf("%s:%s", host, port), i)
 			if err != nil {
 				return err
 			}
@@ -356,4 +356,21 @@ func inferMetricType(s interface{}) metric.SourceType {
 	default:
 		return metric.ATTRIBUTE
 	}
+}
+
+func newRemoteEntity(domain, suffix string, i *integration.Integration) (*integration.Entity, error) {
+	return i.Entity(fmt.Sprintf("%s:%s", domain, suffix), "jmx-domain")
+}
+
+// getConnectionUrlSAP extracts last part that describes connection string,
+// in case that it can't extract SAP part, will return full connection URL
+// ref: https://docs.oracle.com/javase/7/docs/api/javax/management/remote/JMXServiceURL.html
+func getConnectionUrlSAP(connectionUrl string) string {
+	r := strings.Split(connectionUrl, "://")
+
+	if len(r) != 3 {
+		return connectionUrl
+	}
+
+	return r[len(r)-1]
 }
