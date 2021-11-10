@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"regexp"
 	"strings"
 
@@ -103,7 +104,7 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 	var e *integration.Entity
 	var err error
 	if args.RemoteMonitoring {
-		url := fmt.Sprintf("%s:%s", host, port)
+		url := net.JoinHostPort(host, port)
 		if args.ConnectionURL != "" {
 			url = getConnectionUrlSAP(args.ConnectionURL)
 		}
