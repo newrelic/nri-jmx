@@ -113,7 +113,6 @@ func TestJMXIntegrationRemoteMonitoringConnectionUrl(t *testing.T) {
 	assert.NoError(t, err, "The output of JMX integration doesn't have expected format.")
 }
 
-
 func TestJMXIntegration_ShowVersion(t *testing.T) {
 	stdout, stderr, err := runIntegration(t, "SHOW_VERSION=true")
 	assert.Empty(t, stderr, "unexpected stderr")

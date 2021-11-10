@@ -103,18 +103,19 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 	// Create an entity for the domain
 	var e *integration.Entity
 	var err error
-	if args.RemoteMonitoring {
+	switch {
+	case args.RemoteMonitoring:
 		url := net.JoinHostPort(host, port)
 		if args.ConnectionURL != "" {
-			url = getConnectionUrlSAP(args.ConnectionURL)
+			url = getConnectionURLSAP(args.ConnectionURL)
 		}
 		e, err = newRemoteEntity(domain, url, i)
 		if err != nil {
 			return err
 		}
-	} else if args.LocalEntity {
+	case args.LocalEntity:
 		e = i.LocalEntity()
-	} else {
+	default:
 		hostIDAttr := integration.NewIDAttribute("host", host)
 		portIDAttr := integration.NewIDAttribute("port", port)
 		e, err = i.Entity(domain, "jmx-domain", hostIDAttr, portIDAttr)
@@ -360,15 +361,14 @@ func newRemoteEntity(domain, suffix string, i *integration.Integration) (*integr
 	return i.Entity(fmt.Sprintf("%s:%s", domain, suffix), "jmx-domain")
 }
 
-// getConnectionUrlSAP extracts last part that describes connection string,
+// getConnectionURLSAP extracts last part that describes connection string,
 // in case that it can't extract SAP part, will return full connection URL
 // ref: https://docs.oracle.com/javase/7/docs/api/javax/management/remote/JMXServiceURL.html
-func getConnectionUrlSAP(connectionUrl string) string {
-	r := strings.Split(connectionUrl, "://")
-
-	if len(r) != 3 {
-		return connectionUrl
+func getConnectionURLSAP(connectionURL string) string {
+	r := strings.Split(connectionURL, "://")
+	const countOfURLSegments = 3
+	if len(r) != countOfURLSegments {
+		return connectionURL
 	}
-
 	return r[len(r)-1]
 }
