@@ -103,16 +103,13 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 	var e *integration.Entity
 	var err error
 	if args.RemoteMonitoring {
+		url := fmt.Sprintf("%s:%s", host, port)
 		if args.ConnectionURL != "" {
-			e, err = newRemoteEntity(domain, getConnectionUrlSAP(args.ConnectionURL), i)
-			if err != nil {
-				return err
-			}
-		} else {
-			e, err = newRemoteEntity(domain, fmt.Sprintf("%s:%s", host, port), i)
-			if err != nil {
-				return err
-			}
+			url = getConnectionUrlSAP(args.ConnectionURL)
+		}
+		e, err = newRemoteEntity(domain, url, i)
+		if err != nil {
+			return err
 		}
 	} else if args.LocalEntity {
 		e = i.LocalEntity()
