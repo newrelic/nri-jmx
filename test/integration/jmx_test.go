@@ -89,6 +89,30 @@ func TestJMXIntegrationJSONConfig(t *testing.T) {
 	assert.NoError(t, err, "The output of JMX integration doesn't have expected format.")
 }
 
+func TestJMXIntegrationRemoteMonitoring(t *testing.T) {
+	jvmCollectionJSON := `{"collect":[{"domain":"java.lang","event_type":"JVMSample","beans":[{"query":"type=GarbageCollector,name=*","attributes":["CollectionCount","CollectionTime"]},{"query":"type=Memory","attributes":["HeapMemoryUsage.Committed","HeapMemoryUsage.Init","HeapMemoryUsage.Max","HeapMemoryUsage.Used","NonHeapMemoryUsage.Committed","NonHeapMemoryUsage.Init","NonHeapMemoryUsage.Max","NonHeapMemoryUsage.Used"]},{"query":"type=Threading","attributes":["ThreadCount","TotalStartedThreadCount"]},{"query":"type=ClassLoading","attributes":["LoadedClassCount"]},{"query":"type=Compilation","attributes":["TotalCompilationTime"]}]}]}`
+	stdout, stderr, err := runIntegration(t, "REMOTE_MONITORING=true","COLLECTION_FILES=", fmt.Sprintf("COLLECTION_CONFIG=%s", jvmCollectionJSON))
+
+	assert.Empty(t, stderr, "unexpected stderr")
+	assert.NoError(t, err, "Unexpected error")
+
+	schemaPath := filepath.Join("json-schema-files", "jmx-schema-remote-monitoring.json")
+	err = jsonschema.Validate(schemaPath, stdout)
+	assert.NoError(t, err, "The output of JMX integration doesn't have expected format.")
+}
+
+func TestJMXIntegrationRemoteMonitoringConnectionUrl(t *testing.T) {
+	jvmCollectionJSON := `{"collect":[{"domain":"java.lang","event_type":"JVMSample","beans":[{"query":"type=GarbageCollector,name=*","attributes":["CollectionCount","CollectionTime"]},{"query":"type=Memory","attributes":["HeapMemoryUsage.Committed","HeapMemoryUsage.Init","HeapMemoryUsage.Max","HeapMemoryUsage.Used","NonHeapMemoryUsage.Committed","NonHeapMemoryUsage.Init","NonHeapMemoryUsage.Max","NonHeapMemoryUsage.Used"]},{"query":"type=Threading","attributes":["ThreadCount","TotalStartedThreadCount"]},{"query":"type=ClassLoading","attributes":["LoadedClassCount"]},{"query":"type=Compilation","attributes":["TotalCompilationTime"]}]}]}`
+	stdout, stderr, err := runIntegration(t, "CONNECTION_URL=service:jmx:rmi:///jndi/rmi://tomcat:9999/jmxrmi","REMOTE_MONITORING=true","COLLECTION_FILES=", fmt.Sprintf("COLLECTION_CONFIG=%s", jvmCollectionJSON))
+
+	assert.Empty(t, stderr, "unexpected stderr")
+	assert.NoError(t, err, "Unexpected error")
+
+	schemaPath := filepath.Join("json-schema-files", "jmx-schema-remote-monitoring-connection-url.json")
+	err = jsonschema.Validate(schemaPath, stdout)
+	assert.NoError(t, err, "The output of JMX integration doesn't have expected format.")
+}
+
 func TestJMXIntegration_ShowVersion(t *testing.T) {
 	stdout, stderr, err := runIntegration(t, "SHOW_VERSION=true")
 	assert.Empty(t, stderr, "unexpected stderr")
