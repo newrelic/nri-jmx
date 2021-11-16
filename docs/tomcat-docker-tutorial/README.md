@@ -36,7 +36,7 @@ docker build -t tomcat_908_jmx . && docker run -d -p 9010:9010 --name=tomcat_908
 Test the JMX connection:
 
 ```bash
-echo '*:*' | nrjmx -port 9010 -host $(docker inspect --format '{{ .NetworkSettings.IPAddress }}' tomcat_908_jmx)
+echo '*:*' | nrjmx -port 9010 -host localhost
 ```
 
 ##  3. Configure JMX integration
@@ -46,15 +46,22 @@ echo '*:*' | nrjmx -port 9010 -host $(docker inspect --format '{{ .NetworkSettin
 for the jmx_host use this command to obtain ip address of the container `docker inspect --format '{{ .NetworkSettings.IPAddress }}' tomcat_908_jmx` (binding to 0.0.0.0 not working in this case)
 
 ```yaml
-integration_name: com.newrelic.jmx
+integrations:
+  - name: nri-jmx
+    env:
+      COLLECTION_FILES: "/etc/newrelic-infra/integrations.d/tomcat-metrics.yml"
+      JMX_HOST: localhost
+      JMX_PORT: "9010"
 
-instances:
-  - name: jmx
-    command: all_data
-    arguments:
-      jmx_host: IP_OF_CONTAINER
-      jmx_port: 9010
-      collection_files : "/etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml"
+      # New users should leave this property as `true`, to identify the
+      # monitored entities as `remote`. Setting this property to `false` (the
+      # default value) is deprecated and will be removed soon, disallowing
+      # entities that are identified as `local`.
+      # Please check the documentation to get more information about local
+      # versus remote entities:
+      # https://github.com/newrelic/infra-integrations-sdk/blob/master/docs/entity-definition.md
+      REMOTE_MONITORING: "true"
+    interval: 15s
     labels:
       env: staging
 ```
@@ -71,7 +78,7 @@ We can inspect the available JMX metrics using nrjmx command directly or a visua
 nrjmx tool ouputs the jmx metrics in JSON format. We can use jq tool to format the output to be more readable:
 
 ```bash
-echo '*:*' | nrjmx  -port=9010 -H IP_OF_CONTAINER | jq
+echo '*:*' | nrjmx  -port=9010 -H localhost | jq
 ```
 
 or you can start with [template collectors file](../../tomcat-metrics.yml.sample)
@@ -85,5 +92,5 @@ or you can start with [template collectors file](../../tomcat-metrics.yml.sample
 Save the changes in the yaml files, and [restart](https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/manage-your-agent/start-stop-restart-infrastructure-agent) the agent. After a few minutes, go to New Relic and run the following [NRQL query](https://docs.newrelic.com/docs/query-data/nrql-new-relic-query-language):
 
 ```sql 
-FROM AnyNameSample SELECT *
+FROM TomcatSample SELECT *
 ```
