@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/newrelic/nrjmx/gojmx"
+
 	"net"
 	"regexp"
 	"strings"
@@ -9,7 +11,6 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/jmx"
 	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
@@ -27,21 +28,43 @@ type beanAttrValuePair struct {
 	value    interface{}
 }
 
-func runCollection(collection []*domainDefinition, i *integration.Integration, host, port string) error {
+func runCollection(collection []*domainDefinition, i *integration.Integration, client *gojmx.Client, host, port string) error {
 	for _, domain := range collection {
 		var handlingErrs []error
+		var result []*gojmx.JMXAttribute
 		for _, request := range domain.beans {
-			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
-			result, err := jmxQueryFunc(requestString, args.Timeout)
+			mBeanNamePattern := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
+			mBeanNames, err := client.GetMBeanNames(mBeanNamePattern)
 			if err != nil {
-				if err == jmx.ErrBeanPattern {
-					return fmt.Errorf("%s, your pattern: %s", err, requestString)
+				if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
+					return fmt.Errorf("collection failed, error: %v", jmxConnErr)
 				}
-				return fmt.Errorf("cannot query: %s, error: %s", requestString, err.Error())
+				log.Error("cannot query mBeanNames: %s, error: %v", mBeanNamePattern, err)
+				continue
+			}
+
+			for _, mBeanName := range mBeanNames {
+				mBeanAttrNames, err := client.GetMBeanAttrNames(mBeanName)
+				if err != nil {
+					if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
+						return fmt.Errorf("collection failed, error: %v", jmxConnErr)
+					}
+					log.Error("cannot query mBeanAttributeNames: %s, error: %v", mBeanNamePattern, err)
+					continue
+				}
+
+				for _, mBeanAttrName := range mBeanAttrNames {
+					jmxAttributes, err := client.GetMBeanAttrs(mBeanName, mBeanAttrName)
+					if err != nil {
+						log.Debug("cannot query mBean: %s, attribute: %s, error: %s", mBeanName, mBeanAttrName, err)
+						continue
+					}
+					result = append(result, jmxAttributes...)
+				}
 			}
 
 			if len(result) == 0 {
-				handlingErrs = append(handlingErrs, fmt.Errorf("empty data for pattern: %s", requestString))
+				handlingErrs = append(handlingErrs, fmt.Errorf("empty data for pattern: %s", mBeanNamePattern))
 				continue
 			}
 
@@ -61,27 +84,33 @@ func runCollection(collection []*domainDefinition, i *integration.Integration, h
 // handleResponse takes a response, filters out the excluded beans,
 // sorts the responses by domain, and passes each domain off to
 // insertDomainMetrics to populate the metric list
-func handleResponse(eventType string, request *beanRequest, response queryResponse, i *integration.Integration, host, port string) error {
+func handleResponse(eventType string, request *beanRequest, jmxAttributes []*gojmx.JMXAttribute, i *integration.Integration, host, port string) error {
 
+	var filtered []*gojmx.JMXAttribute
 	// Delete excluded mbeans
-	for key := range response {
+	for _, jmxAttribute := range jmxAttributes {
+		excluded := false
 		for _, pattern := range request.exclude {
-			if pattern.MatchString(key) {
-				delete(response, key)
+			if pattern.MatchString(jmxAttribute.Attribute) {
+				excluded = true
+				break
 			}
+		}
+		if !excluded {
+			filtered = append(filtered, jmxAttribute)
 		}
 	}
 
 	// If there are multiple domains, we have to create an entity for each
 	// Create a map with domain as the key that returns query/value
 	domainsMap := make(map[string][]*beanAttrValuePair)
-	for key, val := range response {
-		domain, beanAttr, err := splitBeanName(key)
+	for _, jmxAttribute := range filtered {
+		domain, beanAttr, err := splitBeanName(jmxAttribute.Attribute)
 		if err != nil {
 			return err
 		}
 
-		domainsMap[domain] = append(domainsMap[domain], &beanAttrValuePair{beanAttr: beanAttr, value: val})
+		domainsMap[domain] = append(domainsMap[domain], &beanAttrValuePair{beanAttr: beanAttr, value: jmxAttribute.GetValue()})
 	}
 
 	// For each domain, create an entity and a metric set
@@ -346,11 +375,7 @@ func generateEventType(domain string) (string, error) {
 // on its ability to convert to a number
 func inferMetricType(s interface{}) metric.SourceType {
 	switch s.(type) {
-	case int:
-		return metric.GAUGE
-	case float64:
-		return metric.GAUGE
-	case float32:
+	case int, int32, int64, float32, float64:
 		return metric.GAUGE
 	default:
 		return metric.ATTRIBUTE
