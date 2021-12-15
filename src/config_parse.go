@@ -11,14 +11,16 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+type collectBlock struct {
+	Domain    string                 `yaml:"domain" json:"domain"`
+	EventType string                 `yaml:"event_type" json:"event_type"`
+	Beans     []beanDefinitionParser `yaml:"beans" json:"beans"`
+}
+
 // collectionDefinitionParser is a struct to aid the automatic
 // parsing of a collection yaml file
 type collectionDefinitionParser struct {
-	Collect []struct {
-		Domain    string                 `yaml:"domain" json:"domain"`
-		EventType string                 `yaml:"event_type" json:"event_type"`
-		Beans     []beanDefinitionParser `yaml:"beans" json:"beans"`
-	}
+	Collect []collectBlock
 }
 
 // beanDefinitionParser is a struct to aid the automatic

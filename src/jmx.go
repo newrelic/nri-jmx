@@ -2,8 +2,8 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"github.com/newrelic/nri-jmx/src/client"
 	"github.com/newrelic/nrjmx/gojmx"
 	"os"
 	"path/filepath"
@@ -14,6 +14,10 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/jmx"
 	"github.com/newrelic/infra-integrations-sdk/log"
+)
+
+const (
+	integrationName = "com.newrelic.jmx"
 )
 
 type argumentList struct {
@@ -37,12 +41,14 @@ type argumentList struct {
 	MetricLimit             int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
 	NrJmx                   string `default:"/usr/bin/nrjmx" help:"nrjmx tool executable path"`
 	ConnectionURL           string `default:"" help:"full connection URL"`
+	JmxSSL                  bool   `default:"false" help:"Use https"`
 	ShowVersion             bool   `default:"false" help:"Print build information and exit"`
-}
+	HideSecrets             bool   `default:"true" help:"Set this to false if you want to see the secrets in the verbose logs."`
 
-const (
-	integrationName = "com.newrelic.jmx"
-)
+	Query        string `default:"" help:"For troubleshooting only: Connect to the JMX endpoint and execute the query. Query format DOMAIN:BEAN"`
+	ConfigFile   string `default:"/etc/newrelic-infra/integrations.d/jmx-config.yml" help:"For troubleshooting only: Specify JMX config file. If you don't want to load the config from the file set this empty"`
+	InstanceName string `default:"" help:"For troubleshooting only: Specify which block from the jmx config file will be used. You can find the value in the jmx config file. Is the name field of the instance / integration. If left empty, first configuration block will be used."`
+}
 
 var (
 	args argumentList
@@ -57,11 +63,21 @@ var (
 )
 
 func main() {
-
 	// Create a new integration
 	jmxIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// Troubleshooting mode, we need to read the args from the configuration file.
+	if args.Query != "" {
+		err := client.SetArgs(&args, args.InstanceName, args.ConfigFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		result := client.FormatQuery(args.Query, getJMXConfig(), args.HideSecrets)
+		fmt.Println(result)
+		os.Exit(0)
 	}
 
 	if args.ShowVersion {
@@ -78,38 +94,14 @@ func main() {
 
 	log.SetupLogging(args.Verbose)
 
-	//options := []jmx.Option{
-	//	jmx.WithNrJmxTool(args.NrJmx),
-	//}
+	jmxConfig := getJMXConfig()
 
-	//if args.Verbose {
-	//	options = append(options, jmx.WithVerbose())
-	//}
-
-	jmxConfig := &gojmx.JMXConfig{
-		ConnectionURL:         args.ConnectionURL,
-		IsRemote:              args.JmxRemote,
-		IsJBossStandaloneMode: args.JmxRemoteJbossStandlone,
-		KeyStore:              args.KeyStore,
-		KeyStorePassword:      args.KeyStorePassword,
-		TrustStore:            args.TrustStore,
-		TrustStorePassword:    args.TrustStorePassword,
-		Hostname:              args.JmxHost,
-		Port:                  int32(args.JmxPort),
-		Username:              args.JmxUser,
-		Password:              args.JmxPass,
-	}
-
-	if args.JmxURIPath != "" {
-		jmxConfig.UriPath = &(args.JmxURIPath)
-	}
-
-	ctx := context.Background()
-	client, err := gojmx.NewClient(ctx).Open(jmxConfig)
+	jmxClient := client.NewJMXClient()
+	err = jmxClient.Connect(jmxConfig)
 	if err != nil {
-		log.Error(
-			"Failed to open JMX connection (host: %s, port: %s, user: %s, pass: %s, keyStore: %s, keyStorePassword: %s, trustStore: %s, trustStorePassword: %s, remote: %t): %s",
-			args.JmxHost, args.JmxPort, args.JmxUser, args.JmxPass, args.KeyStore, args.KeyStorePassword, args.TrustStore, args.TrustStorePassword, args.JmxRemote, err,
+		log.Error("Failed to open JMX connection, error: %v, Config: (%s)",
+			err,
+			gojmx.FormatConfig(jmxConfig, args.HideSecrets),
 		)
 		os.Exit(1)
 	}
@@ -120,10 +112,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	runCollectionFiles(jmxIntegration, client)
-	runCollectionConfig(jmxIntegration, client)
+	runCollectionFiles(jmxIntegration, jmxClient)
+	runCollectionConfig(jmxIntegration, jmxClient)
 
-	if err := client.Close(); err != nil {
+	if err := jmxClient.Disconnect(); err != nil {
 		log.Error(
 			"Failed to close JMX connection: %s", err)
 	}
@@ -137,7 +129,7 @@ func main() {
 }
 
 // runCollectionFiles will run the collection for collection files configuration.
-func runCollectionFiles(jmxIntegration *integration.Integration, client *gojmx.Client) {
+func runCollectionFiles(jmxIntegration *integration.Integration, client client.Client) {
 	if args.CollectionFiles == "" {
 		return
 	}
@@ -172,7 +164,7 @@ func runCollectionFiles(jmxIntegration *integration.Integration, client *gojmx.C
 }
 
 // runCollectionConfig will run the collection for JSON collection configuration
-func runCollectionConfig(jmxIntegration *integration.Integration, client *gojmx.Client) {
+func runCollectionConfig(jmxIntegration *integration.Integration, client client.Client) {
 	if args.CollectionConfig == "" {
 		return
 	}
@@ -216,4 +208,26 @@ func checkMetricLimit(entities []*integration.Entity) []*integration.Entity {
 	}
 
 	return validEntities
+}
+
+func getJMXConfig() *gojmx.JMXConfig {
+	jmxConfig := &gojmx.JMXConfig{
+		ConnectionURL:         args.ConnectionURL,
+		IsRemote:              args.JmxRemote,
+		IsJBossStandaloneMode: args.JmxRemoteJbossStandlone,
+		KeyStore:              args.KeyStore,
+		KeyStorePassword:      args.KeyStorePassword,
+		TrustStore:            args.TrustStore,
+		TrustStorePassword:    args.TrustStorePassword,
+		Hostname:              args.JmxHost,
+		Port:                  int32(args.JmxPort),
+		Username:              args.JmxUser,
+		Password:              args.JmxPass,
+		RequestTimoutMs:       int64(args.Timeout),
+		UseSSL:                args.JmxSSL,
+	}
+	if args.JmxURIPath != "" {
+		jmxConfig.UriPath = &(args.JmxURIPath)
+	}
+	return jmxConfig
 }
