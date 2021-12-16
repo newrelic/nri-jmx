@@ -10,7 +10,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nrjmx/gojmx"
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 )
 
 var (
