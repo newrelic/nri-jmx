@@ -16,10 +16,6 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
-// queryResponse is a struct that contains the
-// response from a JMX query
-type queryResponse map[string]interface{}
-
 // beanAttrValuePair is a convenience struct that
 // contains the fully qualified bean name + attribute
 // tag and also contains the value associated with
