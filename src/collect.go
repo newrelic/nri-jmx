@@ -3,18 +3,15 @@ package main
 import (
 	"errors"
 	"fmt"
-
-	"github.com/newrelic/nri-jmx/src/client"
-	"github.com/newrelic/nrjmx/gojmx"
-
-	"net"
-	"regexp"
-	"strings"
-
 	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nri-jmx/src/client"
+	"github.com/newrelic/nrjmx/gojmx"
+	"net"
+	"regexp"
+	"strings"
 )
 
 var (
@@ -54,7 +51,6 @@ func runCollection(collection []*domainDefinition, i *integration.Integration, c
 			log.Error("Failed to parse some responses for domain %s: %v", domain.domain, handlingErrs)
 		}
 	}
-
 	return nil
 }
 
@@ -89,7 +85,6 @@ func filterJMXAttributes(jmxAttributes *[]*gojmx.JMXAttribute, request *beanRequ
 // sorts the responses by domain, and passes each domain off to
 // insertDomainMetrics to populate the metric list
 func handleResponse(eventType string, request *beanRequest, jmxAttributes []*gojmx.JMXAttribute, i *integration.Integration, host, port string) error {
-
 	// Delete excluded mbeans
 	filterJMXAttributes(&jmxAttributes, request)
 
@@ -112,7 +107,6 @@ func handleResponse(eventType string, request *beanRequest, jmxAttributes []*goj
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -120,7 +114,6 @@ func handleResponse(eventType string, request *beanRequest, jmxAttributes []*goj
 // creates an entity and metric set for the domain, and populates the
 // metric set for each attribute to be collected
 func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAttrValuePair, request *beanRequest, i *integration.Integration, host, port string) error {
-
 	// Create an entity for the domain
 	var e *integration.Entity
 	var err error
@@ -174,7 +167,6 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 			}
 		}
 	}
-
 	return nil
 }
 
@@ -182,7 +174,6 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 // returns a metric set from the map if it exists, or creates the metric set
 // and adds it to the map
 func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integration.Entity, request *beanRequest, beanNameMatch string, eventType string, domain string) (*metric.Set, error) {
-
 	// If the metric set exists, return it
 	if ms, ok := entityMetricSets[beanNameMatch]; ok {
 		return ms, nil
@@ -223,7 +214,6 @@ func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integratio
 // Inserts a metric into a metric set, generating metric names
 // and metric types if unset
 func insertMetric(key string, val interface{}, attribute *attributeRequest, metricSet *metric.Set) error {
-
 	// Generate a metric name if unset
 	metricName, err := func() (string, error) {
 		if attribute.metricName == "" {
@@ -231,10 +221,8 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 			if err != nil {
 				return "", err
 			}
-
 			return metricName, nil
 		}
-
 		return attribute.metricName, nil
 	}()
 
@@ -259,7 +247,6 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -329,7 +316,6 @@ func getKeyProperties(keyProperties string) (keyPropertiesMap map[string]string,
 	}
 
 	return keyPropertiesMap, nil
-
 }
 
 // Convenience function to split the domain:query string

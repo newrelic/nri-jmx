@@ -90,8 +90,8 @@ func TestRunCollection(t *testing.T) {
 		fmt.Println(pretty.Diff(expectedMetrics, i.Entities[0].Metrics[0].Metrics))
 		t.Error("Failed to produce expected metrics")
 	}
-
 }
+
 func TestGenerateEventType(t *testing.T) {
 	testCases := []struct {
 		input       string
@@ -334,7 +334,6 @@ func TestHandleResponse(t *testing.T) {
 	if string(jsonbytes) != expectedMarshalled {
 		t.Error("Failed to get expected marshalled json")
 	}
-
 }
 
 func TestDefaultMetricType(t *testing.T) {
@@ -418,7 +417,6 @@ func Test_getKeyProperties(t *testing.T) {
 	}
 
 	assert.Equal(t, expected4, output4)
-
 }
 
 func Test_getConnectionUrlSAP(t *testing.T) {
