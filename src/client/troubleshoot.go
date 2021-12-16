@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -12,6 +13,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var (
+	configErr = errors.New("config error")
+)
+
 func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets bool) string {
 	sb := strings.Builder{}
 	sb.WriteString("=======================================================\n")
@@ -21,6 +26,7 @@ func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets b
 	err := jmxClient.Connect(config)
 	if err != nil {
 		sb.WriteString("Error: " + err.Error() + "\n")
+		return sb.String()
 	}
 
 	go func() {
@@ -35,6 +41,7 @@ func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets b
 	attrs, err := jmxClient.QueryMBean(mBeanGlobPattern)
 	if err != nil {
 		sb.WriteString("Error: " + err.Error() + "\n")
+		return sb.String()
 	}
 
 	sb.WriteString(gojmx.FormatJMXAttributes(attrs))
@@ -77,7 +84,7 @@ func setArgs(args interface{}, fileName string, configOptions map[string]interfa
 		camelCase := strcase.ToCamel(strings.ToLower(optionName))
 		fieldByName := reflect.Indirect(r).FieldByName(camelCase)
 		if !fieldByName.IsValid() {
-			return fmt.Errorf("failed to parse config field: '%s' from file: '%s'", optionName, fileName)
+			return fmt.Errorf("%w: unknown field: '%s' in file: '%s'", configErr, optionName, fileName)
 		}
 
 		fieldByName.Set(reflect.ValueOf(option))
@@ -108,7 +115,7 @@ func (c *configFile) toConfigOptions() (map[string]interface{}, error) {
 	hasIntegrations := len(c.Integrations) > 0
 
 	if !hasInstances && !hasIntegrations {
-		return nil, fmt.Errorf("failed to detect any integration in the config file: '%s'", c.fileName)
+		return nil, fmt.Errorf("%w: failed to detect any integration in the config file: '%s'", configErr, c.fileName)
 	}
 
 	if hasInstances {
@@ -130,7 +137,7 @@ func (c *configFile) getInstances() (map[string]interface{}, error) {
 		}
 	}
 	if configOptions == nil {
-		return nil, fmt.Errorf("failed to detect instance: '%s' in file: '%s'", c.integrationName, c.fileName)
+		return nil, fmt.Errorf("%w: failed to detect instance: '%s' in file: '%s'", configErr, c.integrationName, c.fileName)
 	}
 
 	return configOptions, nil
@@ -148,7 +155,7 @@ func (c *configFile) getIntegrations() (map[string]interface{}, error) {
 		}
 	}
 	if configOptions == nil {
-		return nil, fmt.Errorf("failed to detect integration: '%s' in file: '%s'", c.integrationName, c.fileName)
+		return nil, fmt.Errorf("%w: failed to detect integration: '%s' in file: '%s'", configErr, c.integrationName, c.fileName)
 	}
 	return configOptions, nil
 }

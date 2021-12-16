@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/newrelic/infra-integrations-sdk/log"
@@ -15,6 +16,11 @@ type Client interface {
 	Query(mBeanDomain, mBeanMetric string) ([]*gojmx.JMXAttribute, error)
 	QueryMBean(mBeanNamePattern string) ([]*gojmx.JMXAttribute, error)
 }
+
+var (
+	JMXCollectionErr = errors.New("JMX collection failed")
+	JMXConnectionErr = errors.New("JMX connection failed")
+)
 
 // jmxClient will handle the connection to JMX.
 type jmxClient struct {
@@ -32,9 +38,9 @@ func NewJMXClient() Client {
 func (c *jmxClient) Connect(config *gojmx.JMXConfig) error {
 	_, err := c.conn.Open(config)
 	if jmxErr, ok := gojmx.IsJMXError(err); ok {
-		return fmt.Errorf("%s", jmxErr.Message)
+		return fmt.Errorf("%w, %s", JMXCollectionErr, jmxErr.Message)
 	} else if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
-		return fmt.Errorf("%s", jmxConnErr.Message)
+		return fmt.Errorf("%w, %s", JMXCollectionErr, jmxConnErr.Message)
 	}
 	return err
 }
@@ -90,7 +96,7 @@ func handleError(mBeanNamePattern string, err error) error {
 		)
 		return nil
 	} else if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
-		return fmt.Errorf("collection failed, error: %v", jmxConnErr.Message)
+		return fmt.Errorf("%w, error: %v", JMXConnectionErr, jmxConnErr.Message)
 	}
-	return fmt.Errorf("collection failed, error: %v", err)
+	return fmt.Errorf("%w, error: %v", JMXCollectionErr, err)
 }
