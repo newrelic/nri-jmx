@@ -59,18 +59,17 @@ func SetArgs(args interface{}, integrationName, configFile string) error {
 	return parseConfigToArgs(args, result, integrationName, configFile)
 }
 
-func parseConfigToArgs(args interface{}, config []byte, integrationName, fileName string) (err error) {
+func parseConfigToArgs(args interface{}, config []byte, integrationName, fileName string) error {
 	cfg := configFile{
 		integrationName: integrationName,
 		fileName:        fileName,
 	}
 
-	if err = yaml.Unmarshal(config, &cfg); err != nil {
+	if err := yaml.Unmarshal(config, &cfg); err != nil {
 		return err
 	}
 
-	var configOptions map[string]interface{}
-	configOptions, err = cfg.toConfigOptions()
+	configOptions, err := cfg.toConfigOptions()
 	if err != nil {
 		return err
 	}

@@ -68,6 +68,7 @@ func main() {
 	jmxIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 
 	// Troubleshooting mode, we need to read the args from the configuration file.
