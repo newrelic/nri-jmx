@@ -23,8 +23,7 @@ func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets b
 	sb.WriteString("Connecting to JMX...\n\n")
 	sb.WriteString("Config: " + gojmx.FormatConfig(config, hideSecrets) + "\n\n")
 	jmxClient := NewJMXClient()
-	err := jmxClient.Connect(config)
-	if err != nil {
+	if err := jmxClient.Connect(config); err != nil {
 		sb.WriteString("Error: " + err.Error() + "\n")
 		return sb.String()
 	}
