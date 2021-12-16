@@ -35,7 +35,6 @@ func (j *jmxClientMock) QueryMBean(mBeanNamePattern string) ([]*gojmx.JMXAttribu
 }
 
 func TestRunCollection(t *testing.T) {
-
 	client := &jmxClientMock{
 		result: []*gojmx.JMXAttribute{
 			{
