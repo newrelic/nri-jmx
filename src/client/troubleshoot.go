@@ -111,34 +111,44 @@ func (c *configFile) toConfigOptions() (map[string]interface{}, error) {
 		return nil, fmt.Errorf("failed to detect any integration in the config file: '%s'", c.fileName)
 	}
 
-	configOptions := make(map[string]interface{}, 0)
 	if hasInstances {
-		if c.integrationName == "" {
-			configOptions = c.Instances[0].Arguments
-		} else {
-			for _, instance := range c.Instances {
-				if instance.Name == c.integrationName {
-					configOptions = instance.Arguments
-					break
-				}
-			}
-			if configOptions == nil {
-				return nil, fmt.Errorf("failed to detect instance: '%s' in file: '%s'", c.integrationName, c.fileName)
-			}
+		return c.getInstances()
+	}
+	return c.getIntegrations()
+}
+
+func (c *configFile) getInstances() (map[string]interface{}, error) {
+	if c.integrationName == "" {
+		return c.Instances[0].Arguments, nil
+	}
+	var configOptions map[string]interface{}
+
+	for _, instance := range c.Instances {
+		if instance.Name == c.integrationName {
+			configOptions = instance.Arguments
+			break
 		}
-	} else if hasIntegrations {
-		if c.integrationName == "" {
-			configOptions = c.Integrations[0].Env
-		} else {
-			for _, integration := range c.Integrations {
-				if integration.Name == c.integrationName {
-					configOptions = integration.Env
-				}
-			}
-			if configOptions == nil {
-				return nil, fmt.Errorf("failed to detect integration: '%s' in file: '%s'", c.integrationName, c.fileName)
-			}
+	}
+	if configOptions == nil {
+		return nil, fmt.Errorf("failed to detect instance: '%s' in file: '%s'", c.integrationName, c.fileName)
+	}
+
+	return configOptions, nil
+}
+
+func (c *configFile) getIntegrations() (map[string]interface{}, error) {
+	if c.integrationName == "" {
+		return c.Integrations[0].Env, nil
+	}
+	var configOptions map[string]interface{}
+
+	for _, integration := range c.Integrations {
+		if integration.Name == c.integrationName {
+			configOptions = integration.Env
 		}
+	}
+	if configOptions == nil {
+		return nil, fmt.Errorf("failed to detect integration: '%s' in file: '%s'", c.integrationName, c.fileName)
 	}
 	return configOptions, nil
 }
