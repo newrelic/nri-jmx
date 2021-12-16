@@ -73,9 +73,10 @@ func main() {
 
 	// Troubleshooting mode, we need to read the args from the configuration file.
 	if args.Query != "" {
-		err := client.SetArgs(&args, args.InstanceName, args.ConfigFile)
+		err = client.SetArgs(&args, args.InstanceName, args.ConfigFile)
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
 		result := client.FormatQuery(args.Query, getJMXConfig(), args.HideSecrets)
 		fmt.Println(result)
