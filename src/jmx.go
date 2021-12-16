@@ -22,28 +22,29 @@ const (
 
 type argumentList struct {
 	sdkArgs.DefaultArgumentList
-	JmxHost                 string `default:"localhost" help:"The host running JMX"`
-	JmxPort                 int    `default:"9999" help:"The port JMX is running on"`
-	JmxURIPath              string `default:"" help:"The path portion of the JMX Service URI. This is useful for nonstandard service uris"`
-	JmxUser                 string `default:"" help:"The username for the JMX connection"`
-	JmxPass                 string `default:"" help:"The password for the JMX connection"`
-	JmxRemote               bool   `default:"false" help:"When activated uses the JMX remote url connection format (by default on JBoss Domain-mode)"`
-	JmxRemoteJbossStandlone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
-	LocalEntity             bool   `default:"false" help:"Collect all metrics on the local entity. Use only when monitoring localhost."`
-	RemoteMonitoring        bool   `default:"false" help:"Allows to monitor multiple instances as 'remote' entity. Set to 'FALSE' value for backwards compatibility otherwise set to 'TRUE'"`
-	KeyStore                string `default:"" help:"The location for the keystore containing JMX Client's SSL certificate"`
-	KeyStorePassword        string `default:"" help:"Password for the SSL Key Store"`
-	TrustStore              string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
-	TrustStorePassword      string `default:"" help:"Password for the SSL Trust Store"`
-	CollectionFiles         string `default:"" help:"A comma separated list of full paths to metrics collections configuration files"`
-	CollectionConfig        string `default:"" help:"JSON format metrics collection configuration"`
-	Timeout                 int    `default:"10000" help:"Timeout for JMX queries"`
-	MetricLimit             int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
-	NrJmx                   string `default:"/usr/bin/nrjmx" help:"nrjmx tool executable path"`
-	ConnectionURL           string `default:"" help:"full connection URL"`
-	JmxSSL                  bool   `default:"false" help:"Use https"`
-	ShowVersion             bool   `default:"false" help:"Print build information and exit"`
-	HideSecrets             bool   `default:"true" help:"Set this to false if you want to see the secrets in the verbose logs."`
+	JmxHost                  string `default:"localhost" help:"The host running JMX"`
+	JmxPort                  int    `default:"9999" help:"The port JMX is running on"`
+	JmxURIPath               string `default:"" help:"The path portion of the JMX Service URI. This is useful for nonstandard service uris"`
+	JmxUser                  string `default:"" help:"The username for the JMX connection"`
+	JmxPass                  string `default:"" help:"The password for the JMX connection"`
+	JmxRemote                bool   `default:"false" help:"When activated uses the JMX remote url connection format (by default on JBoss Domain-mode)"`
+	JmxRemoteJbossStandalone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
+	JmxRemoteJbossStandlone  bool   `default:"false" help:"Deprecated, use -jmx-remote-jboss-standalone instead"`
+	LocalEntity              bool   `default:"false" help:"Collect all metrics on the local entity. Use only when monitoring localhost."`
+	RemoteMonitoring         bool   `default:"false" help:"Allows to monitor multiple instances as 'remote' entity. Set to 'FALSE' value for backwards compatibility otherwise set to 'TRUE'"`
+	KeyStore                 string `default:"" help:"The location for the keystore containing JMX Client's SSL certificate"`
+	KeyStorePassword         string `default:"" help:"Password for the SSL Key Store"`
+	TrustStore               string `default:"" help:"The location for the keystore containing JMX Server's SSL certificate"`
+	TrustStorePassword       string `default:"" help:"Password for the SSL Trust Store"`
+	CollectionFiles          string `default:"" help:"A comma separated list of full paths to metrics collections configuration files"`
+	CollectionConfig         string `default:"" help:"JSON format metrics collection configuration"`
+	Timeout                  int    `default:"10000" help:"Timeout for JMX queries"`
+	MetricLimit              int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
+	NrJmx                    string `default:"/usr/bin/nrjmx" help:"nrjmx tool executable path"`
+	ConnectionURL            string `default:"" help:"full connection URL"`
+	JmxSSL                   bool   `default:"false" help:"Use https"`
+	ShowVersion              bool   `default:"false" help:"Print build information and exit"`
+	HideSecrets              bool   `default:"true" help:"Set this to false if you want to see the secrets in the verbose logs."`
 
 	Query        string `default:"" help:"For troubleshooting only: Connect to the JMX endpoint and execute the query. Query format DOMAIN:BEAN"`
 	ConfigFile   string `default:"/etc/newrelic-infra/integrations.d/jmx-config.yml" help:"For troubleshooting only: Specify JMX config file. If you don't want to load the config from the file set this empty"`
@@ -214,7 +215,7 @@ func getJMXConfig() *gojmx.JMXConfig {
 	jmxConfig := &gojmx.JMXConfig{
 		ConnectionURL:         args.ConnectionURL,
 		IsRemote:              args.JmxRemote,
-		IsJBossStandaloneMode: args.JmxRemoteJbossStandlone,
+		IsJBossStandaloneMode: args.JmxRemoteJbossStandlone || args.JmxRemoteJbossStandalone,
 		KeyStore:              args.KeyStore,
 		KeyStorePassword:      args.KeyStorePassword,
 		TrustStore:            args.TrustStore,

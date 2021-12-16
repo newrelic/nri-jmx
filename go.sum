@@ -694,10 +694,8 @@ github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354/go.mod h1:KSVJ
 github.com/ncw/swift v1.0.47/go.mod h1:23YIA4yWVnGwv2dQlN4bB7egfYX6YLn0Yo/S6zZO/ZM=
 github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible h1:DErIlRt4xGwgcR4N/LkzvH/c9xOituAtnEgwFUwfVSs=
 github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible/go.mod h1:tMUHRMq6mJS0YyBnbWrTXAnREnQqC1AGO6Lu45u5xAM=
-github.com/newrelic/nrjmx/gojmx v0.0.0-20211215110833-f4c8f6e1f2c7 h1:xMp60KlsOzIOzVgl6z6zBBfocyGORgxHZOMHrtlrtAM=
-github.com/newrelic/nrjmx/gojmx v0.0.0-20211215110833-f4c8f6e1f2c7/go.mod h1:uv5vTLX6Nc45YO1nkGlB2wAAp9KcdnHpQkZx33rwW6s=
-github.com/newrelic/nrjmx/gojmx v0.0.0-20211216101445-04aab6053d5f h1:LZ3yzUSYPQkr0ei8Eb3zYDiyYxXb2+H1gSofUmHFoJg=
-github.com/newrelic/nrjmx/gojmx v0.0.0-20211216101445-04aab6053d5f/go.mod h1:uv5vTLX6Nc45YO1nkGlB2wAAp9KcdnHpQkZx33rwW6s=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20211216112722-cb3a701cd3d5 h1:WSAeJyAPoUhQDEYrDl+ZQCmMNGfprehm/2+iySrX7WE=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20211216112722-cb3a701cd3d5/go.mod h1:uv5vTLX6Nc45YO1nkGlB2wAAp9KcdnHpQkZx33rwW6s=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nishanths/exhaustive v0.1.0 h1:kVlMw8h2LHPMGUVqUj6230oQjjTMFjwcZrnkhXzFfl8=

@@ -12,7 +12,7 @@ import (
 
 func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets bool) string {
 	sb := strings.Builder{}
-	sb.WriteString("-------------------------------------------------------\n")
+	sb.WriteString("=======================================================\n")
 	sb.WriteString("Connecting to JMX...\n\n")
 	sb.WriteString("Config: " + gojmx.FormatConfig(config, hideSecrets) + "\n\n")
 	jmxClient := NewJMXClient()
@@ -21,7 +21,7 @@ func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets b
 		sb.WriteString("Error: " + err.Error() + "\n")
 	}
 	defer jmxClient.Disconnect()
-	sb.WriteString("Connected!")
+	sb.WriteString("Connected!\n")
 
 	attrs, err := jmxClient.QueryMBean(mBeanGlobPattern)
 	if err != nil {
