@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	configErr = errors.New("config error")
+	ErrConfig = errors.New("config error")
 )
 
 func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets bool) string {
@@ -84,7 +84,7 @@ func setArgs(args interface{}, fileName string, configOptions map[string]interfa
 		camelCase := strcase.ToCamel(strings.ToLower(optionName))
 		fieldByName := reflect.Indirect(r).FieldByName(camelCase)
 		if !fieldByName.IsValid() {
-			return fmt.Errorf("%w: unknown field: '%s' in file: '%s'", configErr, optionName, fileName)
+			return fmt.Errorf("%w: unknown field: '%s' in file: '%s'", ErrConfig, optionName, fileName)
 		}
 
 		fieldByName.Set(reflect.ValueOf(option))
@@ -115,7 +115,7 @@ func (c *configFile) toConfigOptions() (map[string]interface{}, error) {
 	hasIntegrations := len(c.Integrations) > 0
 
 	if !hasInstances && !hasIntegrations {
-		return nil, fmt.Errorf("%w: failed to detect any integration in the config file: '%s'", configErr, c.fileName)
+		return nil, fmt.Errorf("%w: failed to detect any integration in the config file: '%s'", ErrConfig, c.fileName)
 	}
 
 	if hasInstances {
@@ -137,7 +137,7 @@ func (c *configFile) getInstances() (map[string]interface{}, error) {
 		}
 	}
 	if configOptions == nil {
-		return nil, fmt.Errorf("%w: failed to detect instance: '%s' in file: '%s'", configErr, c.integrationName, c.fileName)
+		return nil, fmt.Errorf("%w: failed to detect instance: '%s' in file: '%s'", ErrConfig, c.integrationName, c.fileName)
 	}
 
 	return configOptions, nil
@@ -155,7 +155,7 @@ func (c *configFile) getIntegrations() (map[string]interface{}, error) {
 		}
 	}
 	if configOptions == nil {
-		return nil, fmt.Errorf("%w: failed to detect integration: '%s' in file: '%s'", configErr, c.integrationName, c.fileName)
+		return nil, fmt.Errorf("%w: failed to detect integration: '%s' in file: '%s'", ErrConfig, c.integrationName, c.fileName)
 	}
 	return configOptions, nil
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/newrelic/nri-jmx/src/client"
@@ -14,6 +15,10 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
+)
+
+var (
+	ErrNoDataForPattern = errors.New("empty data for pattern")
 )
 
 // beanAttrValuePair is a convenience struct that
@@ -36,7 +41,7 @@ func runCollection(collection []*domainDefinition, i *integration.Integration, c
 			}
 
 			if len(jmxAttributes) == 0 {
-				handlingErrs = append(handlingErrs, fmt.Errorf("empty data for pattern: %s:%s", domain.domain, request.beanQuery))
+				handlingErrs = append(handlingErrs, fmt.Errorf("%w, Pattern: %s:%s", ErrNoDataForPattern, domain.domain, request.beanQuery))
 				continue
 			}
 

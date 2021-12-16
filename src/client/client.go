@@ -18,8 +18,8 @@ type Client interface {
 }
 
 var (
-	JMXCollectionErr = errors.New("JMX collection failed")
-	JMXConnectionErr = errors.New("JMX connection failed")
+	ErrJMXCollection = errors.New("JMX collection failed")
+	ErrConnectionErr = errors.New("JMX connection failed")
 )
 
 // jmxClient will handle the connection to JMX.
@@ -38,9 +38,9 @@ func NewJMXClient() Client {
 func (c *jmxClient) Connect(config *gojmx.JMXConfig) error {
 	_, err := c.conn.Open(config)
 	if jmxErr, ok := gojmx.IsJMXError(err); ok {
-		return fmt.Errorf("%w, %s", JMXCollectionErr, jmxErr.Message)
+		return fmt.Errorf("%w, %s", ErrJMXCollection, jmxErr.Message)
 	} else if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
-		return fmt.Errorf("%w, %s", JMXCollectionErr, jmxConnErr.Message)
+		return fmt.Errorf("%w, %s", ErrJMXCollection, jmxConnErr.Message)
 	}
 	return err
 }
@@ -96,7 +96,7 @@ func handleError(mBeanNamePattern string, err error) error {
 		)
 		return nil
 	} else if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
-		return fmt.Errorf("%w, error: %v", JMXConnectionErr, jmxConnErr.Message)
+		return fmt.Errorf("%w, error: %v", ErrConnectionErr, jmxConnErr.Message)
 	}
-	return fmt.Errorf("%w, error: %v", JMXCollectionErr, err)
+	return fmt.Errorf("%w, error: %v", ErrJMXCollection, err)
 }
