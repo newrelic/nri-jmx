@@ -55,28 +55,29 @@ func (c *jmxClient) QueryMBean(mBeanNamePattern string) ([]*gojmx.JMXAttribute, 
 	var result []*gojmx.JMXAttribute
 
 	mBeanNames, err := c.conn.GetMBeanNames(mBeanNamePattern)
-	if c.handleError(mBeanNamePattern, err) != nil {
-		return nil, err
+	if jmxErr := handleError(mBeanNamePattern, err); jmxErr != nil {
+		return nil, jmxErr
 	}
 
 	for _, mBeanName := range mBeanNames {
 		mBeanAttrNames, err := c.conn.GetMBeanAttrNames(mBeanName)
-		if c.handleError(mBeanNamePattern, err) != nil {
-			return nil, err
+		if jmxErr := handleError(mBeanNamePattern, err); jmxErr != nil {
+			return nil, jmxErr
 		}
 
 		for _, mBeanAttrName := range mBeanAttrNames {
 			jmxAttributes, err := c.conn.GetMBeanAttrs(mBeanName, mBeanAttrName)
-			if c.handleError(mBeanNamePattern, err) != nil {
-				return nil, err
+			if jmxErr := handleError(mBeanNamePattern, err); jmxErr != nil {
+				return nil, jmxErr
 			}
+
 			result = append(result, jmxAttributes...)
 		}
 	}
 	return result, nil
 }
 
-func (c *jmxClient) handleError(mBeanNamePattern string, err error) error {
+func handleError(mBeanNamePattern string, err error) error {
 	if err == nil {
 		return nil
 	}

@@ -7,7 +7,7 @@ require (
 	github.com/iancoleman/strcase v0.2.0
 	github.com/kr/pretty v0.2.1
 	github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible
-	github.com/newrelic/nrjmx/gojmx v0.0.0-20211215110833-f4c8f6e1f2c7
+	github.com/newrelic/nrjmx/gojmx v0.0.0-20211216101445-04aab6053d5f
 	github.com/stretchr/testify v1.7.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	gopkg.in/yaml.v2 v2.4.0
