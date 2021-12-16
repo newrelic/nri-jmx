@@ -29,7 +29,7 @@ func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets b
 				"Failed to close JMX connection: %s", err)
 		}
 	}()
-	defer jmxClient.Disconnect()
+
 	sb.WriteString("Connected!\n")
 
 	attrs, err := jmxClient.QueryMBean(mBeanGlobPattern)
@@ -54,59 +54,20 @@ func SetArgs(args interface{}, integrationName, configFile string) error {
 }
 
 func parseConfigToArgs(args interface{}, config []byte, integrationName, fileName string) error {
-	t := struct {
-		Instances []struct {
-			Name      string
-			Arguments map[string]interface{}
-		}
-		// For integrations v4.
-		Integrations []struct {
-			Name string
-			Env  map[string]interface{}
-		}
-	}{}
+	cfg := configFile{
+		integrationName: integrationName,
+		fileName:        fileName,
+	}
 
-	err := yaml.Unmarshal(config, &t)
+	if err := yaml.Unmarshal(config, &cfg); err != nil {
+		return err
+	}
+
+	configOptions, err := cfg.toConfigOptions()
 	if err != nil {
 		return err
 	}
 
-	hasInstances := len(t.Instances) > 0
-	hasIntegrations := len(t.Integrations) > 0
-
-	if !hasInstances && !hasIntegrations {
-		return fmt.Errorf("failed to detect any integration in the config file: '%s'", fileName)
-	}
-
-	var configOptions map[string]interface{}
-	if hasInstances {
-		if integrationName == "" {
-			configOptions = t.Instances[0].Arguments
-		} else {
-			for _, instance := range t.Instances {
-				if instance.Name == integrationName {
-					configOptions = instance.Arguments
-					break
-				}
-			}
-			if configOptions == nil {
-				return fmt.Errorf("failed to detect instance: '%s' in file: '%s'", integrationName, fileName)
-			}
-		}
-	} else if hasIntegrations {
-		if integrationName == "" {
-			configOptions = t.Integrations[0].Env
-		} else {
-			for _, integration := range t.Integrations {
-				if integration.Name == integrationName {
-					configOptions = integration.Env
-				}
-			}
-			if configOptions == nil {
-				return fmt.Errorf("failed to detect integration: '%s' in file: '%s'", integrationName, fileName)
-			}
-		}
-	}
 	return setArgs(args, fileName, configOptions)
 }
 
@@ -122,4 +83,62 @@ func setArgs(args interface{}, fileName string, configOptions map[string]interfa
 		fieldByName.Set(reflect.ValueOf(option))
 	}
 	return nil
+}
+
+type instance struct {
+	Name      string
+	Arguments map[string]interface{}
+}
+
+// For integrations v4.
+type integrations struct {
+	Name string
+	Env  map[string]interface{}
+}
+
+type configFile struct {
+	fileName        string
+	integrationName string
+	Instances       []instance
+	Integrations    []integrations
+}
+
+func (c *configFile) toConfigOptions() (map[string]interface{}, error) {
+	hasInstances := len(c.Instances) > 0
+	hasIntegrations := len(c.Integrations) > 0
+
+	if !hasInstances && !hasIntegrations {
+		return nil, fmt.Errorf("failed to detect any integration in the config file: '%s'", c.fileName)
+	}
+
+	configOptions := make(map[string]interface{}, 0)
+	if hasInstances {
+		if c.integrationName == "" {
+			configOptions = c.Instances[0].Arguments
+		} else {
+			for _, instance := range c.Instances {
+				if instance.Name == c.integrationName {
+					configOptions = instance.Arguments
+					break
+				}
+			}
+			if configOptions == nil {
+				return nil, fmt.Errorf("failed to detect instance: '%s' in file: '%s'", c.integrationName, c.fileName)
+			}
+		}
+	} else if hasIntegrations {
+		if c.integrationName == "" {
+			configOptions = c.Integrations[0].Env
+		} else {
+			for _, integration := range c.Integrations {
+				if integration.Name == c.integrationName {
+					configOptions = integration.Env
+				}
+			}
+			if configOptions == nil {
+				return nil, fmt.Errorf("failed to detect integration: '%s' in file: '%s'", c.integrationName, c.fileName)
+			}
+		}
+	}
+	return configOptions, nil
 }
