@@ -76,7 +76,6 @@ func parseYaml(filename string) (*collectionDefinitionParser, error) {
 		log.Error("failed to parse collection: %s", err)
 		return nil, err
 	}
-
 	return &c, nil
 }
 
@@ -88,14 +87,12 @@ func parseJSON(collectionJSON string) (*collectionDefinitionParser, error) {
 		log.Error("failed to parse JSON collection config: %s", err)
 		return nil, err
 	}
-
 	return &c, nil
 }
 
 // parseCollection takes a raw collectionDefinitionParser and returns
 // an array of domains containing the validated configuration
 func parseCollectionDefinition(c *collectionDefinitionParser) ([]*domainDefinition, error) {
-
 	var err error
 
 	// For each domain in the collection
@@ -166,7 +163,6 @@ func parseBean(bean *beanDefinitionParser) (*beanRequest, error) {
 
 		}
 	}
-
 	return &beanRequest{beanQuery: bean.Query, exclude: excludePatterns, attributes: attributes}, nil
 }
 
@@ -203,7 +199,6 @@ func parseAttributes(rawAttributes []interface{}) ([]*attributeRequest, error) {
 			attributes = append(attributes, newAttribute)
 		}
 	}
-
 	return attributes, nil
 }
 
@@ -220,7 +215,6 @@ func createAttributeRegex(attrRegex string, literal bool) (*regexp.Regexp, error
 	if err != nil {
 		return nil, err
 	}
-
 	return r, nil
 }
 
@@ -229,7 +223,6 @@ func parseAttributeFromString(a string) (*attributeRequest, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create regex pattern from attribute name %s", a)
 	}
-
 	return &attributeRequest{attrRegexp: attrRegexp, metricType: -1}, nil
 }
 
@@ -274,7 +267,6 @@ func parseAttributeFromMap(a map[interface{}]interface{}) (*attributeRequest, er
 	}
 
 	return newAttribute, nil
-
 }
 
 func getMetricType(a map[interface{}]interface{}) (metric.SourceType, error) {
@@ -289,6 +281,5 @@ func getMetricType(a map[interface{}]interface{}) (metric.SourceType, error) {
 		}
 		metricType = mt
 	}
-
 	return metricType, nil
 }

@@ -13,7 +13,6 @@ import (
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/jmx"
 	"github.com/newrelic/infra-integrations-sdk/log"
 )
 
@@ -52,12 +51,7 @@ type argumentList struct {
 }
 
 var (
-	args argumentList
-
-	jmxOpenFunc  = jmx.Open
-	jmxCloseFunc = jmx.Close
-	jmxQueryFunc = jmx.Query
-
+	args               argumentList
 	integrationVersion = "0.0.0"
 	gitCommit          = ""
 	buildDate          = ""
@@ -209,7 +203,6 @@ func checkMetricLimit(entities []*integration.Entity) []*integration.Entity {
 
 		validEntities = append(validEntities, entity)
 	}
-
 	return validEntities
 }
 
