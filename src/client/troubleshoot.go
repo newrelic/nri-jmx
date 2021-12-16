@@ -5,7 +5,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/newrelic/nrjmx/gojmx"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
+	"os"
 	"reflect"
 	"strings"
 )
@@ -37,7 +37,7 @@ func SetArgs(args interface{}, integrationName, configFile string) error {
 	if configFile == "" {
 		return nil
 	}
-	result, err := ioutil.ReadFile(configFile)
+	result, err := os.ReadFile(configFile)
 	if err != nil {
 		return err
 	}
