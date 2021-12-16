@@ -2,8 +2,8 @@ package client
 
 import (
 	"context"
-	"errors"
 	"fmt"
+
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nrjmx/gojmx"
 )
@@ -32,9 +32,9 @@ func NewJMXClient() Client {
 func (c *jmxClient) Connect(config *gojmx.JMXConfig) error {
 	_, err := c.conn.Open(config)
 	if jmxErr, ok := gojmx.IsJMXError(err); ok {
-		return errors.New(jmxErr.Message)
+		return fmt.Errorf("%s", jmxErr.Message)
 	} else if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
-		return errors.New(jmxConnErr.Message)
+		return fmt.Errorf("%s", jmxConnErr.Message)
 	}
 	return err
 }

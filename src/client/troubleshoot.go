@@ -2,12 +2,14 @@ package client
 
 import (
 	"fmt"
-	"github.com/iancoleman/strcase"
-	"github.com/newrelic/nrjmx/gojmx"
-	"gopkg.in/yaml.v3"
 	"os"
 	"reflect"
 	"strings"
+
+	"github.com/iancoleman/strcase"
+	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nrjmx/gojmx"
+	"gopkg.in/yaml.v3"
 )
 
 func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets bool) string {
@@ -20,6 +22,13 @@ func FormatQuery(mBeanGlobPattern string, config *gojmx.JMXConfig, hideSecrets b
 	if err != nil {
 		sb.WriteString("Error: " + err.Error() + "\n")
 	}
+
+	go func() {
+		if err := jmxClient.Disconnect(); err != nil {
+			log.Error(
+				"Failed to close JMX connection: %s", err)
+		}
+	}()
 	defer jmxClient.Disconnect()
 	sb.WriteString("Connected!\n")
 
@@ -98,7 +107,10 @@ func parseConfigToArgs(args interface{}, config []byte, integrationName, fileNam
 			}
 		}
 	}
+	return setArgs(args, fileName, configOptions)
+}
 
+func setArgs(args interface{}, fileName string, configOptions map[string]interface{}) error {
 	r := reflect.ValueOf(args)
 	for optionName, option := range configOptions {
 		camelCase := strcase.ToCamel(strings.ToLower(optionName))

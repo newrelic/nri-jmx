@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/newrelic/nri-jmx/src/client"
 	"github.com/newrelic/nrjmx/gojmx"
 

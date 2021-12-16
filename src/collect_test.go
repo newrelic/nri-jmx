@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/newrelic/nrjmx/gojmx"
 	"reflect"
 	"regexp"
 	"testing"
+
+	"github.com/newrelic/nrjmx/gojmx"
 
 	"github.com/kr/pretty"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"

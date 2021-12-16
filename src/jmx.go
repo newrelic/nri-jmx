@@ -3,12 +3,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/newrelic/nri-jmx/src/client"
-	"github.com/newrelic/nrjmx/gojmx"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/newrelic/nri-jmx/src/client"
+	"github.com/newrelic/nrjmx/gojmx"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/integration"
