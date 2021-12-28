@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nr-env
+data:
+  NRIA_STAGING: "true"
+  CLUSTER_NAME: "jmx conf using annotations"
