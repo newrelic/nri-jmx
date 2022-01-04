@@ -106,9 +106,9 @@ func main() {
 
 	clientVersion, err := jmxClient.GetClientVersion()
 	if err != nil {
-		log.Error("Failed to get nrjmx Version: %v", err)
+		log.Debug("Failed to get nrjmx Version: %v", err)
 	} else {
-		log.Info("nrjmx version: %s", clientVersion)
+		log.Debug("nrjmx version: %s", clientVersion)
 	}
 
 	// Ensure a collection file is specified
