@@ -457,7 +457,7 @@ func Test_filterJMXAttributes(t *testing.T) {
 		},
 	}
 
-	var actual []*gojmx.JMXAttribute
+	actual := make([]*gojmx.JMXAttribute, 0)
 
 	for _, jmxAttr := range jmxAttributes {
 		if shouldFilterJMXAttr(jmxAttr, filters) {

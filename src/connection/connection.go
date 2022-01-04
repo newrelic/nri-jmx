@@ -2,6 +2,7 @@ package connection
 
 import (
 	"errors"
+
 	"github.com/newrelic/nrjmx/gojmx"
 )
 
