@@ -11,7 +11,7 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
-	"github.com/newrelic/nri-jmx/src/client"
+	"github.com/newrelic/nri-jmx/src/connection"
 	"github.com/newrelic/nrjmx/gojmx"
 )
 
@@ -29,22 +29,24 @@ type beanAttrValuePair struct {
 	value    interface{}
 }
 
-func runCollection(collection []*domainDefinition, i *integration.Integration, client client.Client, host, port string) error {
+func runCollection(collection []*domainDefinition, i *integration.Integration, client connection.Client, host, port string) error {
 	for _, domain := range collection {
 		var handlingErrs []error
 		for _, request := range domain.beans {
-			jmxAttributes, err := client.Query(domain.domain, request.beanQuery)
-			if err != nil {
-				return err
+			response, err := client.QueryMBean(fmt.Sprintf("%s:%s", domain.domain, request.beanQuery))
+			if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
+				return fmt.Errorf("%w, error: %v", connection.ErrConnectionErr, jmxConnErr.Message)
+			} else if err != nil {
+				return fmt.Errorf("%w, error: %v", connection.ErrJMXCollection, err)
 			}
 
-			if len(jmxAttributes) == 0 {
+			if len(response) == 0 {
 				handlingErrs = append(handlingErrs, fmt.Errorf("%w, Pattern: %s:%s", ErrNoDataForPattern, domain.domain, request.beanQuery))
 				continue
 			}
 
-			if err := handleResponse(domain.eventType, request, jmxAttributes, i, host, port); err != nil {
-				handlingErrs = append(handlingErrs, err)
+			if errs := handleResponse(domain.eventType, request, response, i, host, port); errs != nil {
+				handlingErrs = append(handlingErrs, errs...)
 			}
 		}
 
@@ -55,60 +57,61 @@ func runCollection(collection []*domainDefinition, i *integration.Integration, c
 	return nil
 }
 
-// filterJMXAttributes will remove attributes received but not requested by config.
-func filterJMXAttributes(jmxAttributes *[]*gojmx.JMXAttribute, request *beanRequest) {
-	if jmxAttributes == nil || request == nil {
-		return
+// shouldFilterJMXAttr will remove attributes received but not requested by config.
+func shouldFilterJMXAttr(jmxAttr *gojmx.JMXAttribute, request *beanRequest) bool {
+	if jmxAttr == nil || request == nil {
+		return true
 	}
-	i := 0 // output index
-	for _, jmxAttribute := range *jmxAttributes {
-		excluded := false
-		for _, pattern := range request.exclude {
-			if pattern.MatchString(jmxAttribute.Attribute) {
-				excluded = true
-				break
-			}
-		}
-		if !excluded {
-			(*jmxAttributes)[i] = jmxAttribute
-			i++
+
+	for _, pattern := range request.exclude {
+		if pattern.MatchString(jmxAttr.Attribute) {
+			return true
 		}
 	}
-	// Prevent memory leak by erasing truncated values
-	// (not needed if values don't contain pointers, directly or indirectly)
-	for j := i; j < len(*jmxAttributes); j++ {
-		(*jmxAttributes)[i] = nil
-	}
-	*jmxAttributes = (*jmxAttributes)[:i]
+
+	return false
 }
 
 // handleResponse takes a response, filters out the excluded beans,
 // sorts the responses by domain, and passes each domain off to
 // insertDomainMetrics to populate the metric list
-func handleResponse(eventType string, request *beanRequest, jmxAttributes []*gojmx.JMXAttribute, i *integration.Integration, host, port string) error {
-	// Delete excluded mbeans
-	filterJMXAttributes(&jmxAttributes, request)
-
+func handleResponse(eventType string, request *beanRequest, queryResponse gojmx.QueryResponse, i *integration.Integration, host, port string) (errs []error) {
 	// If there are multiple domains, we have to create an entity for each
 	// Create a map with domain as the key that returns query/value
 	domainsMap := make(map[string][]*beanAttrValuePair)
-	for _, jmxAttribute := range jmxAttributes {
-		domain, beanAttr, err := splitBeanName(jmxAttribute.Attribute)
-		if err != nil {
-			return err
+	for _, response := range queryResponse {
+		attr := response.Attribute
+
+		// Delete excluded mbeans
+		if shouldFilterJMXAttr(attr, request) {
+			continue
 		}
 
-		domainsMap[domain] = append(domainsMap[domain], &beanAttrValuePair{beanAttr: beanAttr, value: jmxAttribute.GetValue()})
+		if response.Status != gojmx.QueryResponseStatusSuccess {
+			errs = append(errs, fmt.Errorf("request: %s failed: %s", request.beanQuery, response.StatusMsg))
+			continue
+		}
+
+		attrName := attr.Attribute
+
+		domain, beanAttr, err := splitBeanName(attrName)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+
+		domainsMap[domain] = append(domainsMap[domain], &beanAttrValuePair{beanAttr: beanAttr, value: attr.GetValue()})
 	}
 
 	// For each domain, create an entity and a metric set
 	for domain, beanAttrVals := range domainsMap {
 		err := insertDomainMetrics(eventType, domain, beanAttrVals, request, i, host, port)
 		if err != nil {
-			return err
+			errs = append(errs, err)
+			continue
 		}
 	}
-	return nil
+	return
 }
 
 // insertDomainMetrics akes a domain and a list of attr:value pairs,

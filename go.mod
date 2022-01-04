@@ -9,7 +9,7 @@ require (
 	github.com/iancoleman/strcase v0.2.0
 	github.com/kr/pretty v0.2.1
 	github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible
-	github.com/newrelic/nrjmx/gojmx v0.0.0-20211216112722-cb3a701cd3d5
+	github.com/newrelic/nrjmx/gojmx v0.0.0-20220104151522-5634d55e8419
 	github.com/prometheus/tsdb v0.7.1 // indirect
 	github.com/sanposhiho/wastedassign v0.2.0 // indirect
 	github.com/stretchr/testify v1.7.0
@@ -18,3 +18,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
+
+replace github.com/newrelic/nrjmx/gojmx => /Users/cciutea/workspace/nr/int/nrjmx/gojmx

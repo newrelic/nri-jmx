@@ -2,13 +2,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 
-	"github.com/newrelic/nri-jmx/src/client"
+	"github.com/newrelic/nri-jmx/src/connection"
 	"github.com/newrelic/nrjmx/gojmx"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
@@ -65,14 +66,17 @@ func main() {
 		return
 	}
 
+	jmxClient := gojmx.NewClient(context.Background())
+	jmxConfig := getJMXConfig()
+
 	// Troubleshooting mode, we need to read the args from the configuration file.
 	if args.Query != "" {
-		err = client.SetArgs(&args, args.InstanceName, args.ConfigFile)
+		err = connection.SetArgs(&args, args.InstanceName, args.ConfigFile)
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
-		result := client.FormatQuery(args.Query, getJMXConfig(), args.HideSecrets)
+		result := connection.FormatQuery(jmxClient, jmxConfig, args.Query, args.HideSecrets)
 		fmt.Println(result)
 		os.Exit(0)
 	}
@@ -91,16 +95,20 @@ func main() {
 
 	log.SetupLogging(args.Verbose)
 
-	jmxConfig := getJMXConfig()
-
-	jmxClient := client.NewJMXClient()
-	err = jmxClient.Connect(jmxConfig)
+	_, err = jmxClient.Open(jmxConfig)
 	if err != nil {
 		log.Error("Failed to open JMX connection, error: %v, Config: (%s)",
 			err,
 			gojmx.FormatConfig(jmxConfig, args.HideSecrets),
 		)
 		os.Exit(1)
+	}
+
+	clientVersion, err := jmxClient.GetClientVersion()
+	if err != nil {
+		log.Error("Failed to get nrjmx Version: %v", err)
+	} else {
+		log.Info("nrjmx version: %s", clientVersion)
 	}
 
 	// Ensure a collection file is specified
@@ -112,7 +120,7 @@ func main() {
 	runCollectionFiles(jmxIntegration, jmxClient)
 	runCollectionConfig(jmxIntegration, jmxClient)
 
-	if err := jmxClient.Disconnect(); err != nil {
+	if err := jmxClient.Close(); err != nil {
 		log.Error(
 			"Failed to close JMX connection: %s", err)
 	}
@@ -126,7 +134,7 @@ func main() {
 }
 
 // runCollectionFiles will run the collection for collection files configuration.
-func runCollectionFiles(jmxIntegration *integration.Integration, client client.Client) {
+func runCollectionFiles(jmxIntegration *integration.Integration, client connection.Client) {
 	if args.CollectionFiles == "" {
 		return
 	}
@@ -161,7 +169,7 @@ func runCollectionFiles(jmxIntegration *integration.Integration, client client.C
 }
 
 // runCollectionConfig will run the collection for JSON collection configuration
-func runCollectionConfig(jmxIntegration *integration.Integration, client client.Client) {
+func runCollectionConfig(jmxIntegration *integration.Integration, client connection.Client) {
 	if args.CollectionConfig == "" {
 		return
 	}
