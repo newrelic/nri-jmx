@@ -81,10 +81,17 @@ func setArgs(args interface{}, fileName string, configOptions map[string]interfa
 		camelCase := strcase.ToCamel(strings.ToLower(optionName))
 		fieldByName := reflect.Indirect(r).FieldByName(camelCase)
 		if !fieldByName.IsValid() {
-			return fmt.Errorf("%w: unknown field: '%s' in file: '%s'", ErrConfig, optionName, fileName)
+			log.Warn("%s: unknown field: '%s' in file: '%s'", ErrConfig, optionName, fileName)
+			continue
 		}
 
-		fieldByName.Set(reflect.ValueOf(option))
+		val := reflect.ValueOf(option)
+		if fieldByName.Type() != val.Type() {
+			return fmt.Errorf("%w: wrong type for option: '%s': '%s' instead of '%s', in file: '%s'",
+				ErrConfig, optionName, val.Type(), fieldByName.Type(), fileName)
+		}
+
+		fieldByName.Set(val)
 	}
 	return nil
 }

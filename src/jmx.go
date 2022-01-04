@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/newrelic/nri-jmx/src/connection"
@@ -25,7 +26,7 @@ type argumentList struct {
 	sdkArgs.DefaultArgumentList
 	MetricLimit              int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
 	Timeout                  int    `default:"10000" help:"Timeout for JMX queries"`
-	JmxPort                  int    `default:"9999" help:"The port JMX is running on"`
+	JmxPort                  string `default:"9999" help:"The port JMX is running on"`
 	JmxRemote                bool   `default:"false" help:"When activated uses the JMX remote url connection format (by default on JBoss Domain-mode)"`
 	JmxRemoteJbossStandalone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
 	JmxRemoteJbossStandlone  bool   `default:"false" help:"Deprecated, use -jmx-remote-jboss-standalone instead"`
@@ -163,7 +164,7 @@ func runCollectionFiles(jmxIntegration *integration.Integration, client connecti
 			os.Exit(1)
 		}
 
-		if err := runCollection(collection, jmxIntegration, client, args.JmxHost, fmt.Sprintf("%d", args.JmxPort)); err != nil {
+		if err := runCollection(collection, jmxIntegration, client, args.JmxHost, args.JmxPort); err != nil {
 			log.Error("Failed to complete collection: %s", err)
 		}
 	}
@@ -189,7 +190,7 @@ func runCollectionConfig(jmxIntegration *integration.Integration, client connect
 		os.Exit(1)
 	}
 
-	if err := runCollection(collection, jmxIntegration, client, args.JmxHost, fmt.Sprintf("%d", args.JmxPort)); err != nil {
+	if err := runCollection(collection, jmxIntegration, client, args.JmxHost, args.JmxPort); err != nil {
 		log.Error("Failed to complete collection: %s", err)
 	}
 }
@@ -216,6 +217,10 @@ func checkMetricLimit(entities []*integration.Entity) []*integration.Entity {
 }
 
 func getJMXConfig() *gojmx.JMXConfig {
+	port, err := strconv.Atoi(args.JmxPort)
+	if err != nil {
+		log.Error("Failed to parse JMX port argument: %v", err)
+	}
 	jmxConfig := &gojmx.JMXConfig{
 		ConnectionURL:         args.ConnectionURL,
 		IsRemote:              args.JmxRemote,
@@ -225,7 +230,7 @@ func getJMXConfig() *gojmx.JMXConfig {
 		TrustStore:            args.TrustStore,
 		TrustStorePassword:    args.TrustStorePassword,
 		Hostname:              args.JmxHost,
-		Port:                  int32(args.JmxPort),
+		Port:                  int32(port),
 		Username:              args.JmxUser,
 		Password:              args.JmxPass,
 		RequestTimoutMs:       int64(args.Timeout),
