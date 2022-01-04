@@ -217,7 +217,7 @@ func checkMetricLimit(entities []*integration.Entity) []*integration.Entity {
 }
 
 func getJMXConfig() *gojmx.JMXConfig {
-	port, err := strconv.Atoi(args.JmxPort)
+	port, err := strconv.ParseInt(args.JmxPort, 10, 32)
 	if err != nil {
 		log.Error("Failed to parse JMX port argument: %v", err)
 	}
