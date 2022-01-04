@@ -38,12 +38,6 @@ For this example I'll copy the connectors from the newly created docker containe
 sudo docker cp <container_id>:/opt/jboss/wildfly/bin/client/ /usr/lib/nrjmx/connectors/
 ```
 
-Test the JMX connection:
-
-```bash
-echo '*:*' | nrjmx  -port=9990 -H 0.0.0.0 --username=admin1234 --password=Password1! -r -s
-```
-
 ##  3. Configure JMX integration
 
 
@@ -69,42 +63,40 @@ instances:
 
 All configuration options can be found in the public [documentation](https://docs.newrelic.com/docs/integrations/host-integrations/host-integrations-list/jmx-monitoring-integration#config).
 
+### Test the JMX connection:
+
+`nri-jmx` `query` tool uses the defined jmx-config.yml file to establish connection and  outputs the available JMX metrics.
+
+```bash
+/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
+```
+
 ### 3.2 Creating the metric collection configuration file.
 In the JMX configuration file, we specified a collection file `jmx-custom-metrics.yml`. This file is used to define which metrics we want to collect.
 
-We can inspect the available JMX metrics using nrjmx command directly or a visual tool like  JConsole.
-
-
-nrjmx tool ouputs the jmx metrics in JSON format. We can use jq tool to format the output to be more readable:
+We can inspect the available JMX metrics using nri-jmx command directly or a visual tool like JConsole.
 
 ```bash
-echo '*:*' | nrjmx  -port=9990 -H 0.0.0.0 --username=admin1234 --password=Password1! -r -s | jq
+/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
 ```
-
 ```bash
 ....
-"jboss.threads:name=\"XNIO-1\",type=thread-pool,attr=LargestQueueSize": 0,
-  "jboss.as.expr:subsystem=ejb3,thread-pool=default,attr=rejectedCount": "0",
-  "jboss.as:core-service=management,access=authorization,constraint=sensitivity-classification,type=elytron,classification=elytron-security,attr=defaultRequiresRead": true,
-  "jboss.as.expr:subsystem=infinispan,cache-container=ejb,thread-pool=expiration,attr=maxThreads": "1",
-  "jboss.as:subsystem=ejb3,attr=disableDefaultEjbPermissions": true,
-....
-```
-
-In order to monitor for example the “LargestQueueSize” the following nri-jmx collection file can be created:
-
-```yaml
-collect:
+=======================================================
   - domain: jboss.threads
-    event_type: AnyNameSample
     beans:
-      - query: name="XNIO-1",type=thread-pool
+....
+-------------------------------------------------------
+      - query: name="threadpool-5",type=thread-pool
         attributes:
-          - LargestQueueSize
+          # Value[DOUBLE]: 0
+          - GrowthResistance
+          # Value[INT]: 2147483647
+          - MaximumQueueSize
+....
 ```
+If for example we want to create a collection file to capture the MaximumQueueSize attribute we can define:
 
-If for example we want to capture the “LargestQueueSize” attribute for multiple thread names, we can use the wildcard:
-
+`/etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml`
 ```yaml
 collect:
   - domain: jboss.threads
@@ -112,8 +104,9 @@ collect:
     beans:
       - query: name=*,type=thread-pool
         attributes:
-          - LargestQueueSize
+          - MaximumQueueSize
 ```
+Notice the usage of `*` wildcard. This is useful when we want to capture all the metrics with that pattern.
 
 The following example illustrates how to create a collection file using information provided by the JConsole Java tool:
 

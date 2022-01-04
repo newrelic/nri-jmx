@@ -67,7 +67,6 @@ func main() {
 	}
 
 	jmxClient := gojmx.NewClient(context.Background())
-	jmxConfig := getJMXConfig()
 
 	// Troubleshooting mode, we need to read the args from the configuration file.
 	if args.Query != "" {
@@ -76,7 +75,7 @@ func main() {
 			log.Fatal(err)
 			return
 		}
-		result := connection.FormatQuery(jmxClient, jmxConfig, args.Query, args.HideSecrets)
+		result := connection.FormatQuery(jmxClient, getJMXConfig(), args.Query, args.HideSecrets)
 		fmt.Println(result)
 		os.Exit(0)
 	}
@@ -94,6 +93,8 @@ func main() {
 	}
 
 	log.SetupLogging(args.Verbose)
+
+	jmxConfig := getJMXConfig()
 
 	_, err = jmxClient.Open(jmxConfig)
 	if err != nil {
