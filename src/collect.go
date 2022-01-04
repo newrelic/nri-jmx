@@ -17,6 +17,7 @@ import (
 
 var (
 	ErrNoDataForPattern = errors.New("empty data for pattern")
+	ErrRequestFailed    = errors.New("request failed")
 )
 
 // beanAttrValuePair is a convenience struct that
@@ -88,7 +89,7 @@ func handleResponse(eventType string, request *beanRequest, queryResponse gojmx.
 		}
 
 		if response.Status != gojmx.QueryResponseStatusSuccess {
-			errs = append(errs, fmt.Errorf("request: %s failed: %s", request.beanQuery, response.StatusMsg))
+			errs = append(errs, fmt.Errorf("%w: %s status: %s", ErrRequestFailed, request.beanQuery, response.StatusMsg))
 			continue
 		}
 
