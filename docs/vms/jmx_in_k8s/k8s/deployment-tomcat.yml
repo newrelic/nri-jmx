@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deployment
+  labels:
+    app: java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java
+  template:
+    metadata:
+      annotations:
+         newrelic.config: '{"collect":[{"domain":"Catalina","event_type":"TomcatSample","beans":[{"query":"type=UtilityExecutor","attributes":["completedTaskCount"]}]},{"domain":"java.lang","event_type":"JVMSample","beans":[{"query":"type=GarbageCollector,name=*","attributes":["CollectionCount","CollectionTime"]},{"query":"type=Memory","attributes":["HeapMemoryUsage.Committed","HeapMemoryUsage.Init","HeapMemoryUsage.Max","HeapMemoryUsage.Used","NonHeapMemoryUsage.Committed","NonHeapMemoryUsage.Init","NonHeapMemoryUsage.Max","NonHeapMemoryUsage.Used"]},{"query":"type=Threading","attributes":["ThreadCount","TotalStartedThreadCount"]},{"query":"type=ClassLoading","attributes":["LoadedClassCount"]},{"query":"type=Compilation","attributes":["TotalCompilationTime"]}]}]}'
+      labels:
+        app: java
+    spec:
+      containers:
+        - name: tomcat
+          image: tomcat:10.0.12
+          ports:
+            - containerPort: 9999
+          env:
+            - name: CATALINA_OPTS
+              value: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
