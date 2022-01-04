@@ -144,9 +144,6 @@ jobs:
           build\windows\download_zip_extract_exe.ps1 "$env:INTEGRATION" ${{ matrix.goarch }} "$env:TAG" "$env:REPO_FULL_NAME"
       - name: Download nrjmx
         shell: bash
-        env:
-          # override latest with 1.5.3 until a fix is released (2020-01-28)
-          NRJMX_URL: "https://download.newrelic.com/infrastructure_agent/windows/integrations/nrjmx/nrjmx-amd64.1.5.3.msi"
         run: |
           build/windows/download_nrjmx.sh
       - name: Create MSI
