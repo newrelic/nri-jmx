@@ -25,8 +25,8 @@ type argumentList struct {
 	sdkArgs.DefaultArgumentList
 	MetricLimit              int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
 	Timeout                  int    `default:"10000" help:"Timeout for JMX queries"`
-	JmxRemote                bool   `default:"false" help:"When activated uses the JMX remote url format format (by default on JBoss Domain-mode)"`
-	JmxRemoteJbossStandalone bool   `default:"false" help:"When activated uses the JMX remote url format format on JBoss Standalone-mode"`
+	JmxRemote                bool   `default:"false" help:"When activated uses the JMX remote url connection format (by default on JBoss Domain-mode)"`
+	JmxRemoteJbossStandalone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
 	JmxRemoteJbossStandlone  bool   `default:"false" help:"Deprecated, use -jmx-remote-jboss-standalone instead"`
 	LocalEntity              bool   `default:"false" help:"Collect all metrics on the local entity. Use only when monitoring localhost."`
 	RemoteMonitoring         bool   `default:"false" help:"Allows to monitor multiple instances as 'remote' entity. Set to 'FALSE' value for backwards compatibility otherwise set to 'TRUE'"`
@@ -40,15 +40,15 @@ type argumentList struct {
 	CollectionFiles          string `default:"" help:"A comma separated list of full paths to metrics collections configuration files"`
 	CollectionConfig         string `default:"" help:"JSON format metrics collection configuration"`
 	NrJmx                    string `default:"/usr/bin/nrjmx" help:"nrjmx tool executable path"`
-	ConnectionURL            string `default:"" help:"full format URL"`
+	ConnectionURL            string `default:"" help:"full connection URL"`
 	Query                    string `default:"" help:"For troubleshooting only: Connect to the JMX endpoint and execute the query. Query format DOMAIN:BEAN"`
 	ConfigFile               string `default:"/etc/newrelic-infra/integrations.d/jmx-config.yml" help:"For troubleshooting only: Specify JMX config file. If you don't want to load the config from the file set this empty"`
 	InstanceName             string `default:"" help:"For troubleshooting only: Specify which block from the jmx config file will be used. You can find the value in the jmx config file. Is the name field of the instance / integration. If left empty, first configuration block will be used."`
 	JmxHost                  string `default:"localhost" help:"The host running JMX"`
 	JmxPort                  string `default:"9999" help:"The port JMX is running on"`
 	JmxURIPath               string `default:"" help:"The path portion of the JMX Service URI. This is useful for nonstandard service uris"`
-	JmxUser                  string `default:"" help:"The username for the JMX format"`
-	JmxPass                  string `default:"" help:"The password for the JMX format"`
+	JmxUser                  string `default:"" help:"The username for the JMX connection"`
+	JmxPass                  string `default:"" help:"The password for the JMX connection"`
 }
 
 var (
@@ -99,7 +99,7 @@ func main() {
 
 	_, err = jmxClient.Open(jmxConfig)
 	if err != nil {
-		log.Error("Failed to open JMX format, error: %v, Config: (%s)",
+		log.Error("Failed to open JMX connection, error: %v, Config: (%s)",
 			err,
 			gojmx.FormatConfig(jmxConfig, args.HideSecrets),
 		)
@@ -124,7 +124,7 @@ func main() {
 
 	if err := jmxClient.Close(); err != nil {
 		log.Error(
-			"Failed to close JMX format: %s", err)
+			"Failed to close JMX connection: %s", err)
 	}
 
 	jmxIntegration.Entities = checkMetricLimit(jmxIntegration.Entities)

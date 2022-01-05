@@ -30,7 +30,7 @@ func FormatQuery(client Client, config *gojmx.JMXConfig, mBeanGlobPattern string
 	defer func() {
 		if err := client.Close(); err != nil {
 			log.Error(
-				"Failed to close JMX format: %s", err)
+				"Failed to close JMX connection: %s", err)
 		}
 	}()
 

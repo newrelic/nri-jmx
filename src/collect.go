@@ -368,8 +368,8 @@ func newRemoteEntity(domain, suffix string, i *integration.Integration) (*integr
 	return i.Entity(fmt.Sprintf("%s:%s", domain, suffix), "jmx-domain")
 }
 
-// getConnectionURLSAP extracts last part that describes format string,
-// in case that it can't extract SAP part, will return full format URL
+// getConnectionURLSAP extracts last part that describes connection string,
+// in case that it can't extract SAP part, will return full connection URL
 // ref: https://docs.oracle.com/javase/7/docs/api/javax/management/remote/JMXServiceURL.html
 func getConnectionURLSAP(connectionURL string) string {
 	r := strings.Split(connectionURL, "://")
