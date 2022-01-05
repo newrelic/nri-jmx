@@ -6,22 +6,43 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/newrelic/nrjmx/gojmx"
+
 	"github.com/kr/pretty"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/stretchr/testify/assert"
 )
 
+type jmxClientMock struct {
+	response gojmx.QueryResponse
+	err      error
+}
+
+func (j *jmxClientMock) Open(config *gojmx.JMXConfig) (*gojmx.Client, error) {
+	return nil, j.err
+}
+func (j *jmxClientMock) Close() error {
+	return j.err
+}
+
+func (j *jmxClientMock) QueryMBean(mBeanNamePattern string) (gojmx.QueryResponse, error) {
+	return j.response, j.err
+}
+
 func TestRunCollection(t *testing.T) {
-
-	jmxQueryFunc = func(name string, timeout int) (map[string]interface{}, error) {
-		outmap := map[string]interface{}{
-			"java.lang:test1=test1,test2=test2,attr=testattr": "testresult",
-		}
-
-		return outmap, nil
+	client := &jmxClientMock{
+		response: gojmx.QueryResponse{
+			{
+				Attribute: &gojmx.JMXAttribute{
+					Attribute:   "java.lang:test1=test1,test2=test2,attr=testattr",
+					ValueType:   gojmx.ValueTypeString,
+					StringValue: "testresult",
+				},
+				Status: gojmx.QueryResponseStatusSuccess,
+			},
+		},
 	}
-
 	collection := []*domainDefinition{
 		{
 			domain:    "java.lang",
@@ -56,7 +77,7 @@ func TestRunCollection(t *testing.T) {
 
 	i, _ := integration.New("jmxtest", "0.1.0")
 
-	err := runCollection(collection, i, "testhost", "1234")
+	err := runCollection(collection, i, client, "testhost", "1234")
 	if err != nil {
 		t.Errorf("Unexpected error: %s", err.Error())
 		t.FailNow()
@@ -66,8 +87,8 @@ func TestRunCollection(t *testing.T) {
 		fmt.Println(pretty.Diff(expectedMetrics, i.Entities[0].Metrics[0].Metrics))
 		t.Error("Failed to produce expected metrics")
 	}
-
 }
+
 func TestGenerateEventType(t *testing.T) {
 	testCases := []struct {
 		input       string
@@ -281,10 +302,25 @@ func TestHandleResponse(t *testing.T) {
 		},
 		attributes: []*attributeRequest{},
 	}
-	response := map[string]interface{}{
-		"test.domain:test1=test1,test2=test2,attr=test3":   "test4",
-		"test.domain:test1=test1,test2=exclude,attr=test3": "test4",
+
+	response := gojmx.QueryResponse{
+		{
+			Attribute: &gojmx.JMXAttribute{
+				Attribute:   "test.domain:test1=test1,test2=test2,attr=test3",
+				ValueType:   gojmx.ValueTypeString,
+				StringValue: "testresult",
+			},
+			Status: gojmx.QueryResponseStatusSuccess,
+		},
+		{
+			Attribute: &gojmx.JMXAttribute{
+				Attribute:   "test.domain:test1=test1,test2=exclude,attr=test3",
+				ValueType:   gojmx.ValueTypeString,
+				StringValue: "testresult",
+			},
+		},
 	}
+
 	i, _ := integration.New("jmx", "0.1.0")
 
 	err := handleResponse(eventType, request, response, i, "testhost", "1234")
@@ -300,33 +336,34 @@ func TestHandleResponse(t *testing.T) {
 	if string(jsonbytes) != expectedMarshalled {
 		t.Error("Failed to get expected marshalled json")
 	}
-
 }
 
 func TestDefaultMetricType(t *testing.T) {
 	eventType := "TestSample"
 	defs, err := parseYaml("../test/data/activemq.yml")
-	if err != nil {
-		t.Error(err)
-	}
+	assert.NoError(t, err)
 
 	domainDefinitions, err := parseCollectionDefinition(defs)
-	if err != nil {
-		t.Error(err)
-	}
+	assert.NoError(t, err)
 
 	request := domainDefinitions[0].beans[0]
 
-	response := map[string]interface{}{
-		"org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Topic,destinationName=ActiveMQ.Advisory.Queue,attr=Name": "ActiveMQ.Advisory.Queue",
+	response := gojmx.QueryResponse{
+		{
+			Attribute: &gojmx.JMXAttribute{
+
+				Attribute:   "org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Topic,destinationName=ActiveMQ.Advisory.Queue,attr=Name",
+				ValueType:   gojmx.ValueTypeString,
+				StringValue: "ActiveMQ.Advisory.Queue",
+			},
+			Status: gojmx.QueryResponseStatusSuccess,
+		},
 	}
+
 	i, _ := integration.New("jmx", "0.1.0")
 
-	err = handleResponse(eventType, request, response, i, "testhost", "1234")
-	if err != nil {
-		t.Error(err)
-	}
-
+	errs := handleResponse(eventType, request, response, i, "testhost", "1234")
+	assert.Empty(t, errs)
 }
 
 func Test_getKeyProperties(t *testing.T) {
@@ -380,7 +417,6 @@ func Test_getKeyProperties(t *testing.T) {
 	}
 
 	assert.Equal(t, expected4, output4)
-
 }
 
 func Test_getConnectionUrlSAP(t *testing.T) {
@@ -391,4 +427,63 @@ func Test_getConnectionUrlSAP(t *testing.T) {
 	assert.Equal(t, "tomcat:9999/jmxrmi", getConnectionURLSAP(connURL))
 	assert.Equal(t, badConnURL, getConnectionURLSAP(badConnURL))
 	assert.Equal(t, badConnURL2, getConnectionURLSAP(badConnURL2))
+}
+
+func Test_filterJMXAttributes(t *testing.T) {
+	jmxAttributes := []*gojmx.JMXAttribute{
+		{
+			Attribute: "aaa",
+		},
+		{
+			Attribute: "bbb",
+		},
+		{
+			Attribute: "ccc",
+		},
+	}
+
+	filters := &beanRequest{
+		exclude: []*regexp.Regexp{
+			regexp.MustCompile("bbb"),
+		},
+	}
+
+	expected := []*gojmx.JMXAttribute{
+		{
+			Attribute: "aaa",
+		},
+		{
+			Attribute: "ccc",
+		},
+	}
+
+	actual := make([]*gojmx.JMXAttribute, 0)
+
+	for _, jmxAttr := range jmxAttributes {
+		if shouldFilterJMXAttr(jmxAttr, filters) {
+			continue
+		}
+		actual = append(actual, jmxAttr)
+	}
+
+	assert.ElementsMatch(t, expected, actual)
+}
+
+func Test_filterJMXAttributesNil(t *testing.T) {
+	jmxAttribute := &gojmx.JMXAttribute{
+		Attribute: "aaa",
+	}
+
+	filters := &beanRequest{
+		exclude: []*regexp.Regexp{
+			regexp.MustCompile("bbb"),
+		},
+	}
+
+	assert.True(t, shouldFilterJMXAttr(nil, filters))
+	assert.True(t, shouldFilterJMXAttr(jmxAttribute, nil))
+
+	assert.False(t, shouldFilterJMXAttr(jmxAttribute, &beanRequest{}))
+
+	assert.False(t, shouldFilterJMXAttr(&gojmx.JMXAttribute{}, &beanRequest{}))
 }

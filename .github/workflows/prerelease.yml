@@ -10,7 +10,7 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GO_VERSION: '1.16'
-  NRJMX_VERSION: '1.5.3'
+  NRJMX_VERSION: '2.0.0'
   INTEGRATION: "jmx"
   ORIGINAL_REPO_NAME: 'newrelic/nri-jmx'
   REPO_FULL_NAME: ${{ github.event.repository.full_name }}
@@ -144,9 +144,6 @@ jobs:
           build\windows\download_zip_extract_exe.ps1 "$env:INTEGRATION" ${{ matrix.goarch }} "$env:TAG" "$env:REPO_FULL_NAME"
       - name: Download nrjmx
         shell: bash
-        env:
-          # override latest with 1.5.3 until a fix is released (2020-01-28)
-          NRJMX_URL: "https://download.newrelic.com/infrastructure_agent/windows/integrations/nrjmx/nrjmx-amd64.1.5.3.msi"
         run: |
           build/windows/download_nrjmx.sh
       - name: Create MSI
@@ -185,7 +182,7 @@ jobs:
           username: ${{ secrets.OHAI_DOCKER_HUB_ID }}
           password: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
       - name: Publish to S3 action
-        uses: newrelic/infrastructure-publish-action@v1
+        uses: newrelic/infrastructure-publish-action@v1.1.0
         env:
           AWS_S3_BUCKET_NAME: "nr-downloads-ohai-staging"
           AWS_S3_LOCK_BUCKET_NAME: "onhost-ci-lock-staging"

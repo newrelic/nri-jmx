@@ -12,7 +12,7 @@ env:
   REPO_FULL_NAME: ${{ github.event.repository.full_name }}
   ORIGINAL_REPO_NAME: "newrelic/nri-jmx"
   GO_VERSION: '1.16'
-  NRJMX_VERSION: '1.5.3'
+  NRJMX_VERSION: '2.0.0'
   DOCKER_LOGIN_AVAILABLE: ${{ secrets.OHAI_DOCKER_HUB_ID }}
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         with:
           auditOn: push
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
+        uses: golangci/golangci-lint-action@v2.5.2
         continue-on-error: ${{ github.event_name != 'pull_request' }}
         with:
           only-new-issues: true

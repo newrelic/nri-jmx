@@ -91,7 +91,7 @@ func TestJMXIntegrationJSONConfig(t *testing.T) {
 
 func TestJMXIntegrationRemoteMonitoring(t *testing.T) {
 	jvmCollectionJSON := `{"collect":[{"domain":"java.lang","event_type":"JVMSample","beans":[{"query":"type=GarbageCollector,name=*","attributes":["CollectionCount","CollectionTime"]},{"query":"type=Memory","attributes":["HeapMemoryUsage.Committed","HeapMemoryUsage.Init","HeapMemoryUsage.Max","HeapMemoryUsage.Used","NonHeapMemoryUsage.Committed","NonHeapMemoryUsage.Init","NonHeapMemoryUsage.Max","NonHeapMemoryUsage.Used"]},{"query":"type=Threading","attributes":["ThreadCount","TotalStartedThreadCount"]},{"query":"type=ClassLoading","attributes":["LoadedClassCount"]},{"query":"type=Compilation","attributes":["TotalCompilationTime"]}]}]}`
-	stdout, stderr, err := runIntegration(t, "REMOTE_MONITORING=true","COLLECTION_FILES=", fmt.Sprintf("COLLECTION_CONFIG=%s", jvmCollectionJSON))
+	stdout, stderr, err := runIntegration(t, "REMOTE_MONITORING=true", "COLLECTION_FILES=", fmt.Sprintf("COLLECTION_CONFIG=%s", jvmCollectionJSON))
 
 	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
@@ -103,7 +103,7 @@ func TestJMXIntegrationRemoteMonitoring(t *testing.T) {
 
 func TestJMXIntegrationRemoteMonitoringConnectionUrl(t *testing.T) {
 	jvmCollectionJSON := `{"collect":[{"domain":"java.lang","event_type":"JVMSample","beans":[{"query":"type=GarbageCollector,name=*","attributes":["CollectionCount","CollectionTime"]},{"query":"type=Memory","attributes":["HeapMemoryUsage.Committed","HeapMemoryUsage.Init","HeapMemoryUsage.Max","HeapMemoryUsage.Used","NonHeapMemoryUsage.Committed","NonHeapMemoryUsage.Init","NonHeapMemoryUsage.Max","NonHeapMemoryUsage.Used"]},{"query":"type=Threading","attributes":["ThreadCount","TotalStartedThreadCount"]},{"query":"type=ClassLoading","attributes":["LoadedClassCount"]},{"query":"type=Compilation","attributes":["TotalCompilationTime"]}]}]}`
-	stdout, stderr, err := runIntegration(t, "CONNECTION_URL=service:jmx:rmi:///jndi/rmi://tomcat:9999/jmxrmi","REMOTE_MONITORING=true","COLLECTION_FILES=", fmt.Sprintf("COLLECTION_CONFIG=%s", jvmCollectionJSON))
+	stdout, stderr, err := runIntegration(t, "CONNECTION_URL=service:jmx:rmi:///jndi/rmi://tomcat:9999/jmxrmi", "REMOTE_MONITORING=true", "COLLECTION_FILES=", fmt.Sprintf("COLLECTION_CONFIG=%s", jvmCollectionJSON))
 
 	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
@@ -136,12 +136,12 @@ func TestJMXIntegration_ExceededMetricLimit(t *testing.T) {
 func TestJMXIntegration_ErrorOpenFuncOnInvalidOptions(t *testing.T) {
 	stdout, stderr, _ := runIntegration(t, "CONNECTION_URL=wrong_url")
 
-	expectedErrorMessage := "Failed to complete collection: cannot query"
+	expectedErrorMessage := "Failed to open JMX connection, error:.*Service URL must start with service:jmx:"
 
 	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
 	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
 
-	assert.NotEmpty(t, stdout, "unexpected stdout")
+	assert.Empty(t, stdout, "unexpected stdout")
 }
 
 func TestJMXIntegration_ErrorEmptyCollectionFiles(t *testing.T) {

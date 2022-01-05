@@ -31,12 +31,6 @@ For this example I'll copy the connectors from the newly created docker containe
 sudo docker cp <container_id>:/home/jboss/jboss-eap-7.2/bin/client/. /usr/lib/nrjmx/connectors/
 ```
 
-Test the JMX connection:
-
-```bash
-echo "*:*" | nrjmx -C service:jmx:remote+https://0.0.0.0:9993 -username admin -password Admin.123 -keyStore $(pwd)/key/jboss.keystore -keyStorePassword password -trustStore $(pwd)/key/jboss.truststore -trustStorePassword password
-```
-
 ##  3. Configure JMX integration
 
 
@@ -63,29 +57,42 @@ instances:
 
 All configuration options can be found in the public [documentation](https://docs.newrelic.com/docs/integrations/host-integrations/host-integrations-list/jmx-monitoring-integration#config).
 
+Test the JMX connection:
+
+`nri-jmx` query tool used the defined jmx-config.yml file and outputs the available JMX metrics.
+
+```bash
+/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
+```
+
 ### 3.2 Creating the metric collection configuration file.
 In the JMX configuration file, we specified a collection file `jmx-custom-metrics.yml`. This file is used to define which metrics we want to collect.
 
-We can inspect the available JMX metrics using nrjmx command directly or a visual tool like  JConsole.
-
-
-nrjmx tool ouputs the jmx metrics in JSON format. We can use jq tool to format the output to be more readable:
+We can inspect the available JMX metrics using nri-jmx command directly or a visual tool like JConsole.
 
 ```bash
-echo "*:*" | nrjmx -C service:jmx:remote+https://0.0.0.0:9993 -username admin -password Admin.123 -keyStore $(pwd)/key/jboss.keystore -keyStorePassword password -trustStore $(pwd)/key/jboss.truststore -trustStorePassword password | jq
+/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
 ```
 
 ```bash
 ....
-  "jboss.threads:name=default,type=thread-pool,attr=QueueSize": 0,
-  "jboss.as:subsystem=infinispan,cache-container=hibernate,local-cache=timestamps,memory=object,attr=size": -1,
-  "jboss.as:subsystem=datasources,data-source=ExampleDS,statistics=jdbc,attr=PreparedStatementCacheAddCount": 0,
-  "java.lang:type=Compilation,attr=TotalCompilationTime": 33183,
+=======================================================
+  - domain: jboss.threads
+    beans:
+....
+-------------------------------------------------------
+      - query: name="threadpool-5",type=thread-pool
+        attributes:
+          # Value[DOUBLE]: 0
+          - GrowthResistance
+          # Value[INT]: 2147483647
+          - MaximumQueueSize
 ....
 ```
 
-If for example we want to capture the QueueSize attribute for multiple thread names, we can use the wildcard:
+If for example we want to create a collection file to capture the MaximumQueueSize attribute we can define:
 
+`/etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml`
 ```yaml
 collect:
   - domain: jboss.threads
@@ -93,8 +100,9 @@ collect:
     beans:
       - query: name=*,type=thread-pool
         attributes:
-          - QueueSize
+          - MaximumQueueSize
 ```
+Notice the usage of `*` wildcard. This is useful when we want to capture all the metrics with that pattern.
 
 ### 3.3 Connecting with JConsole
 
@@ -132,6 +140,7 @@ The following example illustrates how to create a collection file using informat
 
 ![](./img/jconsole.png)
 
+`/etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml`
 ```yaml
 collect:
   - domain: java.lang

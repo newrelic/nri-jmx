@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"regexp"
@@ -9,13 +10,14 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
-	"github.com/newrelic/infra-integrations-sdk/jmx"
 	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nrjmx/gojmx"
 )
 
-// queryResponse is a struct that contains the
-// response from a JMX query
-type queryResponse map[string]interface{}
+var (
+	ErrNoDataForPattern = errors.New("empty data for pattern")
+	ErrRequestFailed    = errors.New("request failed")
+)
 
 // beanAttrValuePair is a convenience struct that
 // contains the fully qualified bean name + attribute
@@ -27,26 +29,24 @@ type beanAttrValuePair struct {
 	value    interface{}
 }
 
-func runCollection(collection []*domainDefinition, i *integration.Integration, host, port string) error {
+func runCollection(collection []*domainDefinition, i *integration.Integration, client Client, host, port string) error {
 	for _, domain := range collection {
 		var handlingErrs []error
 		for _, request := range domain.beans {
-			requestString := fmt.Sprintf("%s:%s", domain.domain, request.beanQuery)
-			result, err := jmxQueryFunc(requestString, args.Timeout)
-			if err != nil {
-				if err == jmx.ErrBeanPattern {
-					return fmt.Errorf("%s, your pattern: %s", err, requestString)
-				}
-				return fmt.Errorf("cannot query: %s, error: %s", requestString, err.Error())
+			response, err := client.QueryMBean(fmt.Sprintf("%s:%s", domain.domain, request.beanQuery))
+			if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
+				return fmt.Errorf("%w, error: %v", ErrConnectionErr, jmxConnErr.Message)
+			} else if err != nil {
+				return fmt.Errorf("%w, error: %v", ErrJMXCollection, err)
 			}
 
-			if len(result) == 0 {
-				handlingErrs = append(handlingErrs, fmt.Errorf("empty data for pattern: %s", requestString))
+			if len(response) == 0 {
+				handlingErrs = append(handlingErrs, fmt.Errorf("%w, Pattern: %s:%s", ErrNoDataForPattern, domain.domain, request.beanQuery))
 				continue
 			}
 
-			if err := handleResponse(domain.eventType, request, result, i, host, port); err != nil {
-				handlingErrs = append(handlingErrs, err)
+			if errs := handleResponse(domain.eventType, request, response, i, host, port); errs != nil {
+				handlingErrs = append(handlingErrs, errs...)
 			}
 		}
 
@@ -54,52 +54,70 @@ func runCollection(collection []*domainDefinition, i *integration.Integration, h
 			log.Error("Failed to parse some responses for domain %s: %v", domain.domain, handlingErrs)
 		}
 	}
-
 	return nil
+}
+
+// shouldFilterJMXAttr will remove attributes received but not requested by config.
+func shouldFilterJMXAttr(jmxAttr *gojmx.JMXAttribute, request *beanRequest) bool {
+	if jmxAttr == nil || request == nil {
+		return true
+	}
+
+	for _, pattern := range request.exclude {
+		if pattern.MatchString(jmxAttr.Attribute) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // handleResponse takes a response, filters out the excluded beans,
 // sorts the responses by domain, and passes each domain off to
 // insertDomainMetrics to populate the metric list
-func handleResponse(eventType string, request *beanRequest, response queryResponse, i *integration.Integration, host, port string) error {
-
-	// Delete excluded mbeans
-	for key := range response {
-		for _, pattern := range request.exclude {
-			if pattern.MatchString(key) {
-				delete(response, key)
-			}
-		}
-	}
-
+func handleResponse(eventType string, request *beanRequest, queryResponse gojmx.QueryResponse, i *integration.Integration, host, port string) (errs []error) {
 	// If there are multiple domains, we have to create an entity for each
 	// Create a map with domain as the key that returns query/value
 	domainsMap := make(map[string][]*beanAttrValuePair)
-	for key, val := range response {
-		domain, beanAttr, err := splitBeanName(key)
-		if err != nil {
-			return err
+	for _, response := range queryResponse {
+		attr := response.Attribute
+
+		// Delete excluded mbeans
+		if shouldFilterJMXAttr(attr, request) {
+			continue
 		}
 
-		domainsMap[domain] = append(domainsMap[domain], &beanAttrValuePair{beanAttr: beanAttr, value: val})
+		if response.Status != gojmx.QueryResponseStatusSuccess {
+			errs = append(errs, fmt.Errorf("%w: %s status: %s", ErrRequestFailed, request.beanQuery, response.StatusMsg))
+			continue
+		}
+
+		attrName := attr.Attribute
+
+		domain, beanAttr, err := splitBeanName(attrName)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+
+		domainsMap[domain] = append(domainsMap[domain], &beanAttrValuePair{beanAttr: beanAttr, value: attr.GetValue()})
 	}
 
 	// For each domain, create an entity and a metric set
 	for domain, beanAttrVals := range domainsMap {
 		err := insertDomainMetrics(eventType, domain, beanAttrVals, request, i, host, port)
 		if err != nil {
-			return err
+			errs = append(errs, err)
+			continue
 		}
 	}
-
-	return nil
+	return
 }
 
 // insertDomainMetrics akes a domain and a list of attr:value pairs,
 // creates an entity and metric set for the domain, and populates the
 // metric set for each attribute to be collected
 func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAttrValuePair, request *beanRequest, i *integration.Integration, host, port string) error {
-
 	// Create an entity for the domain
 	var e *integration.Entity
 	var err error
@@ -137,7 +155,7 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 					return err
 				}
 
-				// Get the metric set from the map or create it
+				// Query the metric set from the map or create it
 				metricSet, err := getOrCreateMetricSet(entityMetricSets, e, request, beanName, eventType, domain)
 				if err != nil {
 					return err
@@ -153,7 +171,6 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 			}
 		}
 	}
-
 	return nil
 }
 
@@ -161,7 +178,6 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 // returns a metric set from the map if it exists, or creates the metric set
 // and adds it to the map
 func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integration.Entity, request *beanRequest, beanNameMatch string, eventType string, domain string) (*metric.Set, error) {
-
 	// If the metric set exists, return it
 	if ms, ok := entityMetricSets[beanNameMatch]; ok {
 		return ms, nil
@@ -202,7 +218,6 @@ func getOrCreateMetricSet(entityMetricSets map[string]*metric.Set, e *integratio
 // Inserts a metric into a metric set, generating metric names
 // and metric types if unset
 func insertMetric(key string, val interface{}, attribute *attributeRequest, metricSet *metric.Set) error {
-
 	// Generate a metric name if unset
 	metricName, err := func() (string, error) {
 		if attribute.metricName == "" {
@@ -210,10 +225,8 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 			if err != nil {
 				return "", err
 			}
-
 			return metricName, nil
 		}
-
 		return attribute.metricName, nil
 	}()
 
@@ -238,7 +251,6 @@ func insertMetric(key string, val interface{}, attribute *attributeRequest, metr
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -308,7 +320,6 @@ func getKeyProperties(keyProperties string) (keyPropertiesMap map[string]string,
 	}
 
 	return keyPropertiesMap, nil
-
 }
 
 // Convenience function to split the domain:query string
@@ -346,11 +357,7 @@ func generateEventType(domain string) (string, error) {
 // on its ability to convert to a number
 func inferMetricType(s interface{}) metric.SourceType {
 	switch s.(type) {
-	case int:
-		return metric.GAUGE
-	case float64:
-		return metric.GAUGE
-	case float32:
+	case int, int32, int64, float32, float64:
 		return metric.GAUGE
 	default:
 		return metric.ATTRIBUTE

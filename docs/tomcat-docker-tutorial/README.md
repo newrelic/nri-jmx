@@ -33,12 +33,6 @@ Build and run the image, exposing the JMX port 9010:
 docker build -t tomcat_908_jmx . && docker run -d -p 9010:9010 --name=tomcat_908_jmx tomcat_908_jmx
 ```
 
-Test the JMX connection:
-
-```bash
-echo '*:*' | nrjmx -port 9010 -host localhost
-```
-
 ##  3. Configure JMX integration
 
 ### 3.1 First step is creating a JMX integration configuration file `/etc/newrelic-infra/integrations.d/jmx-config.yml`
@@ -68,17 +62,22 @@ integrations:
 
 All configuration options can be found in the public [documentation](https://docs.newrelic.com/docs/integrations/host-integrations/host-integrations-list/jmx-monitoring-integration#config).
 
+### Test the JMX connection:
+
+`nri-jmx` `query` tool uses the defined jmx-config.yml file to establish connection and  outputs the available JMX metrics.
+
+```bash
+/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
+```
+
 ### 3.2 Creating the metric collection configuration file.
 
 In the JMX configuration file, we specified a collection file `jmx-custom-metrics.yml`. This file is used to define which metrics we want to collect.
 
-We can inspect the available JMX metrics using nrjmx command directly or a visual tool like  JConsole.
-
-
-nrjmx tool ouputs the jmx metrics in JSON format. We can use jq tool to format the output to be more readable:
+We can inspect the available JMX metrics using nri-jmx command directly or a visual tool like JConsole.
 
 ```bash
-echo '*:*' | nrjmx  -port=9010 -H localhost | jq
+/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
 ```
 
 or you can start with [template collectors file](../../tomcat-metrics.yml.sample)
