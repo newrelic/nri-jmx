@@ -26,7 +26,6 @@ type argumentList struct {
 	sdkArgs.DefaultArgumentList
 	MetricLimit              int    `default:"200" help:"Number of metrics that can be collected per entity. If this limit is exceeded the entity will not be reported. A limit of 0 implies no limit."`
 	Timeout                  int    `default:"10000" help:"Timeout for JMX queries"`
-	JmxPort                  string `default:"9999" help:"The port JMX is running on"`
 	JmxRemote                bool   `default:"false" help:"When activated uses the JMX remote url connection format (by default on JBoss Domain-mode)"`
 	JmxRemoteJbossStandalone bool   `default:"false" help:"When activated uses the JMX remote url connection format on JBoss Standalone-mode"`
 	JmxRemoteJbossStandlone  bool   `default:"false" help:"Deprecated, use -jmx-remote-jboss-standalone instead"`
@@ -47,6 +46,7 @@ type argumentList struct {
 	ConfigFile               string `default:"/etc/newrelic-infra/integrations.d/jmx-config.yml" help:"For troubleshooting only: Specify JMX config file. If you don't want to load the config from the file set this empty"`
 	InstanceName             string `default:"" help:"For troubleshooting only: Specify which block from the jmx config file will be used. You can find the value in the jmx config file. Is the name field of the instance / integration. If left empty, first configuration block will be used."`
 	JmxHost                  string `default:"localhost" help:"The host running JMX"`
+	JmxPort                  string `default:"9999" help:"The port JMX is running on"`
 	JmxURIPath               string `default:"" help:"The path portion of the JMX Service URI. This is useful for nonstandard service uris"`
 	JmxUser                  string `default:"" help:"The username for the JMX connection"`
 	JmxPass                  string `default:"" help:"The password for the JMX connection"`
@@ -71,11 +71,12 @@ func main() {
 
 	// Troubleshooting mode, we need to read the args from the configuration file.
 	if args.Query != "" {
-		err = connection.SetArgs(&args, args.InstanceName, args.ConfigFile)
+		err := connection.SetArgs(args.InstanceName, args.ConfigFile)
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
+
 		result := connection.FormatQuery(jmxClient, getJMXConfig(), args.Query, args.HideSecrets)
 		fmt.Println(result)
 		os.Exit(0)

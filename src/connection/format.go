@@ -2,12 +2,11 @@ package connection
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
 
-	"github.com/iancoleman/strcase"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nrjmx/gojmx"
 	yaml "gopkg.in/yaml.v3"
@@ -46,7 +45,7 @@ func FormatQuery(client Client, config *gojmx.JMXConfig, mBeanGlobPattern string
 	return sb.String()
 }
 
-func SetArgs(args interface{}, integrationName, configFile string) error {
+func SetArgs(integrationName, configFile string) error {
 	if configFile == "" {
 		return nil
 	}
@@ -54,10 +53,10 @@ func SetArgs(args interface{}, integrationName, configFile string) error {
 	if err != nil {
 		return err
 	}
-	return parseConfigToArgs(args, result, integrationName, configFile)
+	return parseArgsFromConfig(result, integrationName, configFile)
 }
 
-func parseConfigToArgs(args interface{}, config []byte, integrationName, fileName string) error {
+func parseArgsFromConfig(config []byte, integrationName, fileName string) error {
 	cfg := configFile{
 		integrationName: integrationName,
 		fileName:        fileName,
@@ -72,26 +71,23 @@ func parseConfigToArgs(args interface{}, config []byte, integrationName, fileNam
 		return err
 	}
 
-	return setArgs(args, fileName, configOptions)
+	return setArgs(configOptions)
 }
 
-func setArgs(args interface{}, fileName string, configOptions map[string]interface{}) error {
-	r := reflect.ValueOf(args)
+func setArgs(configOptions map[string]interface{}) error {
 	for optionName, option := range configOptions {
-		camelCase := strcase.ToCamel(strings.ToLower(optionName))
-		fieldByName := reflect.Indirect(r).FieldByName(camelCase)
-		if !fieldByName.IsValid() {
-			log.Warn("%s: unknown field: '%s' in file: '%s'", ErrConfig, optionName, fileName)
-			continue
-		}
+		os.Setenv(strings.ToUpper(optionName), fmt.Sprintf("%v", option))
+	}
 
-		val := reflect.ValueOf(option)
-		if fieldByName.Type() != val.Type() {
-			return fmt.Errorf("%w: wrong type for option: '%s': '%s' instead of '%s', in file: '%s'",
-				ErrConfig, optionName, val.Type(), fieldByName.Type(), fileName)
+	// Overwrite all flag values with env vars.
+	flag.VisitAll(func(f *flag.Flag) {
+		envName := strings.ToUpper(f.Name)
+		if os.Getenv(envName) != "" {
+			f.Value.Set(os.Getenv(envName)) // nolint: errcheck
 		}
-
-		fieldByName.Set(val)
+	})
+	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
+		return err
 	}
 	return nil
 }
