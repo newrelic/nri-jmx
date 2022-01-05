@@ -8,7 +8,7 @@ if [[ -z $NRJMX_URL ]]; then
   echo "Generating nrjmx asset url"
   if [[ -z $NRJMX_VERSION ]]; then
     echo "Fetching latest nrjmx version"
-    NRJMX_VERSION=$(curl --silent "https://api.github.com/repos/newrelic/nrjmx/releases/latest" | grep '"tag_name":' |  grep -oE '[0-9.?]+')
+    NRJMX_VERSION=$(curl --silent "https://api.github.com/repos/newrelic/nrjmx/tags"| grep 'name' | grep -oE '[0-9.?]+' | sort -V | tail -n 1)
     echo $NRJMX_VERSION
   fi
   echo "Using latest nrjmx version $NRJMX_VERSION."
@@ -16,4 +16,4 @@ if [[ -z $NRJMX_URL ]]; then
   echo $NRJMX_URL
 fi
 
-curl -Ss --fail "$NRJMX_URL" -o "build/package/windows/bundle/nrjmx-amd64.msi"
+curl -L -Ss --fail "$NRJMX_URL" -o "build/package/windows/bundle/nrjmx-amd64.msi"
