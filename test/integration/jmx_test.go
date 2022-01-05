@@ -108,7 +108,7 @@ func TestJMXIntegrationRemoteMonitoringConnectionUrl(t *testing.T) {
 	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
 
-	schemaPath := filepath.Join("json-schema-files", "jmx-schema-remote-monitoring-connection-url.json")
+	schemaPath := filepath.Join("json-schema-files", "jmx-schema-remote-monitoring-format-url.json")
 	err = jsonschema.Validate(schemaPath, stdout)
 	assert.NoError(t, err, "The output of JMX integration doesn't have expected format.")
 }
@@ -136,7 +136,7 @@ func TestJMXIntegration_ExceededMetricLimit(t *testing.T) {
 func TestJMXIntegration_ErrorOpenFuncOnInvalidOptions(t *testing.T) {
 	stdout, stderr, _ := runIntegration(t, "CONNECTION_URL=wrong_url")
 
-	expectedErrorMessage := "Failed to open JMX connection, error:.*Service URL must start with service:jmx:"
+	expectedErrorMessage := "Failed to open JMX format, error:.*Service URL must start with service:jmx:"
 
 	errMatch, _ := regexp.MatchString(expectedErrorMessage, stderr)
 	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)

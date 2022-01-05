@@ -1,4 +1,4 @@
-package connection
+package main
 
 import (
 	"errors"
@@ -8,10 +8,10 @@ import (
 
 var (
 	ErrJMXCollection = errors.New("JMX collection failed")
-	ErrConnectionErr = errors.New("JMX connection failed")
+	ErrConnectionErr = errors.New("JMX format failed")
 )
 
-// Client interface for JMX connection.
+// Client interface for JMX format.
 type Client interface {
 	Open(config *gojmx.JMXConfig) (*gojmx.Client, error)
 	Close() error

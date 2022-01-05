@@ -1,4 +1,4 @@
-package connection
+package main
 
 import (
 	"errors"
@@ -16,6 +16,7 @@ var (
 	ErrConfig = errors.New("config error")
 )
 
+// FormatQuery is used for troubleshooting. It formats the result in multiple yaml sections.
 func FormatQuery(client Client, config *gojmx.JMXConfig, mBeanGlobPattern string, hideSecrets bool) string {
 	sb := strings.Builder{}
 	sb.WriteString("=======================================================\n")
@@ -29,7 +30,7 @@ func FormatQuery(client Client, config *gojmx.JMXConfig, mBeanGlobPattern string
 	defer func() {
 		if err := client.Close(); err != nil {
 			log.Error(
-				"Failed to close JMX connection: %s", err)
+				"Failed to close JMX format: %s", err)
 		}
 	}()
 
@@ -45,6 +46,7 @@ func FormatQuery(client Client, config *gojmx.JMXConfig, mBeanGlobPattern string
 	return sb.String()
 }
 
+// SetArgs will read the config file and will set the integration flags. This is used for troubleshooting.
 func SetArgs(integrationName, configFile string) error {
 	if configFile == "" {
 		return nil

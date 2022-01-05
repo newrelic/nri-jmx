@@ -11,7 +11,6 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
-	"github.com/newrelic/nri-jmx/src/connection"
 	"github.com/newrelic/nrjmx/gojmx"
 )
 
@@ -30,15 +29,15 @@ type beanAttrValuePair struct {
 	value    interface{}
 }
 
-func runCollection(collection []*domainDefinition, i *integration.Integration, client connection.Client, host, port string) error {
+func runCollection(collection []*domainDefinition, i *integration.Integration, client Client, host, port string) error {
 	for _, domain := range collection {
 		var handlingErrs []error
 		for _, request := range domain.beans {
 			response, err := client.QueryMBean(fmt.Sprintf("%s:%s", domain.domain, request.beanQuery))
 			if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
-				return fmt.Errorf("%w, error: %v", connection.ErrConnectionErr, jmxConnErr.Message)
+				return fmt.Errorf("%w, error: %v", ErrConnectionErr, jmxConnErr.Message)
 			} else if err != nil {
-				return fmt.Errorf("%w, error: %v", connection.ErrJMXCollection, err)
+				return fmt.Errorf("%w, error: %v", ErrJMXCollection, err)
 			}
 
 			if len(response) == 0 {
@@ -369,8 +368,8 @@ func newRemoteEntity(domain, suffix string, i *integration.Integration) (*integr
 	return i.Entity(fmt.Sprintf("%s:%s", domain, suffix), "jmx-domain")
 }
 
-// getConnectionURLSAP extracts last part that describes connection string,
-// in case that it can't extract SAP part, will return full connection URL
+// getConnectionURLSAP extracts last part that describes format string,
+// in case that it can't extract SAP part, will return full format URL
 // ref: https://docs.oracle.com/javase/7/docs/api/javax/management/remote/JMXServiceURL.html
 func getConnectionURLSAP(connectionURL string) string {
 	r := strings.Split(connectionURL, "://")
