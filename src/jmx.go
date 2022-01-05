@@ -70,7 +70,7 @@ func main() {
 
 	// Troubleshooting mode, we need to read the args from the configuration file.
 	if args.Query != "" {
-		err := SetArgs(args.InstanceName, args.ConfigFile)
+		err = SetArgs(args.InstanceName, args.ConfigFile)
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -217,7 +217,7 @@ func checkMetricLimit(entities []*integration.Entity) []*integration.Entity {
 }
 
 func getJMXConfig() *gojmx.JMXConfig {
-	port, err := strconv.ParseInt(args.JmxPort, 10, 32)
+	port, err := strconv.ParseInt(args.JmxPort, 10, 32) //nolint
 	if err != nil {
 		log.Error("Failed to parse JMX port argument: %v", err)
 	}
