@@ -30,10 +30,12 @@ type beanAttrValue struct {
 
 func runCollection(collection []*domainDefinition, i *integration.Integration, client Client, host, port string) error {
 	for _, domain := range collection {
+		var handlingErrs []error
+
 		for _, request := range domain.beans {
 			response, err := client.QueryMBeanAttributes(fmt.Sprintf("%s:%s", domain.domain, request.beanQuery))
 			if jmxErr, ok := gojmx.IsJMXError(err); ok {
-				log.Error("%v, Pattern: %s:%s, error: %v", ErrNoDataForPattern, domain.domain, request.beanQuery, jmxErr)
+				handlingErrs = append(handlingErrs, fmt.Errorf("%w, Pattern: %s:%s, error: %v", ErrNoDataForPattern, domain.domain, request.beanQuery, jmxErr))
 				continue
 			} else if jmxConnErr, ok := gojmx.IsJMXConnectionError(err); ok {
 				return fmt.Errorf("%w, error: %v", ErrConnectionErr, jmxConnErr.Message)
@@ -42,11 +44,19 @@ func runCollection(collection []*domainDefinition, i *integration.Integration, c
 			}
 
 			if len(response) == 0 {
-				log.Error("%v, Pattern: %s:%s", ErrNoDataForPattern, domain.domain, request.beanQuery)
+				handlingErrs = append(handlingErrs, fmt.Errorf("%w, Pattern: %s:%s", ErrNoDataForPattern, domain.domain, request.beanQuery))
 				continue
 			}
 
-			handleResponse(domain, request, response, i, host, port)
+			if errs := handleResponse(domain, request, response, i, host, port); errs != nil {
+				handlingErrs = append(handlingErrs, errs...)
+			}
+		}
+		for i, err := range handlingErrs {
+			if i == 0 {
+				log.Error("Failed to parse some responses for domain %s", domain.domain)
+			}
+			log.Error("can't parse response: %v", err)
 		}
 	}
 	return nil
@@ -78,7 +88,7 @@ func matchRequest(jmxAttr *gojmx.AttributeResponse, request *beanRequest) *attri
 // handleResponse takes a response, filters out the excluded beans,
 // sorts the responses by domain, and passes each domain off to
 // insertDomainMetrics to populate the metric list
-func handleResponse(domain *domainDefinition, request *beanRequest, response []*gojmx.AttributeResponse, i *integration.Integration, host, port string) {
+func handleResponse(domain *domainDefinition, request *beanRequest, response []*gojmx.AttributeResponse, i *integration.Integration, host, port string) (handlingErrs []error) {
 	// If there are multiple domains, we have to create an entity for each
 	// Create a map with domain as the key that returns query/value
 	domainsMap := make(map[string][]*beanAttrValue)
@@ -96,7 +106,7 @@ func handleResponse(domain *domainDefinition, request *beanRequest, response []*
 
 		domainName, beanAttr, err := splitBeanName(attribute.Name)
 		if err != nil {
-			log.Error("Failed to split mBeanName, error: %v", err)
+			handlingErrs = append(handlingErrs, err)
 			continue
 		}
 
@@ -111,7 +121,7 @@ func handleResponse(domain *domainDefinition, request *beanRequest, response []*
 	for domainName, beanAttrVals := range domainsMap {
 		err := insertDomainMetrics(domain.eventType, domainName, beanAttrVals, request, i, host, port)
 		if err != nil {
-			log.Error("Failed to process domain metrics, error: %v", err)
+			handlingErrs = append(handlingErrs, err)
 			continue
 		}
 	}
