@@ -4,12 +4,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/newrelic/nrjmx/gojmx"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/newrelic/nrjmx/gojmx"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/integration"

@@ -3,14 +3,15 @@ package main
 import (
 	"errors"
 	"fmt"
+	"net"
+	"regexp"
+	"strings"
+
 	"github.com/newrelic/infra-integrations-sdk/data/attribute"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nrjmx/gojmx"
-	"net"
-	"regexp"
-	"strings"
 )
 
 var (
