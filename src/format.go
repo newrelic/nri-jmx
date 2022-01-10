@@ -24,6 +24,7 @@ func FormatQuery(client Client, config *gojmx.JMXConfig, mBeanGlobPattern string
 	sb.WriteString("Config: " + gojmx.FormatConfig(config, hideSecrets) + "\n\n")
 	if _, err := client.Open(config); err != nil {
 		sb.WriteString("Error: " + err.Error() + "\n")
+		sb.WriteString("=======================================================\n")
 		return sb.String()
 	}
 
@@ -35,13 +36,26 @@ func FormatQuery(client Client, config *gojmx.JMXConfig, mBeanGlobPattern string
 	}()
 
 	sb.WriteString("Connected!\n")
+	sb.WriteString("=======================================================\n")
 
-	response, err := client.QueryMBean(mBeanGlobPattern)
+	response, err := client.QueryMBeanAttributes(mBeanGlobPattern)
 	if err != nil {
 		sb.WriteString("Error: " + err.Error() + "\n")
 		return sb.String()
 	}
-	sb.WriteString(gojmx.FormatJMXAttributes(response.GetValidAttributes()))
+	if len(response) == 0 {
+		sb.WriteString(fmt.Sprintf("No data returned for the pattern: \"%s\"\n", mBeanGlobPattern))
+		return sb.String()
+	}
+	attrs := make([]*gojmx.AttributeResponse, 0)
+	for _, attr := range response {
+		if attr.ResponseType == gojmx.ResponseTypeErr {
+			log.Warn(attr.StatusMsg)
+			continue
+		}
+		attrs = append(attrs, attr)
+	}
+	sb.WriteString(gojmx.FormatJMXAttributes(attrs))
 
 	return sb.String()
 }

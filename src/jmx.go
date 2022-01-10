@@ -98,19 +98,14 @@ func main() {
 	jmxConfig := getJMXConfig()
 
 	_, err = jmxClient.Open(jmxConfig)
+	log.Debug("nrjmx version: %s", jmxClient.GetClientVersion())
+
 	if err != nil {
 		log.Error("Failed to open JMX connection, error: %v, Config: (%s)",
 			err,
 			gojmx.FormatConfig(jmxConfig, args.HideSecrets),
 		)
 		os.Exit(1)
-	}
-
-	clientVersion, err := jmxClient.GetClientVersion()
-	if err != nil {
-		log.Debug("Failed to get nrjmx Version: %v", err)
-	} else {
-		log.Debug("nrjmx version: %s", clientVersion)
 	}
 
 	// Ensure a collection file is specified
@@ -233,8 +228,9 @@ func getJMXConfig() *gojmx.JMXConfig {
 		Port:                  int32(port),
 		Username:              args.JmxUser,
 		Password:              args.JmxPass,
-		RequestTimoutMs:       int64(args.Timeout),
+		RequestTimeoutMs:      int64(args.Timeout),
 		UseSSL:                args.JmxSSL,
+		Verbose:               args.Verbose,
 	}
 	if args.JmxURIPath != "" {
 		jmxConfig.UriPath = &(args.JmxURIPath)
