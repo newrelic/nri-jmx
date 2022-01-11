@@ -788,6 +788,8 @@ github.com/newrelic/nrjmx/gojmx v0.0.0-20220110132127-dff84652a12c h1:nGCJ15ogl5
 github.com/newrelic/nrjmx/gojmx v0.0.0-20220110132127-dff84652a12c/go.mod h1:IkAXyoBADgN1udITssgA861eVEGMckvBE3ML40Dkmn0=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20220110133924-2eeea6352b56 h1:YF6kG8xwILP+Ur5kmpNRrCbDKAwJ3x1k26/3KiOsW5s=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20220110133924-2eeea6352b56/go.mod h1:IkAXyoBADgN1udITssgA861eVEGMckvBE3ML40Dkmn0=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20220111091339-e2345236b704 h1:jrXjEoZpBYxHVdvCUBrWpR0wNqEnrdHExk2TYyhx518=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20220111091339-e2345236b704/go.mod h1:IkAXyoBADgN1udITssgA861eVEGMckvBE3ML40Dkmn0=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nishanths/exhaustive v0.2.3 h1:+ANTMqRNrqwInnP9aszg/0jDo+zbXa4x66U19Bx/oTk=
