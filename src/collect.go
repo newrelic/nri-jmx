@@ -149,6 +149,11 @@ func insertDomainMetrics(eventType string, domain string, beanAttrVals []*beanAt
 	case args.LocalEntity:
 		e = i.LocalEntity()
 	default:
+		// create task for consistency with remote_monitoring
+		if args.ConnectionURL != "" {
+			host, port = getConnectionURLHostPort(args.ConnectionURL)
+		}
+
 		hostIDAttr := integration.NewIDAttribute("host", host)
 		portIDAttr := integration.NewIDAttribute("port", port)
 		e, err = i.Entity(domain, "jmx-domain", hostIDAttr, portIDAttr)
@@ -385,4 +390,18 @@ func getConnectionURLSAP(connectionURL string) string {
 		return connectionURL
 	}
 	return r[len(r)-1]
+}
+
+func getConnectionURLHostPort(connectionURL string) (string, string) {
+	const hostAndPortCount = 2
+	connectionSAP := getConnectionURLSAP(connectionURL)
+	hostParts := strings.Split(connectionSAP, "/")
+	if len(hostParts) == 0 {
+		return "", ""
+	}
+	hostAndPort := strings.Split(hostParts[0], ":")
+	if len(hostAndPort) != hostAndPortCount {
+		return "", ""
+	}
+	return hostAndPort[0], hostAndPort[1]
 }
