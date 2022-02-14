@@ -421,6 +421,20 @@ func Test_getConnectionUrlSAP(t *testing.T) {
 	assert.Equal(t, badConnURL2, getConnectionURLSAP(badConnURL2))
 }
 
+func Test_getHostPortPairFromConnectionURL(t *testing.T) {
+	host, port := getConnectionURLHostPort("service:jmx:rmi:///jndi/rmi://tomcat:9999/jmxrmi")
+	assert.Equal(t, "tomcat", host)
+	assert.Equal(t, "9999", port)
+
+	host, port = getConnectionURLHostPort("random string")
+	assert.Equal(t, "", host)
+	assert.Equal(t, "", port)
+
+	host, port = getConnectionURLHostPort("service:jmx:rmi///jndi/rmi//tomcat:9999/jmxrmi")
+	assert.Equal(t, "", host)
+	assert.Equal(t, "", port)
+}
+
 func Test_matchRequest(t *testing.T) {
 	jmxAttributes := []*gojmx.AttributeResponse{
 		{
