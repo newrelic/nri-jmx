@@ -19,7 +19,7 @@ in config/standalone.xml. Build and run the docker image using the provided Dock
 
 Build and run the image, exposing the https JMX port 9993:
 ```bash
-docker build -t test/jmx_jboss . && docker run -d -p 9993:9993 -p 8080:8080 -p 8443:8443 -p 9990:9990 test/jmx_jboss
+docker build -t test_jboss_tls . && docker run -d -p 9993:9993 -p 8080:8080 -p 8443:8443 -p 9990:9990 --name test_jboss_tls test_jboss_tls
 ```
 
 ### Install JBoss Custom connector
@@ -28,7 +28,7 @@ JMX allows the use of custom connectors to communicate with the application. In 
 For this example I'll copy the connectors from the newly created docker container:
 
 ```bash
-sudo docker cp <container_id>:/home/jboss/jboss-eap-7.2/bin/client/. /usr/lib/nrjmx/connectors/
+sudo docker cp test_jboss_tls:/home/jboss/jboss-eap-7.2/bin/client/. /usr/lib/nrjmx/connectors/
 ```
 
 ##  3. Configure JMX integration
@@ -37,20 +37,27 @@ sudo docker cp <container_id>:/home/jboss/jboss-eap-7.2/bin/client/. /usr/lib/nr
 ### 3.1 First step is creating a JMX integration configuration file `/etc/newrelic-infra/integrations.d/jmx-config.yml`
 
 ```yaml
-integration_name: com.newrelic.jmx
+integrations:
+  - name: nri-jmx
+    env:
+      COLLECTION_FILES: "/etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml"
+      CONNECTION_URL: "service:jmx:remote+https://localhost:9993"
+      JMX_USER: admin
+      JMX_PASS: Admin.123
+      KEY_STORE: <tutorial_path>/key/jboss.keystore
+      KEY_STORE_PASSWORD: password
+      TRUST_STORE: <tutorial_path>/key/jboss.truststore
+      TRUST_STORE_PASSWORD: password
 
-instances:
-  - name: jmx
-    command: all_data
-    arguments:
-      connection_url: "service:jmx:remote+https://localhost:9993"
-      jmx_user: admin
-      jmx_pass: Admin.123
-      key_store: <tutorial_path>/key/jboss.keystore
-      key_store_password: password
-      trust_store: <tutorial_path>/key/jboss.truststore
-      trust_store_password: password
-      collection_files: "/etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml"
+      # New users should leave this property as `true`, to identify the
+      # monitored entities as `remote`. Setting this property to `false` (the
+      # default value) is deprecated and will be removed soon, disallowing
+      # entities that are identified as `local`.
+      # Please check the documentation to get more information about local
+      # versus remote entities:
+      # https://github.com/newrelic/infra-integrations-sdk/blob/master/docs/entity-definition.md
+      REMOTE_MONITORING: "true"
+    interval: 15s
     labels:
       env: staging
 ```

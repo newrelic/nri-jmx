@@ -14,20 +14,12 @@
 
 ## 2. Expose JMX from JBoss
 
-For this tutorial we will run a JBoss service in Standalone-mode inside Docker using the following Dockerfile:
-
-```bash
-FROM jboss/wildfly:18.0.0.Final
-
-RUN /opt/jboss/wildfly/bin/add-user.sh admin1234 Password1! --silent
-
-CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0"]
-```
+For this tutorial we will run a JBoss service in Standalone-mode inside Docker using [./Dockerfile](./Dockerfile):
 
 Build and run the image, exposing the JMX port 9990:
 
 ```bash	
-docker build -t test_jboss . && docker run -d -p 9990:9990 test_jboss
+docker build -t test_jboss_standalone . && docker run -d -p 9990:9990 --name test_jboss_standalone  test_jboss_standalone
 ```
 ### Install JBoss Custom connector
 JMX allows the use of custom connectors to communicate with the application. In order to use a custom connector, you have to place the files inside the sub-folder connectors where nrjmx is installed.
@@ -35,7 +27,7 @@ JMX allows the use of custom connectors to communicate with the application. In 
 For this example I'll copy the connectors from the newly created docker container:
 
 ```bash
-sudo docker cp <container_id>:/opt/jboss/wildfly/bin/client/ /usr/lib/nrjmx/connectors/
+sudo docker cp test_jboss_standalone:/opt/jboss/wildfly/bin/client/ /usr/lib/nrjmx/connectors/
 ```
 
 ##  3. Configure JMX integration
@@ -44,19 +36,26 @@ sudo docker cp <container_id>:/opt/jboss/wildfly/bin/client/ /usr/lib/nrjmx/conn
 ### 3.1 First step is creating a JMX integration configuration file `/etc/newrelic-infra/integrations.d/jmx-config.yml`
 
 ```yaml
-integration_name: com.newrelic.jmx
-
-instances:
-  - name: jmx
-    command: all_data
-    arguments:
-      jmx_host: 0.0.0.0
-      jmx_port: 9990
-      jmx_user: admin1234
-      jmx_pass: Password1!
-      jmx_remote: true
-      jmx_remote_jboss_standlone: true
-      collection_files : "/etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml"
+integrations:
+  - name: nri-jmx
+    env:
+      COLLECTION_FILES : "/etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml"
+      JMX_HOST: 0.0.0.0
+      JMX_PORT: "9990"
+      JMX_USER: admin1234
+      JMX_PASS: Password1!
+      JMX_REMOTE: true
+      JMX_REMOTE_JBOSS_STANDLONE: true
+      
+      # New users should leave this property as `true`, to identify the
+      # monitored entities as `remote`. Setting this property to `false` (the
+      # default value) is deprecated and will be removed soon, disallowing
+      # entities that are identified as `local`.
+      # Please check the documentation to get more information about local
+      # versus remote entities:
+      # https://github.com/newrelic/infra-integrations-sdk/blob/master/docs/entity-definition.md
+      REMOTE_MONITORING: "true"
+    interval: 15s
     labels:
       env: staging
 ```
