@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -118,7 +119,7 @@ func TestJMXIntegration_ShowVersion(t *testing.T) {
 	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
 
-	expectedOutMessage := "New Relic Jmx integration Version: 0.0.0, Platform: linux/amd64, GoVersion: go1.16.3, GitCommit: , BuildDate: \n"
+	expectedOutMessage := "New Relic Jmx integration Version: 0.0.0, Platform: linux/amd64, GoVersion: go1.18, GitCommit: , BuildDate: \n"
 	assert.Equal(t, expectedOutMessage, stdout)
 }
 
