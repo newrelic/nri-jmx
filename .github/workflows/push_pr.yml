@@ -26,8 +26,17 @@ jobs:
         uses: returntocorp/semgrep-action@v1
         with:
           auditOn: push
+
+      - name: Modify go.mod version to support golangci-lint
+        run: sed -i -e 's/go 1\.18/go 1\.17/' go.mod
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'
+
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2.5.2
+        uses: golangci/golangci-lint-action@v3
         continue-on-error: ${{ github.event_name != 'pull_request' }}
         with:
           only-new-issues: true
