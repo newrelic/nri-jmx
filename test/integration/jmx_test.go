@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package integration
@@ -118,8 +119,8 @@ func TestJMXIntegration_ShowVersion(t *testing.T) {
 	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
 
-	expectedOutMessage := "New Relic Jmx integration Version: 0.0.0, Platform: linux/amd64, GoVersion: go1.16.3, GitCommit: , BuildDate: \n"
-	assert.Equal(t, expectedOutMessage, stdout)
+	expectedOutMessage := "New Relic Jmx integration Version: 0\\.0\\.0, Platform: linux/(amd|arm)64, GoVersion: go1\\.18\\.[0-9]+, GitCommit: , BuildDate:"
+	assert.Regexp(t, regexp.MustCompile(expectedOutMessage), stdout)
 }
 
 func TestJMXIntegration_ExceededMetricLimit(t *testing.T) {
