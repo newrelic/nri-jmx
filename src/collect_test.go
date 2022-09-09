@@ -26,7 +26,7 @@ func (j *jmxClientMock) Close() error {
 	return j.err
 }
 
-func (j *jmxClientMock) QueryMBeanAttributes(mBeanNamePattern string) ([]*gojmx.AttributeResponse, error) {
+func (j *jmxClientMock) QueryMBeanAttributes(mBeanNamePattern string, mBeanAttributeName ...string) ([]*gojmx.AttributeResponse, error) {
 	return j.response, j.err
 }
 
