@@ -112,14 +112,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	defer func() {
-		if err = jmxClient.Close(); err != nil {
-			log.Error(
-				"Failed to close JMX connection: %s", err)
-		}
-	}()
-
 	err = runMetricCollection(jmxIntegration, jmxClient)
+
+	// Make sure we close the connection after collection was done.
+	// We cannot defer this, since we are using log.Fail/os.Exit
+	if connErr := jmxClient.Close(); connErr != nil {
+		log.Error(
+			"Failed to close JMX connection: %s", err)
+	}
+
 	fatalIfErr(err)
 
 	jmxIntegration.Entities = checkMetricLimit(jmxIntegration.Entities)
