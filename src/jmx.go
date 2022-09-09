@@ -119,7 +119,7 @@ func main() {
 	}
 
 	defer func() {
-		if err := jmxClient.Close(); err != nil {
+		if err = jmxClient.Close(); err != nil {
 			log.Error(
 				"Failed to close JMX connection: %s", err)
 		}
@@ -128,6 +128,7 @@ func main() {
 	err = runMetricCollection(jmxIntegration, jmxClient)
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 
 	jmxIntegration.Entities = checkMetricLimit(jmxIntegration.Entities)
