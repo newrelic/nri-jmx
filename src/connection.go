@@ -15,5 +15,5 @@ var (
 type Client interface {
 	Open(config *gojmx.JMXConfig) (*gojmx.Client, error)
 	Close() error
-	QueryMBeanAttributes(mBeanNamePattern string) ([]*gojmx.AttributeResponse, error)
+	QueryMBeanAttributes(mBeanNamePattern string, mBeanAttributeName ...string) ([]*gojmx.AttributeResponse, error)
 }
