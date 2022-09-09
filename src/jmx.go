@@ -69,20 +69,14 @@ var (
 func main() {
 	// Create a new integration
 	jmxIntegration, err := integration.New(integrationName, integrationVersion, integration.Args(&args))
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+	fatalIfErr(err)
 
 	jmxClient := gojmx.NewClient(context.Background())
 
 	// Troubleshooting mode, we need to read the args from the configuration file.
 	if args.Query != "" {
 		err = SetArgs(args.InstanceName, args.ConfigFile)
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+		fatalIfErr(err)
 
 		result := FormatQuery(jmxClient, getJMXConfig(), args.Query, args.HideSecrets)
 		fmt.Println(result)
@@ -126,10 +120,7 @@ func main() {
 	}()
 
 	err = runMetricCollection(jmxIntegration, jmxClient)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+	fatalIfErr(err)
 
 	jmxIntegration.Entities = checkMetricLimit(jmxIntegration.Entities)
 
@@ -357,4 +348,10 @@ func getJMXConfig() *gojmx.JMXConfig {
 		jmxConfig.UriPath = &(args.JmxURIPath)
 	}
 	return jmxConfig
+}
+
+func fatalIfErr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
