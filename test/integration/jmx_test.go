@@ -228,13 +228,13 @@ func TestJMXIntegration_LongRunningIntegration(t *testing.T) {
 	// take time to timeout. The assumption is that after 60 seconds even if the jmx connection hangs,
 	// when we restart the container again it will fail because of a new server listening on jmx port.
 	log.Info("Waiting for jmx connection to fail")
-	time.Sleep(60 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	err = helpers.RunDockerCommandForContainer(t, "start", serviceContainer)
 	require.NoError(t, err)
 
 	log.Info("Waiting for jmx server to be up again")
-	time.Sleep(30 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	_, stderr := output.Flush(t)
 
