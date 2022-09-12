@@ -1,3 +1,11 @@
+//go:build integration
+// +build integration
+
+/*
+ * Copyright 2022 New Relic Corporation. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package helpers
 
 import (
@@ -5,14 +13,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/newrelic/infra-integrations-sdk/log"
-	"github.com/newrelic/nri-jmx/test/integration/jsonschema"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"os/exec"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/newrelic/infra-integrations-sdk/log"
+	"github.com/newrelic/nri-jmx/test/integration/jsonschema"
+	"github.com/stretchr/testify/assert"
 )
 
 // ExecInContainer executes the given command inside the specified container. It returns three values:
