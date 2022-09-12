@@ -6,8 +6,12 @@ package integration
 import (
 	"context"
 	"flag"
+	"fmt"
+	"github.com/newrelic/nri-jmx/test/integration/jsonschema"
 	"github.com/stretchr/testify/require"
+	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
