@@ -238,7 +238,7 @@ func TestJMXIntegration_LongRunningIntegration(t *testing.T) {
 
 	_, stderr := output.Flush(t)
 
-	helpers.AssertReceivedErrors(t, "connection error", stderr...)
+	helpers.AssertReceivedErrors(t, "JMX connection failed", stderr...)
 
 	helpers.AssertReceivedPayloadsMatchSchema(t, ctx, output, schemaFile, 10*time.Second)
 }
