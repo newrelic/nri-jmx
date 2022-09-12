@@ -23,7 +23,9 @@ import (
 
 var (
 	defaultContainer = "integration_nri-jmx_1"
-	defaultBinPath   = "/nri-jmx"
+	serviceContainer = "integration_tomcat_1"
+
+	defaultBinPath = "/nri-jmx"
 
 	jmx_host               = "tomcat"
 	defaultCollectionFiles = "/jvm-metrics.yml,/tomcat-metrics.yml"
@@ -219,7 +221,7 @@ func TestJMXIntegration_LongRunningIntegration(t *testing.T) {
 	schemaFile := filepath.Join("json-schema-files", "jmx-schema.json")
 	helpers.AssertReceivedPayloadsMatchSchema(t, ctx, output, schemaFile, 10*time.Second)
 
-	err = helpers.RunDockerCommandForContainer(t, "stop", defaultContainer)
+	err = helpers.RunDockerCommandForContainer(t, "stop", serviceContainer)
 	require.NoError(t, err)
 
 	// Wait for the jmx connection to fail. We need to give it time as it might
@@ -228,7 +230,7 @@ func TestJMXIntegration_LongRunningIntegration(t *testing.T) {
 	log.Info("Waiting for jmx connection to fail")
 	time.Sleep(60 * time.Second)
 
-	err = helpers.RunDockerCommandForContainer(t, "start", defaultContainer)
+	err = helpers.RunDockerCommandForContainer(t, "start", serviceContainer)
 	require.NoError(t, err)
 
 	log.Info("Waiting for jmx server to be up again")
