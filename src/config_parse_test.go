@@ -7,10 +7,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"reflect"
 	"regexp"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/kr/pretty"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
