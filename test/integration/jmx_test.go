@@ -4,17 +4,16 @@
 package integration
 
 import (
+	"context"
 	"flag"
-	"fmt"
-	"os"
+	"github.com/stretchr/testify/require"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-jmx/test/integration/helpers"
-	"github.com/newrelic/nri-jmx/test/integration/jsonschema"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -179,4 +178,61 @@ func TestJMXIntegration_ErrorCollectionFileNotExisting(t *testing.T) {
 	assert.Truef(t, errMatch, "Expected error message: '%s', got: '%s'", expectedErrorMessage, stderr)
 
 	assert.Empty(t, stdout, "unexpected stdout")
+}
+
+func TestJMXIntegration_LongRunningIntegration(t *testing.T) {
+	jvmCollectionJSON := `{"collect":[{"domain":"java.lang","event_type":"JVMSample","beans":[{"query":"type=GarbageCollector,name=*","attributes":["CollectionCount","CollectionTime"]},{"query":"type=Memory","attributes":["HeapMemoryUsage.Committed","HeapMemoryUsage.Init","HeapMemoryUsage.Max","HeapMemoryUsage.Used","NonHeapMemoryUsage.Committed","NonHeapMemoryUsage.Init","NonHeapMemoryUsage.Max","NonHeapMemoryUsage.Used"]},{"query":"type=Threading","attributes":["ThreadCount","TotalStartedThreadCount"]},{"query":"type=ClassLoading","attributes":["LoadedClassCount"]},{"query":"type=Compilation","attributes":["TotalCompilationTime"]}]}]}`
+
+	ctx, cancelFn := context.WithTimeout(context.Background(), 300*time.Second)
+	defer cancelFn()
+
+	env := map[string]string{
+		"COLLECTION_CONFIG":  jvmCollectionJSON,
+		"LONG_RUNNING":       "true",
+		"INTERVAL":           "2",
+		"HEARTBEAT_INTERVAL": "2",
+		"JMX_HOST":           jmx_host,
+
+		// Uncomment those for troubleshooting.
+		// "VERBOSE":               "true",
+		// "ENABLE_INTERNAL_STATS": "true",
+	}
+
+	cmd := helpers.NewDockerExecCommand(ctx, t, defaultContainer, []string{"/nri-jmx"}, env)
+
+	output, err := helpers.StartLongRunningProcess(ctx, t, cmd)
+	assert.NoError(t, err)
+
+	go func() {
+		err = cmd.Wait()
+
+		// Avoid failing the test when we cancel the context at the end. (This is a long-running integration)
+		if ctx.Err() == nil {
+			assert.NoError(t, err)
+		}
+	}()
+
+	schemaFile := filepath.Join("json-schema-files", "jmx-schema.json")
+	helpers.AssertReceivedPayloadsMatchSchema(t, ctx, output, schemaFile, 10*time.Second)
+
+	err = helpers.RunDockerCommandForContainer(t, "stop", defaultContainer)
+	require.NoError(t, err)
+
+	// Wait for the jmx connection to fail. We need to give it time as it might
+	// take time to timeout. The assumption is that after 60 seconds even if the jmx connection hangs,
+	// when we restart the container again it will fail because of a new server listening on jmx port.
+	log.Info("Waiting for jmx connection to fail")
+	time.Sleep(60 * time.Second)
+
+	err = helpers.RunDockerCommandForContainer(t, "start", defaultContainer)
+	require.NoError(t, err)
+
+	log.Info("Waiting for jmx server to be up again")
+	time.Sleep(30 * time.Second)
+
+	_, stderr := output.Flush(t)
+
+	helpers.AssertReceivedErrors(t, "connection error", stderr...)
+
+	helpers.AssertReceivedPayloadsMatchSchema(t, ctx, output, schemaFile, 10*time.Second)
 }

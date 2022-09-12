@@ -10,6 +10,8 @@ services:
         -Dcom.sun.management.jmxremote.port=9999
         -Dcom.sun.management.jmxremote.rmi.port=9999
         -Djava.rmi.server.hostname=tomcat
+    ports:
+    - "9999:9999"
 
   nri-jmx:
     container_name: integration_nri-jmx_1
