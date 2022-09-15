@@ -1,3 +1,8 @@
+/*
+ * Copyright 2022 New Relic Corporation. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package main
 
 import (
@@ -8,7 +13,7 @@ import (
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
 	"github.com/newrelic/infra-integrations-sdk/log"
-	yaml "gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v3"
 )
 
 type collectBlock struct {
@@ -185,7 +190,7 @@ func parseAttributes(rawAttributes []interface{}) ([]*attributeRequest, error) {
 			var err error
 			switch a := attribute.(type) {
 			// If it's a map
-			case map[interface{}]interface{}:
+			case map[string]interface{}:
 				newAttribute, err = parseAttributeFromMap(a)
 			// If it's only the attribute name
 			case string:
@@ -226,7 +231,7 @@ func parseAttributeFromString(a string) (*attributeRequest, error) {
 	return &attributeRequest{attrRegexp: attrRegexp, metricType: -1}, nil
 }
 
-func parseAttributeFromMap(a map[interface{}]interface{}) (*attributeRequest, error) {
+func parseAttributeFromMap(a map[string]interface{}) (*attributeRequest, error) {
 	attrName, namePresent := a["attr"]
 	attrRegexpString, regexPresent := a["attr_regex"]
 	var attrRegexp *regexp.Regexp
@@ -269,7 +274,7 @@ func parseAttributeFromMap(a map[interface{}]interface{}) (*attributeRequest, er
 	return newAttribute, nil
 }
 
-func getMetricType(a map[interface{}]interface{}) (metric.SourceType, error) {
+func getMetricType(a map[string]interface{}) (metric.SourceType, error) {
 	metricTypeString, ok := a["metric_type"]
 	var metricType metric.SourceType
 	if !ok {

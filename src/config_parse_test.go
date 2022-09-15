@@ -1,3 +1,8 @@
+/*
+ * Copyright 2022 New Relic Corporation. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package main
 
 import (
@@ -5,6 +10,8 @@ import (
 	"reflect"
 	"regexp"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/kr/pretty"
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
@@ -48,42 +55,42 @@ func TestParseAttributeFromString(t *testing.T) {
 
 func TestParseAttributeFromMap(t *testing.T) {
 	testCases := []struct {
-		input        map[interface{}]interface{}
+		input        map[string]interface{}
 		output       *attributeRequest
 		expectedFail bool
 	}{
 		{
-			map[interface{}]interface{}{"attr": "testattr", "metric_type": "gauge", "metric_name": "testmetricname"},
+			map[string]interface{}{"attr": "testattr", "metric_type": "gauge", "metric_name": "testmetricname"},
 			&attributeRequest{attrRegexp: regexp.MustCompile("attr=testattr$"), metricName: "testmetricname", metricType: metric.GAUGE},
 			false,
 		},
 		{
-			map[interface{}]interface{}{"attr": "testattr", "metric_name": "testmetricname"},
+			map[string]interface{}{"attr": "testattr", "metric_name": "testmetricname"},
 			&attributeRequest{attrRegexp: regexp.MustCompile("attr=testattr$"), metricName: "testmetricname", metricType: -1},
 			false,
 		},
 		{
-			map[interface{}]interface{}{"attr": "testattr"},
+			map[string]interface{}{"attr": "testattr"},
 			&attributeRequest{attrRegexp: regexp.MustCompile("attr=testattr$"), metricType: -1},
 			false,
 		},
 		{
-			map[interface{}]interface{}{"attr": "testattr", "attr_regex": "testattrregex"},
+			map[string]interface{}{"attr": "testattr", "attr_regex": "testattrregex"},
 			&attributeRequest{attrRegexp: regexp.MustCompile("attr=testattr$"), metricType: -1},
 			true,
 		},
 		{
-			map[interface{}]interface{}{},
+			map[string]interface{}{},
 			&attributeRequest{attrRegexp: regexp.MustCompile("attr=testattr$"), metricType: -1},
 			true,
 		},
 		{
-			map[interface{}]interface{}{"attr_regex": "testattr"},
+			map[string]interface{}{"attr_regex": "testattr"},
 			&attributeRequest{attrRegexp: regexp.MustCompile("attr=testattr$"), metricType: -1},
 			false,
 		},
 		{
-			map[interface{}]interface{}{"attr": "testattr"},
+			map[string]interface{}{"attr": "testattr"},
 			&attributeRequest{attrRegexp: regexp.MustCompile("attr=testattr$"), metricType: metric.DELTA},
 			true,
 		},
@@ -149,7 +156,7 @@ func TestParseBean(t *testing.T) {
 				Query:   "name=test,partition=test",
 				Exclude: []interface{}{"testexclude"},
 				Attributes: []interface{}{
-					map[interface{}]interface{}{
+					map[string]interface{}{
 						"attr": "testattr",
 					},
 				},
@@ -173,7 +180,7 @@ func TestParseBean(t *testing.T) {
 				Query:   "name=test,partition=test",
 				Exclude: []interface{}{"testexclude"},
 				Attributes: []interface{}{
-					map[interface{}]interface{}{
+					map[string]interface{}{
 						"attr":        "testattr",
 						"metric_type": "gauge",
 					},
@@ -209,6 +216,62 @@ func TestParseBean(t *testing.T) {
 			t.Errorf("Not the same for test case %d", i)
 		}
 	}
+}
+
+func TestParseCollectionDefinitionJSON(t *testing.T) {
+	configJSON := `
+          {
+              "collect": [
+                  {
+                      "domain": "com.demo.app",
+                      "event_type": "JMXAnnotationSample",
+                      "beans": [
+                          {
+                              "query": "name=SystemStatusExample",
+                              "exclude_regex": [
+                                "Random.*"
+                              ],
+                              "attributes": [
+                                  {
+                                    "attr_regex": "Random.*",
+                                    "metric_name": "t.test",
+                                    "metric_type": "rate"
+                                  }
+                              ]
+                          }
+                      ]
+                  }
+              ]
+          }`
+
+	expectedDomains := []*domainDefinition{
+		{
+			domain:    "com.demo.app",
+			eventType: "JMXAnnotationSample",
+			beans: []*beanRequest{
+				{
+					beanQuery: "name=SystemStatusExample",
+					exclude: []*regexp.Regexp{
+						regexp.MustCompile("Random.*"),
+					},
+					attributes: []*attributeRequest{
+						{
+							attrRegexp: regexp.MustCompile(`attr=Random.*$`),
+							metricName: "t.test",
+							metricType: metric.RATE,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	c, err := parseJSON(configJSON)
+	assert.NoError(t, err)
+
+	actualDomains, err := parseCollectionDefinition(c)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedDomains, actualDomains)
 }
 
 func TestParseCollectionDefinition(t *testing.T) {

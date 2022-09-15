@@ -1,3 +1,8 @@
+/*
+ * Copyright 2022 New Relic Corporation. All rights reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package main
 
 import (
@@ -26,7 +31,7 @@ func (j *jmxClientMock) Close() error {
 	return j.err
 }
 
-func (j *jmxClientMock) QueryMBeanAttributes(mBeanNamePattern string) ([]*gojmx.AttributeResponse, error) {
+func (j *jmxClientMock) QueryMBeanAttributes(mBeanNamePattern string, mBeanAttributeName ...string) ([]*gojmx.AttributeResponse, error) {
 	return j.response, j.err
 }
 
