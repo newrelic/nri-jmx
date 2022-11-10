@@ -6,7 +6,7 @@ require (
 	github.com/golangci/golangci-lint v1.43.0
 	github.com/kr/pretty v0.2.1
 	github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible
-	github.com/newrelic/nrjmx/gojmx v0.0.0-20220831103627-56d00601006c
+	github.com/newrelic/nrjmx/gojmx v0.0.0-20221110115014-1bf7da3bcacf
 	github.com/stretchr/testify v1.7.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	gopkg.in/yaml.v2 v2.4.0
