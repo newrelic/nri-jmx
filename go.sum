@@ -803,6 +803,12 @@ github.com/newrelic/nrjmx/gojmx v0.0.0-20220805091631-f89f03942044 h1:/K+yOh6PPS
 github.com/newrelic/nrjmx/gojmx v0.0.0-20220805091631-f89f03942044/go.mod h1:zd01rBtry4cfiVBXpUhBeEjolk86vMczWd/d7QQHGK8=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20220831103627-56d00601006c h1:B6Fj3lqF+NnztRe+DMXRJsp+gKRKhznmQd5qzQAEP/U=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20220831103627-56d00601006c/go.mod h1:zd01rBtry4cfiVBXpUhBeEjolk86vMczWd/d7QQHGK8=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20221110115014-1bf7da3bcacf h1:vdY3pdgs6DK/HD5ncBic788uDiBhw75+I96UdS57Xc0=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20221110115014-1bf7da3bcacf/go.mod h1:zd01rBtry4cfiVBXpUhBeEjolk86vMczWd/d7QQHGK8=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20221111120337-1dd960d912d6 h1:YGbl0XRgpl8Haxj7C78mmZGoTkpRJZJ+/EfNvrK7EU8=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20221111120337-1dd960d912d6/go.mod h1:zd01rBtry4cfiVBXpUhBeEjolk86vMczWd/d7QQHGK8=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20221114105432-46c05232c4f8 h1:CQ3MxVMsWkOKvP+35rYGrvrHv1tp7V+yEzoC//o8liw=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20221114105432-46c05232c4f8/go.mod h1:zd01rBtry4cfiVBXpUhBeEjolk86vMczWd/d7QQHGK8=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e h1:fD57ERR4JtEqsWbfPhv4DMiApHyliiK5xCTNVSPiaAs=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nishanths/exhaustive v0.2.3 h1:+ANTMqRNrqwInnP9aszg/0jDo+zbXa4x66U19Bx/oTk=
