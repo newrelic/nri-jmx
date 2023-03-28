@@ -11,7 +11,6 @@ env:
   TAG: "v0.0.0" # needed for goreleaser windows builds
   REPO_FULL_NAME: ${{ github.event.repository.full_name }}
   ORIGINAL_REPO_NAME: "newrelic/nri-jmx"
-  GO_VERSION: '1.18'
   NRJMX_VERSION: '2.3.2'
   DOCKER_LOGIN_AVAILABLE: ${{ secrets.OHAI_DOCKER_HUB_ID }}
 
@@ -27,13 +26,10 @@ jobs:
         with:
           auditOn: push
 
-      - name: Modify go.mod version to support golangci-lint
-        run: sed -i -e 's/go 1\.18/go 1\.17/' go.mod
-
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: '1.17'
+          go-version-file: 'go.mod'
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
@@ -86,9 +82,9 @@ jobs:
         with:
           path: src/github.com/${{env.ORIGINAL_REPO_NAME}}
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: ${{env.GO_VERSION}}
+          go-version-file: 'src/github.com/${{env.ORIGINAL_REPO_NAME}}/go.mod'
       - name: Running unit tests
         shell: pwsh
         run: |
@@ -108,9 +104,9 @@ jobs:
           fetch-depth: 1
           path: src/github.com/${{env.ORIGINAL_REPO_NAME}}
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
-          go-version: ${{env.GO_VERSION}}
+          go-version-file: 'src/github.com/${{env.ORIGINAL_REPO_NAME}}/go.mod'
       - name: Login to DockerHub
         if: ${{env.DOCKER_LOGIN_AVAILABLE}}
         uses: docker/login-action@v1
