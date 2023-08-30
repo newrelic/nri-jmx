@@ -5,14 +5,14 @@ go 1.20
 require (
 	github.com/kr/pretty v0.3.0
 	github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible
-	github.com/newrelic/nrjmx/gojmx v0.0.0-20221114105432-46c05232c4f8
+	github.com/newrelic/nrjmx/gojmx v0.0.0-20230714122532-90d44704c70c
 	github.com/stretchr/testify v1.8.2
 	github.com/xeipuuv/gojsonschema v1.2.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
-	github.com/apache/thrift v0.16.0 // indirect
+	github.com/apache/thrift v0.17.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
