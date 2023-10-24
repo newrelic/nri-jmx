@@ -2,11 +2,11 @@
 
 ## Prerequisites
 
-##  1. <a name='InstalltheInfrastructureagent'></a>Install the Infrastructure agent and JMX integration
+## 1. <a name='InstalltheInfrastructureagent'></a>Install the Infrastructure agent and JMX integration
 
 - [Install Infrastructure for Linux using the package manager](https://docs.newrelic.com/docs/infrastructure/install-configure-manage-infrastructure/linux-installation/install-infrastructure-linux-using-package-manager)
 
-  or 
+  or
 
 - [Install Infrastructure for Windows Server using the MSI installer](https://docs.newrelic.com/docs/infrastructure/install-configure-manage-infrastructure/windows-installation/install-infrastructure-windows-server-using-msi-installer)
 
@@ -33,7 +33,7 @@ Build and run the image, exposing the JMX port 9010:
 docker build -t tomcat_908_jmx . && docker run -d -p 9010:9010 --name=tomcat_908_jmx tomcat_908_jmx
 ```
 
-##  3. Configure JMX integration
+## 3. Configure JMX integration
 
 ### 3.1 First step is creating a JMX integration configuration file `/etc/newrelic-infra/integrations.d/jmx-config.yml`
 
@@ -62,34 +62,34 @@ integrations:
 
 All configuration options can be found in the public [documentation](https://docs.newrelic.com/docs/integrations/host-integrations/host-integrations-list/jmx-monitoring-integration#config).
 
-### Test the JMX connection:
+### Test the JMX connection
 
 `nri-jmx` `query` tool uses the defined jmx-config.yml file to establish connection and  outputs the available JMX metrics.
 
 ```bash
-/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
+/opt/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
 ```
 
-### 3.2 Creating the metric collection configuration file.
+### 3.2 Creating the metric collection configuration file
 
 In the JMX configuration file, we specified a collection file `jmx-custom-metrics.yml`. This file is used to define which metrics we want to collect.
 
 We can inspect the available JMX metrics using nri-jmx command directly or a visual tool like JConsole.
 
 ```bash
-/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
+/opt/newrelic-infra/newrelic-integrations/bin/nri-jmx -query "*:*"
 ```
 
 or you can start with [template collectors file](../../tomcat-metrics.yml.sample)
 
 ### 3.3 Validate nri-jmx standalone
 
-```/var/db/newrelic-infra/newrelic-integrations/bin/nri-jmx -collection_files /etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml -jmx_port 9010 -jmx_host IP_OF_CONTAINER```
+```/opt/newrelic-infra/newrelic-integrations/bin/nri-jmx -collection_files /etc/newrelic-infra/integrations.d/jmx-custom-metrics.yml -jmx_port 9010 -jmx_host IP_OF_CONTAINER```
 
 ### 3.3 Checking data
 
 Save the changes in the yaml files, and [restart](https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/manage-your-agent/start-stop-restart-infrastructure-agent) the agent. After a few minutes, go to New Relic and run the following [NRQL query](https://docs.newrelic.com/docs/query-data/nrql-new-relic-query-language):
 
-```sql 
+```sql
 FROM TomcatSample SELECT *
 ```
