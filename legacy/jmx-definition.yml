@@ -6,5 +6,5 @@ os: linux
 commands:
   all_data:
     command:
-      - ./bin/nri-jmx
+      - /opt/newrelic-infra/newrelic-integrations/bin/nri-jmx
     interval: 15
