@@ -8,6 +8,7 @@ require (
 	github.com/newrelic/nrjmx/gojmx v0.0.0-20230714122532-90d44704c70c
 	github.com/stretchr/testify v1.8.2
 	github.com/xeipuuv/gojsonschema v1.2.0
+	golang.org/x/text v0.14.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
