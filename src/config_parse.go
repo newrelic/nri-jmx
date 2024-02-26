@@ -8,7 +8,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 
 	"github.com/newrelic/infra-integrations-sdk/data/metric"
@@ -69,7 +69,7 @@ type beanRequest struct {
 // It validates syntax only and not content
 func parseYaml(filename string) (*collectionDefinitionParser, error) {
 	// Read the file
-	yamlFile, err := ioutil.ReadFile(filename)
+	yamlFile, err := os.ReadFile(filename)
 	if err != nil {
 		log.Error("failed to open %s: %s", filename, err)
 		return nil, err

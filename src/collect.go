@@ -17,6 +17,8 @@ import (
 	"github.com/newrelic/infra-integrations-sdk/integration"
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nrjmx/gojmx"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var (
@@ -362,8 +364,9 @@ func generateEventType(domain string) (string, error) {
 	}
 
 	eventType := ""
+	caser := cases.Title(language.English)
 	for _, s := range strings.Split(domain, ".") {
-		eventType += strings.Title(s)
+		eventType += caser.String(s)
 	}
 	eventType += "Sample"
 
