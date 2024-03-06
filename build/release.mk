@@ -1,6 +1,7 @@
 BUILD_DIR    := ./bin/
 GORELEASER_VERSION := v1.16.2
 GORELEASER_BIN ?= bin/goreleaser
+TOOLS_MOD_DIR := ./internal/tools
 
 bin:
 	@mkdir -p $(BUILD_DIR)
@@ -21,7 +22,7 @@ release/clean:
 .PHONY : release/deps
 release/deps: $(GORELEASER_BIN)
 	@echo "===> $(INTEGRATION) === [release/deps] install goversioninfo"
-	@GO111MODULE=off go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
+	@cd $(TOOLS_MOD_DIR) && go install github.com/josephspurrier/goversioninfo/cmd/goversioninfo
 
 .PHONY : release/build
 release/build: release/deps release/clean

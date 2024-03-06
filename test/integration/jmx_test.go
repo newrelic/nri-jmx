@@ -12,14 +12,15 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/newrelic/nri-jmx/test/integration/jsonschema"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/newrelic/nri-jmx/test/integration/jsonschema"
+	"github.com/stretchr/testify/require"
 
 	"github.com/newrelic/infra-integrations-sdk/log"
 	"github.com/newrelic/nri-jmx/test/integration/helpers"
@@ -129,7 +130,7 @@ func TestJMXIntegration_ShowVersion(t *testing.T) {
 	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
 
-	expectedOutMessage := "New Relic Jmx integration Version: 0\\.0\\.0, Platform: linux/(amd|arm)64, GoVersion: go1\\.20\\.[0-9]+, GitCommit: , BuildDate:"
+	expectedOutMessage := "New Relic Jmx integration Version: 0\\.0\\.0, Platform: linux/(amd|arm)64, GoVersion: go1\\.22\\.[0-9]+, GitCommit: , BuildDate:"
 	assert.Regexp(t, regexp.MustCompile(expectedOutMessage), stdout)
 }
 
