@@ -9,7 +9,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  NRJMX_VERSION: '2.5.0'
+  NRJMX_VERSION: '2.6.0'
   INTEGRATION: "jmx"
   ORIGINAL_REPO_NAME: 'newrelic/nri-jmx'
   REPO_FULL_NAME: ${{ github.event.repository.full_name }}
