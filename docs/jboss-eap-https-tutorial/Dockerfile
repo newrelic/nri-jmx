@@ -1,4 +1,4 @@
-FROM daggerok/jboss-eap-7.2:7.2.0-centos
+FROM daggerok/jboss-eap-7.2:7.2.71-centos
 
 COPY config/standalone.xml /home/jboss/jboss-eap-7.2/standalone/configuration/standalone.xml
 
