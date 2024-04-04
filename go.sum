@@ -34,6 +34,8 @@ github.com/moby/term v0.0.0-20201216013528-df9cb8a40635 h1:rzf0wL0CHVc8CEsgyygG0
 github.com/morikuni/aec v1.0.0 h1:nP9CBfwrvYnBRgY6qfDQkygYDmYwOilePFkwzv4dU8A=
 github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible h1:DErIlRt4xGwgcR4N/LkzvH/c9xOituAtnEgwFUwfVSs=
 github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible/go.mod h1:tMUHRMq6mJS0YyBnbWrTXAnREnQqC1AGO6Lu45u5xAM=
+github.com/newrelic/infra-integrations-sdk v3.8.2+incompatible h1:Ktcm1aPAl7CW3o+FXAIKJ+jygWVXDXaUIWFyf2CXQTk=
+github.com/newrelic/infra-integrations-sdk v3.8.2+incompatible/go.mod h1:tMUHRMq6mJS0YyBnbWrTXAnREnQqC1AGO6Lu45u5xAM=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20230714122532-90d44704c70c h1:UC77tt3fDB0jSsduXxrOIjxe77ezfnqeXCYM96l9usU=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20230714122532-90d44704c70c/go.mod h1:tDD9KR/voGBWOlqnTdXfo+oDVXhg2HD0KrYwBrgd04s=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20240305121005-9fddfa34e08e h1:ZYdlZuIA9RZjJKkYA+PvfZ1QuRXsU9uIZOQt7wSUr7s=
