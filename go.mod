@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/kr/pretty v0.3.0
-	github.com/newrelic/infra-integrations-sdk v3.7.0+incompatible
+	github.com/newrelic/infra-integrations-sdk v3.8.2+incompatible
 	github.com/newrelic/nrjmx/gojmx v0.0.0-20240305121005-9fddfa34e08e
 	github.com/stretchr/testify v1.8.2
 	github.com/xeipuuv/gojsonschema v1.2.0
