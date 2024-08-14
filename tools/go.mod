@@ -4,7 +4,7 @@ go 1.22.1
 
 toolchain go1.23.0
 
-require github.com/golangci/golangci-lint v1.60.0
+require github.com/golangci/golangci-lint v1.60.1
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
