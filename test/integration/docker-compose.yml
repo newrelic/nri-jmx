@@ -2,6 +2,7 @@ version: '3.1'
 
 services:
   tomcat:
+    container_name: integration_tomcat_1
     image: tomcat:8.5-alpine
     environment:
       CATALINA_OPTS: |
