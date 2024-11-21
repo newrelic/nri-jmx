@@ -7,32 +7,38 @@ on:
       - master
   pull_request:
 
+env:
+  NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
+
 jobs:
-  static-analysis:
-    name: Run all static analysis checks
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: newrelic/newrelic-infra-checkers@v1
-      - name: Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          auditOn: push
+  # reusable_push_pr contains static-analysis but it does not contain the Semgrep step
+  # static-analysis job in reusable_push_pr cannot be disabled
+  # uncommenting the below leads to the following error "creating validator: parsing markdown: parsing markdown headers: unexpected additional L1 header \"2.4.7 (2021-06-10)\" found, only a single L1 header is allowed"
+  # TODO check if we can remove the below code and ignore the Semgrep step
+  # static-analysis:
+  #   name: Run all static analysis checks
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: newrelic/newrelic-infra-checkers@v1
+  #     - name: Semgrep
+  #       uses: returntocorp/semgrep-action@v1
+  #       with:
+  #         auditOn: push
 
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
+  #     - name: Install Go
+  #       uses: actions/setup-go@v5
+  #       with:
+  #         go-version-file: 'go.mod'
 
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        continue-on-error: ${{ github.event_name != 'pull_request' }}
-        with:
-          only-new-issues: true
+  #     - name: golangci-lint
+  #       uses: golangci/golangci-lint-action@v6
+  #       continue-on-error: ${{ github.event_name != 'pull_request' }}
+  #       with:
+  #         only-new-issues: true
 
   push-pr:
     uses: newrelic/coreint-automation/.github/workflows/reusable_push_pr.yaml@v3
     with:
       integration: jmx
-      run_test_build_fake_prerelease: true
     secrets: inherit

@@ -6,6 +6,8 @@ on:
       - prereleased
     tags:
       - 'v*'
+env:
+  NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
 
 jobs:
   pre-release:
