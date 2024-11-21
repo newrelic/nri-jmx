@@ -7,6 +7,9 @@ on:
       - master
   pull_request:
 
+env:
+  NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
+
 jobs:
   # reusable_push_pr contains static-analysis but it does not contain the Semgrep step
   # static-analysis job in reusable_push_pr cannot be disabled
@@ -34,9 +37,31 @@ jobs:
   #       with:
   #         only-new-issues: true
 
+  # can't run this step inside of container because of tests specific
+  test-integration-nix:
+    name: Run integration tests on *Nix
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: src/github.com/${{env.ORIGINAL_REPO_NAME}}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          path: src/github.com/${{env.ORIGINAL_REPO_NAME}}
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'src/github.com/${{env.ORIGINAL_REPO_NAME}}/go.mod'
+      - name: Integration test
+        env:
+          GOPATH: ${{ github.workspace }}
+        run: make integration-test
+
   push-pr:
     uses: newrelic/coreint-automation/.github/workflows/reusable_push_pr.yaml@v3
     with:
       integration: jmx
-      NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
+      run_integration_nix: false
     secrets: inherit
