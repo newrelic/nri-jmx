@@ -7,9 +7,6 @@ on:
       - master
   pull_request:
 
-env:
-  NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
-
 jobs:
   # reusable_push_pr contains static-analysis but it does not contain the Semgrep step
   # static-analysis job in reusable_push_pr cannot be disabled
@@ -41,4 +38,5 @@ jobs:
     uses: newrelic/coreint-automation/.github/workflows/reusable_push_pr.yaml@v3
     with:
       integration: jmx
+      NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
     secrets: inherit
