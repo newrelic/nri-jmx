@@ -7,7 +7,31 @@ on:
     tags:
       - 'v*'
 
+env:
+  NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
+
 jobs:
+  test-integration-nix:
+    name: Run integration tests on *Nix
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: src/github.com/${{env.ORIGINAL_REPO_NAME}}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          path: src/github.com/${{env.ORIGINAL_REPO_NAME}}
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'src/github.com/${{env.ORIGINAL_REPO_NAME}}/go.mod'
+      - name: Integration test
+        env:
+          GOPATH: ${{ github.workspace }}
+        run: make integration-test
+
   pre-release:
     uses: newrelic/coreint-automation/.github/workflows/reusable_pre_release.yaml@v3
     with:
@@ -16,5 +40,4 @@ jobs:
       windows_goarch_matrix: ["amd64"] # 386 not supported in jmx integrations
       win_package_type: exe # JMX integrations are shipped in .exe format
       publish_schema: "ohi-jmx" # ohi-jmx for integrations that bundle JMX on windows installers
-      NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
     secrets: inherit
