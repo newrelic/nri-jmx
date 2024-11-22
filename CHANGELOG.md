@@ -1,9 +1,14 @@
-[[#]] Change Log
+# Change Log
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## Unreleased
+
+### enhancements
+- leveraged reusable workflows to automate releases
 
 ## 2.5.0
 ### Added
@@ -13,7 +18,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 Please notice that old [V3](https://docs.newrelic.com/docs/create-integrations/infrastructure-integrations-sdk/specifications/host-integrations-standard-configuration-format/) configuration format is deprecated, but still supported.
 
 ## 2.4.7 (2021-06-10)
-
 ### Changed
 - ARM support
 
