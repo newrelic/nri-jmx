@@ -13,7 +13,6 @@ env:
 jobs:
   # reusable_push_pr contains static-analysis but it does not contain the Semgrep step
   # static-analysis job in reusable_push_pr cannot be disabled
-  # uncommenting the below leads to the following error "creating validator: parsing markdown: parsing markdown headers: unexpected additional L1 header \"2.4.7 (2021-06-10)\" found, only a single L1 header is allowed"
   # TODO check if we can remove the below code and ignore the Semgrep step
   # static-analysis:
   #   name: Run all static analysis checks
