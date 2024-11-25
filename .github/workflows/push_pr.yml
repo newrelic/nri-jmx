@@ -11,31 +11,6 @@ env:
   NRJMX_VERSION: '2.6.0' # TODO check if we should update it to latest release version
 
 jobs:
-  # reusable_push_pr contains static-analysis but it does not contain the Semgrep step
-  # static-analysis job in reusable_push_pr cannot be disabled
-  # TODO check if we can remove the below code and ignore the Semgrep step
-  # static-analysis:
-  #   name: Run all static analysis checks
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: newrelic/newrelic-infra-checkers@v1
-  #     - name: Semgrep
-  #       uses: returntocorp/semgrep-action@v1
-  #       with:
-  #         auditOn: push
-
-  #     - name: Install Go
-  #       uses: actions/setup-go@v5
-  #       with:
-  #         go-version-file: 'go.mod'
-
-  #     - name: golangci-lint
-  #       uses: golangci/golangci-lint-action@v6
-  #       continue-on-error: ${{ github.event_name != 'pull_request' }}
-  #       with:
-  #         only-new-issues: true
-
   # can't run this step inside of container because of tests specific
   test-integration-nix:
     name: Run integration tests on *Nix
