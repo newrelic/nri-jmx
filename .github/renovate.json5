@@ -1,5 +1,41 @@
 {
   "extends": [
     "github>newrelic/coreint-automation:renovate-base.json5"
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "^\\.github/workflows/push_pr.yml$",
+        "^\\.github/workflows/prerelease.yml$"
+      ],
+      "matchStrings": [
+        "NRJMX_VERSION\\s*[:=]\\s*[\"']?(?<currentValue>\\d+\\.\\d+\\.\\d+)[\"']?"
+      ],
+      "depNameTemplate": "newrelic/nrjmx",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Automerge minor and patch updates for NRJMX_VERSION",
+      "matchDatasources": ["github-releases"],
+      "matchPackageNames": ["newrelic/nrjmx"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "pruneBranchAfterAutomerge": true,
+      "platformAutomerge": true,
+      "prCreation": "immediate"
+    },
+    {
+      "description": "Raise PR for major updates for NRJMX_VERSION",
+      "matchDatasources": ["github-releases"],
+      "matchPackageNames": ["newrelic/nrjmx"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "nrjmx major version",
+      "automerge": false,
+      "pruneBranchAfterAutomerge": true,
+      "prCreation": "immediate"
+    }
   ]
 }
