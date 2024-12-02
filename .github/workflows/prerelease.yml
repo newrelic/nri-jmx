@@ -37,7 +37,7 @@ jobs:
     with:
       tag: ${{ github.event.release.tag_name }}
       integration: "jmx"
-      windows_goarch_matrix: ["amd64"] # 386 not supported in jmx integrations
+      windows_goarch_matrix: '["amd64"]' # 386 not supported in jmx integrations
       win_package_type: exe # JMX integrations are shipped in .exe format
       publish_schema: "ohi-jmx" # ohi-jmx for integrations that bundle JMX on windows installers
       run_integration_nix: false
