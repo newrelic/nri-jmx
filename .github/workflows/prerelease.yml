@@ -41,4 +41,5 @@ jobs:
       win_package_type: exe # JMX integrations are shipped in .exe format
       publish_schema: "ohi-jmx" # ohi-jmx for integrations that bundle JMX on windows installers
       run_integration_nix: false
+      dest_prefix: "test-resuable-prerelease-sairaj"
     secrets: inherit
