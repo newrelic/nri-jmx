@@ -43,5 +43,5 @@ jobs:
       windows_download_nrjmx: true
       run_integration_nix: false
       dest_prefix: "test-resuable-prerelease-sairaj"
-      # windows_version: "2019"
+      windows_version: "2019"
     secrets: inherit
