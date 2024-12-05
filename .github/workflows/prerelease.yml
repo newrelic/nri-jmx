@@ -42,6 +42,6 @@ jobs:
       publish_schema: "ohi-jmx" # ohi-jmx for integrations that bundle JMX on windows installers
       windows_download_nrjmx: true
       run_integration_nix: false
-      dest_prefix: "test-resuable-prerelease-sairaj-3/"
+      dest_prefix: "test-resuable-prerelease-sairaj-4/"
       windows_version: "2019"
     secrets: inherit
