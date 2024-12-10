@@ -8,88 +8,9 @@ on:
   pull_request:
 
 env:
-  TAG: "v0.0.0" # needed for goreleaser windows builds
-  REPO_FULL_NAME: ${{ github.event.repository.full_name }}
-  ORIGINAL_REPO_NAME: "newrelic/nri-jmx"
-  NRJMX_VERSION: '2.6.0'
-  DOCKER_LOGIN_AVAILABLE: ${{ secrets.OHAI_DOCKER_HUB_ID }}
+  NRJMX_VERSION: '2.6.0' # Renovate automatically updates this dependencies to the latest release version. It will automatically merge minor and patch versions, while raising a pull request for major version updates.
 
 jobs:
-  static-analysis:
-    name: Run all static analysis checks
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: newrelic/newrelic-infra-checkers@v1
-      - name: Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          auditOn: push
-
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'go.mod'
-
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        continue-on-error: ${{ github.event_name != 'pull_request' }}
-        with:
-          only-new-issues: true
-
-  snyk:
-    name: Run security checks via snyk
-    runs-on: ubuntu-20.04
-    env:
-      SNYK_TOKEN: ${{ secrets.CAOS_SNYK_TOKEN }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Login to DockerHub
-        if: ${{env.DOCKER_LOGIN_AVAILABLE}}
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.OHAI_DOCKER_HUB_ID }}
-          password: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
-      - name: Scan code for vulnerabilities
-        if: ${{env.SNYK_TOKEN}}
-        run: make ci/snyk-test
-
-  test-nix:
-    name: Run unit tests on *Nix
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Login to DockerHub
-        if: ${{env.DOCKER_LOGIN_AVAILABLE}}
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.OHAI_DOCKER_HUB_ID }}
-          password: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
-      - name: Unit tests
-        run: make ci/test
-
-  test-windows:
-    name: Run unit tests on Windows
-    runs-on: windows-2019
-    env:
-      GOPATH: ${{ github.workspace }}
-    defaults:
-      run:
-        working-directory: src/github.com/${{ env.ORIGINAL_REPO_NAME }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          path: src/github.com/${{env.ORIGINAL_REPO_NAME}}
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: 'src/github.com/${{env.ORIGINAL_REPO_NAME}}/go.mod'
-      - name: Running unit tests
-        shell: pwsh
-        run: |
-          .\build\windows\unit_tests.ps1
-
   # can't run this step inside of container because of tests specific
   test-integration-nix:
     name: Run integration tests on *Nix
@@ -107,27 +28,14 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'src/github.com/${{env.ORIGINAL_REPO_NAME}}/go.mod'
-      - name: Login to DockerHub
-        if: ${{env.DOCKER_LOGIN_AVAILABLE}}
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.OHAI_DOCKER_HUB_ID }}
-          password: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
       - name: Integration test
         env:
           GOPATH: ${{ github.workspace }}
         run: make integration-test
 
-  test-build:
-    name: Test binary compilation for all platforms:arch
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Login to DockerHub
-        if: ${{env.DOCKER_LOGIN_AVAILABLE}}
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.OHAI_DOCKER_HUB_ID }}
-          password: ${{ secrets.OHAI_DOCKER_HUB_PASSWORD }}
-      - name: Build all platforms:arch
-        run: make ci/build
+  push-pr:
+    uses: newrelic/coreint-automation/.github/workflows/reusable_push_pr.yaml@v3
+    with:
+      integration: jmx
+      run_integration_nix: false
+    secrets: inherit
