@@ -2,6 +2,10 @@
 # workflow_dispatch to work properly
 name: Repolinter Action
 
+on:
+  push:
+  workflow_dispatch:
+
 jobs:
   repolinter:
     uses: newrelic/coreint-automation/.github/workflows/reusable_repolinter.yaml@v3
