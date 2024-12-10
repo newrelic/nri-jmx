@@ -33,7 +33,7 @@ jobs:
         run: make integration-test
 
   pre-release:
-    uses: newrelic/coreint-automation/.github/workflows/reusable_pre_release.yaml@v3
+    uses: newrelic/coreint-automation/.github/workflows/reusable_pre_release.yaml@NR-329534-add-input-windows-version-to-reusable-pre-release # TODO change back to v3
     with:
       tag: ${{ github.event.release.tag_name }}
       integration: "jmx"
@@ -42,5 +42,6 @@ jobs:
       publish_schema: "ohi-jmx" # ohi-jmx for integrations that bundle JMX on windows installers
       windows_download_nrjmx: true
       run_integration_nix: false
-      windows_version: "2019"
+      dest_prefix: "sairaj-test-pre-release-nri-jmx-final"
+      windows_version: "windows-2019"
     secrets: inherit
