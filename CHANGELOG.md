@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### bugfix
+- Updated go to v1.22.9
+
 ## 2.5.0
 ### Added
 
