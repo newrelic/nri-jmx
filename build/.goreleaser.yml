@@ -21,7 +21,8 @@ builds:
       - arm64
     ignore:
       - goos: darwin
-        goarch: 386'
+        goarch: 386
+
   - id: nri-nix-fips
     main: ./src
     binary: nri-jmx
@@ -99,6 +100,9 @@ nfpms:
           - newrelic-infra (>= 1.48.0)
           - nrjmx (>= 2.6.0)
       rpm:
+        dependencies:
+          - newrelic-infra (>= 1.48.0)
+          - nrjmx >= 2.6.0
         file_name_template: >-
           {{- .ProjectName }}-
           {{- .Version }}-1.
@@ -117,7 +121,7 @@ nfpms:
     vendor: "New Relic, Inc."
     homepage: "https://www.newrelic.com/infrastructure"
     maintainer: "New Relic Infrastructure Team <infrastructure-eng@newrelic.com>"
-    description: "New Relic Infrastructure jmx Integration extend the core New Relic\nInfrastructure agent's capabilities to allow you to collect metric and\nlive state data from jmx components."
+    description: "New Relic Infrastructure jmx Integration extend the core New Relic\nInfrastructure agent's capabilities to allow you to collect metric and\nlive state data from jmx components and it's FIPS compliant."
     license: "https://newrelic.com/terms (also see LICENSE installed with this package)"
 
     builds:
@@ -131,6 +135,10 @@ nfpms:
     contents:
       - src: "jmx-config.yml.sample"
         dst: "/etc/newrelic-infra/integrations.d/jmx-config.yml.sample"
+      - src: "jvm-metrics.yml.sample"
+        dst: "/etc/newrelic-infra/integrations.d/jvm-metrics.yml.sample"
+      - src: "tomcat-metrics.yml.sample"
+        dst: "/etc/newrelic-infra/integrations.d/tomcat-metrics.yml.sample"
       - src: "CHANGELOG.md"
         dst: "/usr/share/doc/nri-jmx/CHANGELOG.md"
       - src: "README.md"
@@ -139,10 +147,12 @@ nfpms:
         dst: "/usr/share/doc/nri-jmx/LICENSE"
       - src: "legacy/jmx-definition.yml"
         dst: "/var/db/newrelic-infra/newrelic-integrations/jmx-definition.yml"
-        type: config
 
     overrides:
       rpm:
+        dependencies:
+          - newrelic-infra (>= 1.48.0)
+          - nrjmx >= 2.6.0
         file_name_template: >-
           {{- .ProjectName }}-fips-
           {{- .Version }}-1.
@@ -168,17 +178,17 @@ archives:
       - jvm-metrics.yml.sample
     format: tar.gz
 
-  # - id: nri-jmx-win
-  #   builds:
-  #     - nri-jmx-win
-  #   name_template: "{{ .ProjectName }}-{{ .Arch }}.{{ .Version }}_dirty"
-  #   files:
-  #     - jmx-win-config.yml.sample
-  #     - src: "legacy/jmx-win-definition.yml"
-  #       dst: .
-  #       strip_parent: true
-  #     - jvm-metrics.yml.sample
-  #   format: zip
+  - id: nri-jmx-win
+    builds:
+      - nri-jmx-win
+    name_template: "{{ .ProjectName }}-{{ .Arch }}.{{ .Version }}_dirty"
+    files:
+      - jmx-win-config.yml.sample
+      - src: "legacy/jmx-win-definition.yml"
+        dst: .
+        strip_parent: true
+      - jvm-metrics.yml.sample
+    format: zip
 
   - id: nri-nix-fips
     builds:
