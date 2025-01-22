@@ -1,3 +1,6 @@
+---
+version: 2
+project_name: nri-jmx
 builds:
   - id: nri-jmx-nix
     main: ./src
@@ -18,7 +21,26 @@ builds:
       - arm64
     ignore:
       - goos: darwin
-        goarch: 386
+        goarch: 386'
+  - id: nri-nix-fips
+    main: ./src
+    binary: nri-jmx
+    ldflags:
+      - -s -w -X main.integrationVersion={{.Version}} -X main.gitCommit={{.Commit}} -X main.buildDate={{.Date}}
+    env:
+      - CGO_ENABLED=1
+      - GOEXPERIMENT=boringcrypto
+      - >-
+        {{- if eq .Arch "arm64" -}}
+        CC=aarch64-linux-gnu-gcc
+        {{- end }}
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    tags:
+      - fips
 
   - id: nri-jmx-win
     main: ./src
@@ -38,6 +60,8 @@ builds:
 
 nfpms:
   - id: linux
+    package_name: nri-jmx
+    file_name_template: "{{ .PackageName }}_{{ .Version }}-1_{{ .Arch }}"
     file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
     vendor: "New Relic, Inc."
     homepage: "https://www.newrelic.com/infrastructure"
@@ -76,13 +100,57 @@ nfpms:
           - newrelic-infra (>= 1.48.0)
           - nrjmx (>= 2.6.0)
       rpm:
-        file_name_template: "{{ .ProjectName }}-{{ .Version }}-1.{{ .Arch }}"
-        replacements:
-          amd64: x86_64
-        dependencies:
-          - newrelic-infra (>= 1.48.0)
-          - nrjmx >= 2.6.0
+        file_name_template: >-
+          {{- .ProjectName }}-
+          {{- .Version }}-1.
+          {{- if eq .Arch "amd64" -}}x86_64
+          {{- else -}}
+          {{ .Arch }}
+          {{- end }}
+    # Formats to be generated.
+    formats:
+      - deb
+      - rpm
 
+  - id: linux-fips
+    package_name: nri-jmx-fips
+    file_name_template: "{{ .PackageName }}_{{ .Version }}-1_{{ .Arch }}"
+    vendor: "New Relic, Inc."
+    homepage: "https://www.newrelic.com/infrastructure"
+    maintainer: "New Relic Infrastructure Team <infrastructure-eng@newrelic.com>"
+    description: "New Relic Infrastructure jmx Integration extend the core New Relic\nInfrastructure agent's capabilities to allow you to collect metric and\nlive state data from jmx components."
+    license: "https://newrelic.com/terms (also see LICENSE installed with this package)"
+
+    builds:
+      - nri-nix-fips
+
+    dependencies:
+      - newrelic-infra-fips (>= 1.20.0)
+
+    bindir: "/var/db/newrelic-infra/newrelic-integrations/bin"
+
+    contents:
+      - src: "jmx-config.yml.sample"
+        dst: "/etc/newrelic-infra/integrations.d/jmx-config.yml.sample"
+      - src: "CHANGELOG.md"
+        dst: "/usr/share/doc/nri-jmx/CHANGELOG.md"
+      - src: "README.md"
+        dst: "/usr/share/doc/nri-jmx/README.md"
+      - src: "LICENSE"
+        dst: "/usr/share/doc/nri-jmx/LICENSE"
+      - src: "legacy/jmx-definition.yml"
+        dst: "/var/db/newrelic-infra/newrelic-integrations/jmx-definition.yml"
+        type: config
+
+    overrides:
+      rpm:
+        file_name_template: >-
+          {{- .ProjectName }}-fips-
+          {{- .Version }}-1.
+          {{- if eq .Arch "amd64" -}}x86_64
+          {{- else -}}
+          {{ .Arch }}
+          {{- end }}
     # Formats to be generated.
     formats:
       - deb
@@ -101,17 +169,28 @@ archives:
       - jvm-metrics.yml.sample
     format: tar.gz
 
-  - id: nri-jmx-win
+  # - id: nri-jmx-win
+  #   builds:
+  #     - nri-jmx-win
+  #   name_template: "{{ .ProjectName }}-{{ .Arch }}.{{ .Version }}_dirty"
+  #   files:
+  #     - jmx-win-config.yml.sample
+  #     - src: "legacy/jmx-win-definition.yml"
+  #       dst: .
+  #       strip_parent: true
+  #     - jvm-metrics.yml.sample
+  #   format: zip
+
+  - id: nri-nix-fips
     builds:
-      - nri-jmx-win
-    name_template: "{{ .ProjectName }}-{{ .Arch }}.{{ .Version }}_dirty"
+      - nri-nix-fips
+    name_template: "{{ .ProjectName }}-fips_{{ .Os }}_{{ .Version }}_{{ .Arch }}_dirty"
     files:
-      - jmx-win-config.yml.sample
-      - src: "legacy/jmx-win-definition.yml"
+      - jmx-config.yml.sample
+      - src: 'legacy/jmx-definition.yml'
         dst: .
         strip_parent: true
-      - jvm-metrics.yml.sample
-    format: zip
+    format: tar.gz
 
 # we use custom publisher for fixing archives and signing them
 release:
