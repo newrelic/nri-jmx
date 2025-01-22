@@ -13,5 +13,6 @@ jobs:
     with:
       integration: jmx
       tag: ${{ github.event.release.tag_name }}
+      upload_fips_packages: true
       publish_schema: "ohi-jmx" # ohi-jmx for integrations that bundle JMX on windows installers
     secrets: inherit
