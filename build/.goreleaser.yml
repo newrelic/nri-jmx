@@ -62,7 +62,6 @@ nfpms:
   - id: linux
     package_name: nri-jmx
     file_name_template: "{{ .PackageName }}_{{ .Version }}-1_{{ .Arch }}"
-    file_name_template: "{{ .ProjectName }}_{{ .Version }}-1_{{ .Arch }}"
     vendor: "New Relic, Inc."
     homepage: "https://www.newrelic.com/infrastructure"
     maintainer: "New Relic Infrastructure Team <infrastructure-eng@newrelic.com>"
