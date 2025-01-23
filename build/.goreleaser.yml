@@ -199,6 +199,7 @@ archives:
       - src: 'legacy/jmx-definition.yml'
         dst: .
         strip_parent: true
+      - jvm-metrics.yml.sample
     format: tar.gz
 
 # we use custom publisher for fixing archives and signing them
