@@ -1,6 +1,6 @@
 module github.com/nri-jmx/internal/tools
 
-go 1.22.0
+go 1.23.5
 
 require github.com/josephspurrier/goversioninfo v1.4.1
 
