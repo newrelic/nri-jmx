@@ -1,5 +1,5 @@
 BUILD_DIR    := ./bin/
-GORELEASER_VERSION := v1.16.2
+GORELEASER_VERSION := v2.4.4
 GORELEASER_BIN ?= bin/goreleaser
 TOOLS_MOD_DIR := ./internal/tools
 
@@ -28,10 +28,10 @@ release/deps: $(GORELEASER_BIN)
 release/build: release/deps release/clean
 ifeq ($(PRERELEASE), true)
 	@echo "===> $(INTEGRATION) === [release/build] PRE-RELEASE compiling all binaries, creating packages, archives"
-	@$(GORELEASER_BIN) release --config $(CURDIR)/build/.goreleaser.yml --rm-dist
+	@$(GORELEASER_BIN) release --config $(CURDIR)/build/.goreleaser.yml --clean
 else
 	@echo "===> $(INTEGRATION) === [release/build] build compiling all binaries"
-	@$(GORELEASER_BIN) build --config $(CURDIR)/build/.goreleaser.yml --snapshot --rm-dist
+	@$(GORELEASER_BIN) build --config $(CURDIR)/build/.goreleaser.yml --snapshot --clean
 endif
 
 .PHONY : release/fix-archive
@@ -44,7 +44,7 @@ release/fix-archive:
 .PHONY : release/sign/nix
 release/sign/nix:
 	@echo "===> $(INTEGRATION) === [release/sign] signing packages"
-	@bash $(CURDIR)/build/nix/sign.sh
+	@bash sign.sh
 
 
 .PHONY : release/publish
