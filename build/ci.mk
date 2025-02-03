@@ -1,8 +1,9 @@
-BUILDER_TAG ?= nri-$(INTEGRATION)-builder
+.PHONY : ci/pull-builder-image
+ci/pull-builder-image:
+	@docker pull $(BUILDER_IMAGE)
 
 .PHONY : ci/deps
-ci/deps:
-	@docker build -t $(BUILDER_TAG) -f $(CURDIR)/build/Dockerfile $(CURDIR)
+ci/deps: ci/pull-builder-image
 
 .PHONY : ci/debug-container
 ci/debug-container: ci/deps
@@ -17,7 +18,7 @@ ci/debug-container: ci/deps
 			-e GPG_MAIL \
 			-e GPG_PASSPHRASE \
 			-e GPG_PRIVATE_KEY_BASE64 \
-			$(BUILDER_TAG) bash
+			$(BUILDER_IMAGE) bash
 
 .PHONY : ci/validate
 ci/validate: ci/deps
@@ -25,7 +26,7 @@ ci/validate: ci/deps
 			--name "nri-$(INTEGRATION)-validate" \
 			-v $(CURDIR):/go/src/github.com/newrelic/nri-$(INTEGRATION) \
 			-w /go/src/github.com/newrelic/nri-$(INTEGRATION) \
-			$(BUILDER_TAG) make validate
+			$(BUILDER_IMAGE) make validate
 
 .PHONY : ci/test
 ci/test: ci/deps
@@ -33,7 +34,7 @@ ci/test: ci/deps
 			--name "nri-$(INTEGRATION)-test" \
 			-v $(CURDIR):/go/src/github.com/newrelic/nri-$(INTEGRATION) \
 			-w /go/src/github.com/newrelic/nri-$(INTEGRATION) \
-			$(BUILDER_TAG) make test
+			$(BUILDER_IMAGE) make test
 
 .PHONY : ci/snyk-test
 ci/snyk-test:
@@ -54,7 +55,7 @@ ifdef TAG
 			-w /go/src/github.com/newrelic/nri-$(INTEGRATION) \
 			-e INTEGRATION \
 			-e TAG \
-			$(BUILDER_TAG) make release/build
+			$(BUILDER_IMAGE) make release/build
 else
 	@echo "===> $(INTEGRATION) ===  [ci/build] TAG env variable expected to be set"
 	exit 1
@@ -75,7 +76,7 @@ ifdef TAG
 			-e GPG_MAIL \
 			-e GPG_PASSPHRASE \
 			-e GPG_PRIVATE_KEY_BASE64 \
-			$(BUILDER_TAG) make release
+			$(BUILDER_IMAGE) make release
 else
 	@echo "===> $(INTEGRATION) ===  [ci/prerelease] TAG env variable expected to be set"
 	exit 1
