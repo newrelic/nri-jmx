@@ -286,6 +286,7 @@ github.com/golangci/golangci-lint v1.64.4/go.mod h1:0ev6fvv1iDY0P52Sp+WTvEvxZbcw
 github.com/golangci/golangci-lint v1.64.5/go.mod h1:WZnwq8TF0z61h3jLQ7Sk5trcP7b3kUFxLD6l1ivtdvU=
 github.com/golangci/golangci-lint v1.64.6/go.mod h1:Wz9q+6EVuqGQ94GQ96RB2mjpcZYTOGhBhbt4O7REPu4=
 github.com/golangci/golangci-lint v1.64.7/go.mod h1:5cEsUQBSr6zi8XI8OjmcY2Xmliqc4iYL7YoPrL+zLJ4=
+github.com/golangci/golangci-lint v1.64.8/go.mod h1:5cEsUQBSr6zi8XI8OjmcY2Xmliqc4iYL7YoPrL+zLJ4=
 github.com/golangci/lint-1 v0.0.0-20191013205115-297bf364a8e0 h1:MfyDlzVjl1hoaPzPD4Gpb/QgoRfSBR0jdhwGyAWwMSA=
 github.com/golangci/lint-1 v0.0.0-20191013205115-297bf364a8e0/go.mod h1:66R6K6P6VWk9I95jvqGxkqJxVWGFy9XlDwLwVz1RCFg=
 github.com/golangci/maligned v0.0.0-20180506175553-b1d89398deca h1:kNY3/svz5T29MYHubXix4aDDuE3RWHkPvopM/EDv/MA=
