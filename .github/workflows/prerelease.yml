@@ -13,7 +13,7 @@ env:
 jobs:
   test-integration-nix:
     name: Run integration tests on *Nix
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: src/github.com/${{env.ORIGINAL_REPO_NAME}}
