@@ -8,13 +8,13 @@ on:
   pull_request:
 
 env:
-  NRJMX_VERSION: '2.8.0' # Renovate automatically updates this dependencies to the latest release version. It will automatically merge minor and patch versions, while raising a pull request for major version updates.
+  NRJMX_VERSION: '2.7.0' # Renovate automatically updates this dependencies to the latest release version. It will automatically merge minor and patch versions, while raising a pull request for major version updates.
 
 jobs:
   # can't run this step inside of container because of tests specific
   test-integration-nix:
     name: Run integration tests on *Nix
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: src/github.com/${{env.ORIGINAL_REPO_NAME}}
