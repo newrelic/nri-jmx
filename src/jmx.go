@@ -18,6 +18,8 @@ import (
 	"time"
 
 	"github.com/newrelic/nrjmx/gojmx"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	sdkArgs "github.com/newrelic/infra-integrations-sdk/args"
 	"github.com/newrelic/infra-integrations-sdk/integration"
@@ -89,9 +91,10 @@ func main() {
 	}
 
 	if args.ShowVersion {
+		caser := cases.Title(language.English)
 		fmt.Printf(
 			"New Relic %s integration Version: %s, Platform: %s, GoVersion: %s, GitCommit: %s, BuildDate: %s\n",
-			strings.Title(strings.Replace(integrationName, "com.newrelic.", "", 1)),
+			caser.String(strings.Replace(integrationName, "com.newrelic.", "", 1)),
 			integrationVersion,
 			fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
 			runtime.Version(),
