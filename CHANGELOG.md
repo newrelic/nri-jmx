@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### security
+- fix: internal tools module path
+
 ## v3.8.2 - 2025-06-26
 
 ### ⛓️ Dependencies
