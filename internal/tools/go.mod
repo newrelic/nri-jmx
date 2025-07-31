@@ -1,4 +1,4 @@
-module github.com/nri-jmx/internal/tools
+module github.com/newrelic/nri-jmx/internal/tools
 
 go 1.24.4
 
