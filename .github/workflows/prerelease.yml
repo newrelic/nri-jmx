@@ -43,5 +43,5 @@ jobs:
       publish_schema: "ohi-jmx" # ohi-jmx for integrations that bundle JMX on windows installers
       windows_download_nrjmx: true
       run_integration_nix: false
-      windows_version: "windows-2019"
+      dest_prefix: "nri-jmx-windows/"
     secrets: inherit
