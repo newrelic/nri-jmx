@@ -14,6 +14,13 @@
         <Name>newrelic-nri-$(IntegrationName)-installer</Name>
         <DefineSolutionProperties>false</DefineSolutionProperties>
     </PropertyGroup>
+    <PropertyGroup>
+    <!-- Define a default for SignToolArgs if it's not passed from MSBuild -->
+    <!-- Using SHA256 as a recommended default -->
+    <SignToolArgs Condition="'$(SignToolArgs)' == ''">/fd SHA256 /tr http://timestamp.digicert.com /td SHA256</SignToolArgs>
+    <!-- Define a default for SkipSigning if it's not passed -->
+    <SkipSigning Condition="'$(SkipSigning)' == ''">false</SkipSigning>
+    </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
         <OutputPath>bin\$(Configuration)\</OutputPath>
         <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
@@ -44,7 +51,8 @@
         </CreateProperty>
     </Target>
     <Target Name="SignInstaller" Condition="'$(SkipSigning)' != 'true'">
-        <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign $(SignToolArgs) /d &quot;New Relic Infrastructure Agent&quot; /n &quot;New Relic, Inc.&quot; &quot;$(OutputPath)$(OutputName).msi&quot;" />    <Copy SourceFiles="$(OutputPath)$(OutputName).msi" DestinationFiles="$(OutputPath)$(OutputName).x.y.z.msi"/>
+        <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign $(SignToolArgs) /d &quot;New Relic Infrastructure Agent&quot; /n &quot;New Relic, Inc.&quot; &quot;$(OutputPath)$(OutputName).msi&quot;" />    
+        <Copy SourceFiles="$(OutputPath)$(OutputName).msi" DestinationFiles="$(OutputPath)$(OutputName).x.y.z.msi"/>
         <!-- <Delete Files="$(OutputPath)$(OutputName).msi" /> -->
     </Target>
     <Target Name="AfterBuild" DependsOnTargets="SignInstaller"/>
