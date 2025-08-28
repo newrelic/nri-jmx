@@ -44,5 +44,4 @@ jobs:
       windows_download_nrjmx: true
       run_integration_nix: false
       windows_version: "windows-2025"
-      dest_prefix: "abhishu_testing/"
     secrets: inherit
