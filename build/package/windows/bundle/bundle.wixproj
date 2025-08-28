@@ -57,10 +57,10 @@
             <Output TaskParameter="Value" PropertyName="DefineConstants" />
         </CreateProperty>
     </Target>
-    <Target Name="SignBundleEngine">
+    <Target Name="SignBundleEngine" Condition="'$(SkipSigning)' != 'true'">
         <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign $(SignToolArgs) /d &quot;$(pfx_certificate_description)&quot; /n &quot;$(pfx_certificate_description)&quot; &quot;@(SignBundleEngine)&quot;"/>
     </Target>
-    <Target Name="SignBundle">
+    <Target Name="SignBundle" Condition="'$(SkipSigning)' != 'true'">
         <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign $(SignToolArgs) /d &quot;$(pfx_certificate_description)&quot; /n &quot;$(pfx_certificate_description)&quot; &quot;@(SignBundle)&quot;"/>
     </Target>
 </Project>
