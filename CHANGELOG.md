@@ -7,9 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-### Dependencies
-- Updated GH worker for windows
-
 ## v3.8.4 - 2025-08-14
 
 ### ⛓️ Dependencies
