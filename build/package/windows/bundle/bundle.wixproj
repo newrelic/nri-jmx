@@ -58,9 +58,9 @@
         </CreateProperty>
     </Target>
     <Target Name="SignBundleEngine">
-        <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /s &quot;My&quot; /d &quot;$(pfx_certificate_description)&quot; /n &quot;$(pfx_certificate_description)&quot; &quot;@(SignBundleEngine)&quot;"/>
+        <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign $(SignToolArgs) /d &quot;$(pfx_certificate_description)&quot; /n &quot;$(pfx_certificate_description)&quot; &quot;@(SignBundleEngine)&quot;"/>
     </Target>
     <Target Name="SignBundle">
-        <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /s &quot;My&quot; /d &quot;$(pfx_certificate_description)&quot; /n &quot;$(pfx_certificate_description)&quot; &quot;@(SignBundle)&quot;"/>
+        <Exec Command="&quot;$(SignToolPath)signtool.exe&quot; sign $(SignToolArgs) /d &quot;$(pfx_certificate_description)&quot; /n &quot;$(pfx_certificate_description)&quot; &quot;@(SignBundle)&quot;"/>
     </Target>
 </Project>
