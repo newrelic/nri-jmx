@@ -11,6 +11,7 @@ if [[ -z $NRJMX_URL ]]; then
     NRJMX_VERSION=$(curl --silent "https://api.github.com/repos/newrelic/nrjmx/tags"| grep 'name' | grep -oE '[0-9.?]+' | sort -V | tail -n 1)
     echo $NRJMX_VERSION
   fi
+  NRJMX_VERSION="2.10.1"
   echo "Using latest nrjmx version $NRJMX_VERSION."
   NRJMX_URL=https://github.com/newrelic/nrjmx/releases/download/v$NRJMX_VERSION/nrjmx-amd64.$NRJMX_VERSION.msi
   echo $NRJMX_URL
