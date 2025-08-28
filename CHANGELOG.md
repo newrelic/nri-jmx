@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
+### Changed
+- Updated GH worker for windows
 
 ## v3.8.4 - 2025-08-14
 
