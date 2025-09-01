@@ -73,8 +73,8 @@ nfpms:
       - nri-jmx-nix
 
     dependencies:
-      - newrelic-infra
-      - nrjmx
+      - newrelic-infra (>= 1.48.0)
+      - nrjmx (>= 2.6.0)
 
     bindir: "/opt/newrelic-infra/newrelic-integrations/bin"
 
@@ -102,7 +102,7 @@ nfpms:
       rpm:
         dependencies:
           - newrelic-infra (>= 1.48.0)
-          - nrjmx >= 2.6.0
+          - nrjmx (>= 2.6.0)
         file_name_template: >-
           {{- .ProjectName }}-
           {{- .Version }}-1.
@@ -128,7 +128,8 @@ nfpms:
       - nri-nix-fips
 
     dependencies:
-      - newrelic-infra-fips (>= 1.20.0)
+      - newrelic-infra-fips (>= 1.60.0)
+      - nrjmx-fips (>= 2.10.1)
 
     bindir: "/var/db/newrelic-infra/newrelic-integrations/bin"
 
@@ -152,11 +153,11 @@ nfpms:
       deb:
         dependencies:
           - newrelic-infra-fips (>= 1.60.0)
-          - nrjmx (>= 2.6.0)
+          - nrjmx-fips (>= 2.10.1)
       rpm:
         dependencies:
           - newrelic-infra-fips (>= 1.60.0)
-          - nrjmx >= 2.6.0
+          - nrjmx-fips (>= 2.10.1)
         file_name_template: >-
           {{- .ProjectName }}-fips-
           {{- .Version }}-1.
