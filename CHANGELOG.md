@@ -7,19 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-## v3.8.4 - 2025-08-14
-
-### ⛓️ Dependencies
+### security
 - Updated golang patch version to v1.24.6
-
-## v3.8.3 - 2025-08-07
-
-### ⛓️ Dependencies
-- Updated golang patch version to v1.24.5
-
-## v3.9.0 - 2025-07-31
-
-### 🛡️ Security notices
 - fix: internal tools module path
 
 ### ⛓️ Dependencies
