@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-### security
-- Updated golang patch version to v1.24.6
-- fix: internal tools module path
+## v3.10.0 - 2025-09-04
 
 ### ⛓️ Dependencies
 - Updated golang patch version to v1.24.5
+
+### 🛡️ Security notices
+- Updated golang patch version to v1.24.6
+- fix: internal tools module path
 
 ## v3.8.2 - 2025-06-26
 
