@@ -8,7 +8,7 @@ on:
       - 'v*'
 
 env:
-  NRJMX_VERSION: '2.10.1' # Renovate automatically updates this dependencies to the latest release version. It will automatically merge minor and patch versions, while raising a pull request for major version updates.
+  NRJMX_VERSION: '2.10.2' # Renovate automatically updates this dependencies to the latest release version. It will automatically merge minor and patch versions, while raising a pull request for major version updates.
 
 jobs:
   test-integration-nix:
