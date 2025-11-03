@@ -130,7 +130,7 @@ func TestJMXIntegration_ShowVersion(t *testing.T) {
 	assert.Empty(t, stderr, "unexpected stderr")
 	assert.NoError(t, err, "Unexpected error")
 
-	expectedOutMessage := "New Relic Jmx integration Version: 0\\.0\\.0, Platform: linux/(amd|arm)64, GoVersion: go1\\.24\\.[0-9]+, GitCommit: , BuildDate:"
+	expectedOutMessage := "New Relic Jmx integration Version: 0\\.0\\.0, Platform: linux/(amd|arm)64, GoVersion: go1\\.25\\.[0-9]+, GitCommit: , BuildDate:"
 	assert.Regexp(t, regexp.MustCompile(expectedOutMessage), stdout)
 }
 
