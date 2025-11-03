@@ -129,7 +129,7 @@ nfpms:
 
     dependencies:
       - newrelic-infra-fips (>= 1.60.0)
-      - nrjmx-fips (>= 2.10.1)
+      - nrjmx-fips (>= 2.10.2)
 
     bindir: "/var/db/newrelic-infra/newrelic-integrations/bin"
 
@@ -153,11 +153,11 @@ nfpms:
       deb:
         dependencies:
           - newrelic-infra-fips (>= 1.60.0)
-          - nrjmx-fips (>= 2.10.1)
+          - nrjmx-fips (>= 2.10.2)
       rpm:
         dependencies:
           - newrelic-infra-fips (>= 1.60.0)
-          - nrjmx-fips (>= 2.10.1)
+          - nrjmx-fips (>= 2.10.2)
         file_name_template: >-
           {{- .ProjectName }}-fips-
           {{- .Version }}-1.
