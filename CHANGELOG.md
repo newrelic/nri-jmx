@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### enhancement
+- Updated nrjmx-fips patch version to v2.10.2
+
 ## v3.10.0 - 2025-09-04
 
 ### ⛓️ Dependencies
