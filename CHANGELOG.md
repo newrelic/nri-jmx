@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-### enhancement
+## v3.11.0 - 2025-11-06
+
+### 🚀 Enhancements
 - Updated nrjmx-fips patch version to v2.10.2
+
+### ⛓️ Dependencies
+- Updated golang version to v1.25.3
 
 ## v3.10.0 - 2025-09-04
 
