@@ -2,7 +2,7 @@ module github.com/newrelic/nri-jmx/tools
 
 go 1.25.4
 
-require github.com/golangci/golangci-lint v1.64.8
+require github.com/golangci/golangci-lint/v2 v2.6.2
 
 require (
 	4d63.com/gocheckcompilerdirectives v1.3.0 // indirect
