@@ -6,6 +6,8 @@ github.com/Microsoft/hcsshim v0.9.3 h1:k371PzBuRrz2b+ebGuI2nVgVhgsVX60jMfSw80NEC
 github.com/Microsoft/hcsshim v0.9.3/go.mod h1:7pLA8lDk46WKDWlVsENo92gC0XFa8rbKfyFRBqxEbCc=
 github.com/apache/thrift v0.17.0 h1:cMd2aj52n+8VoAtvSvLn4kDC3aZ6IAkBuqWQ2IDu7wo=
 github.com/apache/thrift v0.17.0/go.mod h1:OLxhMRJxomX+1I/KUw03qoV3mMz16BwaKI+d4fPBx7Q=
+github.com/apache/thrift v0.21.0 h1:tdPmh/ptjE1IJnhbhrcl2++TauVjy242rkV/UzJChnE=
+github.com/apache/thrift v0.21.0/go.mod h1:W1H8aR/QRtYNvrPeFXBtobyRkd0/YVhTc6i07XIAgDw=
 github.com/cenkalti/backoff v2.2.1+incompatible h1:tNowT99t7UNflLxfYYSlKYsBpXdEet03Pg2g16Swow4=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/containerd/cgroups v1.0.3 h1:ADZftAkglvCiD44c77s5YmMqaP2pzVCFZvBmAlBdAP4=
@@ -57,6 +59,8 @@ github.com/newrelic/infra-integrations-sdk v3.8.2+incompatible h1:Ktcm1aPAl7CW3o
 github.com/newrelic/infra-integrations-sdk v3.8.2+incompatible/go.mod h1:tMUHRMq6mJS0YyBnbWrTXAnREnQqC1AGO6Lu45u5xAM=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20240305121005-9fddfa34e08e h1:ZYdlZuIA9RZjJKkYA+PvfZ1QuRXsU9uIZOQt7wSUr7s=
 github.com/newrelic/nrjmx/gojmx v0.0.0-20240305121005-9fddfa34e08e/go.mod h1:cevS+iKLxJJ+gQY0RpHIJSoEZwJMTU3j/1tI50ztq1c=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20251008190552-2821be002322 h1:bBD5WhyEYB34ILl+2QwocZczeKwRKKEMy/n6qTeRWig=
+github.com/newrelic/nrjmx/gojmx v0.0.0-20251008190552-2821be002322/go.mod h1:mTaEkRWBlEy7DkcDz5hTkW6XVbabYjVV1UyC1KLCMEU=
 github.com/opencontainers/go-digest v1.0.0 h1:apOUWs51W5PlhuyGyz9FCeeBIOUDA/6nW8Oi/yOhh5U=
 github.com/opencontainers/go-digest v1.0.0/go.mod h1:0JzlMkj0TRzQZfJkVvzbP0HBR3IKzErnv2BNG4W4MAM=
 github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799 h1:rc3tiVYb5z54aKaDfakKn0dDjIyPpTtszkjuMzyt7ec=
