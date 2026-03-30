@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### security
+- Updated golang to `v1.25.8` to fix transitive CVEs
+- Upgraded `github.com/newrelic/nrjmx/gojmx` from `0.0.0-20240305121005` to `0.0.0-20260311192102` to fix transitive CVEs
+
 ## v3.11.4 - 2026-02-05
 
 ### ⛓️ Dependencies
