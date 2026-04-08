@@ -1,6 +1,6 @@
 module github.com/newrelic/nri-jmx
 
-go 1.25.8
+go 1.26.2
 
 require (
 	github.com/kr/pretty v0.3.0
