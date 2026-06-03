@@ -3,7 +3,7 @@ RUN git clone https://github.com/newrelic/nrjmx.git && \
     cd nrjmx && \
     mvn package -DskipTests -P \!deb,\!rpm,\!test,\!tarball
 
-FROM golang:1.26.3-bookworm as builder
+FROM golang:1.26.4-bookworm as builder
 COPY . /go/src/github.com/newrelic/nri-jmx/
 RUN cd /go/src/github.com/newrelic/nri-jmx && \
     make && \
