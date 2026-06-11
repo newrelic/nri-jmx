@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## v3.15.1 - 2026-06-11
+
+### ⛓️ Dependencies
+- Updated golang patch version to v1.26.4
+
 ## v3.15.0 - 2026-05-20
 
 ### 🛡️ Security notices
