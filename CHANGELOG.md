@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### security
+- Upgraded `golang.org/x/crypto` from v0.45.0 to v0.52.0 to fix [CVE-2026-39827](https://github.com/advisories/GHSA-qpw4-5x99-6vjp) (High severity)
+- Upgraded `golang.org/x/sys` from v0.31.0 to v0.45.0 in the tools module to fix [GO-2026-5024](https://pkg.go.dev/vuln/GO-2026-5024) (Low severity)
+- Upgraded `github.com/go-viper/mapstructure/v2` from v2.2.1 to v2.4.0 in the tools module to fix [GHSA-2464-8j7c-4cjm](https://github.com/advisories/GHSA-2464-8j7c-4cjm) (Medium severity)
+
 ## v3.15.1 - 2026-06-11
 
 ### ⛓️ Dependencies
