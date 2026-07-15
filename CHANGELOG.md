@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Upgraded `golang.org/x/sys` from v0.31.0 to v0.45.0 in the tools module to fix [GO-2026-5024](https://pkg.go.dev/vuln/GO-2026-5024) (Low severity)
 - Upgraded `github.com/go-viper/mapstructure/v2` from v2.2.1 to v2.4.0 in the tools module to fix [GHSA-2464-8j7c-4cjm](https://github.com/advisories/GHSA-2464-8j7c-4cjm) (Medium severity)
 
+### ⛓️ Dependencies
+- Updated `github.com/newrelic/nrjmx/gojmx` to `v0.0.0-20260714104524-a2f2193e84e3`
+
 ## v3.15.1 - 2026-06-11
 
 ### ⛓️ Dependencies
