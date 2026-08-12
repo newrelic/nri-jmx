@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	github.com/kr/pretty v0.3.1
 	github.com/newrelic/infra-integrations-sdk v3.8.2+incompatible
-	github.com/newrelic/nrjmx/gojmx v0.0.0-20260714104524-a2f2193e84e3
+	github.com/newrelic/nrjmx/gojmx v0.0.0-20260812103111-ec73e85ec47a
 	github.com/stretchr/testify v1.11.1
 	github.com/xeipuuv/gojsonschema v1.2.0
 	gopkg.in/yaml.v3 v3.0.1
