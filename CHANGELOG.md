@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### 🛡️ Security notices
+- Updated go module directive to v1.26.6 to address CVEs in net/http, crypto/tls, encoding/asn1, encoding/xml, and golang.org/x/mod (#218)
+
+### ⛓️ Dependencies
+- Updated github.com/stretchr/testify to v1.12.1 (#216)
+
 ## v3.16.0 - 2026-07-16
 
 ### 🛡️ Security notices
