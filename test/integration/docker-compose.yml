@@ -1,7 +1,7 @@
 services:
   tomcat:
     container_name: integration_tomcat_1
-    image: tomcat:8.5-alpine
+    image: tomcat:9.0-alpine
     environment:
       CATALINA_OPTS: |
         -Dcom.sun.management.jmxremote.authenticate=false
