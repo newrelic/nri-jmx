@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-### security
-- Bump apache/thrift  to v0.25.0
+## v3.19.0 - 2026-10-07
+
+### 🛡️ Security notices
+- Bump apache/thrift to v0.25.0
 - Bump golang.org/x/crypto to v0.57.0
 
 ## v3.18.0 - 2026-09-15
