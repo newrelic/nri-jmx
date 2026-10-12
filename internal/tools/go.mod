@@ -1,6 +1,6 @@
 module github.com/newrelic/nri-jmx/internal/tools
 
-go 1.27.1
+go 1.27.2
 
 require github.com/josephspurrier/goversioninfo v1.7.0
 

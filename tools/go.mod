@@ -1,6 +1,6 @@
 module github.com/newrelic/nri-jmx/tools
 
-go 1.27.1
+go 1.27.2
 
 require github.com/golangci/golangci-lint v1.64.8
 
