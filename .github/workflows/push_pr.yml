@@ -38,7 +38,7 @@ jobs:
         run: make integration-test
 
   push-pr:
-    uses: newrelic/coreint-automation/.github/workflows/reusable_push_pr.yaml@v3
+    uses: newrelic/coreint-automation/.github/workflows/reusable_push_pr.yaml@v4
     with:
       integration: jmx
       run_integration_nix: false
