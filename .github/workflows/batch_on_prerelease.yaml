@@ -16,6 +16,7 @@ env:
 
 jobs:
   test-integration-nix:
+    if: ${{ contains(github.event.release.body, 'release-flow=batch') }}
     name: Run integration tests on *Nix
     runs-on: ubuntu-latest
     defaults:
@@ -37,6 +38,7 @@ jobs:
         run: make integration-test
 
   pre-release:
+    if: ${{ contains(github.event.release.body, 'release-flow=batch') }}
     uses: newrelic/coreint-automation/.github/workflows/reusable_pre_release_build.yaml@v4
     with:
       tag: ${{ github.event.release.tag_name }}
